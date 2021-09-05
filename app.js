@@ -1,3 +1,5 @@
+const Picturesmongodb = require('./picturesmongodb.js')
+const pictureMongodb = new Picturesmongodb();
 const express = require('express')
 const app = express()
 const port = 3001
@@ -28,4 +30,27 @@ app.get('/file/:name', function (req, res, next) {
             console.log('Sent:', fileName)
         }
     })
+})
+
+app.get('/picture/:picture', function (req, res, next) {
+    var picture = req.params.picture
+    pictureMongodb.getPicture(picture).then((value => {
+            console.log('outside', value)
+            if(value) {
+                res.send(value)
+            }
+            else {
+                res.status(404)
+                res.send({value: 'not found'})
+            }
+        }
+    )).catch(e => {
+        console.log(e)
+        res.send(e)
+    })
+})
+
+
+app.get('pictures/:pictures', function (req, res, next) {
+
 })
