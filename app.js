@@ -34,7 +34,7 @@ app.get('/file/:name', function (req, res, next) {
 
 app.get('/picture/:picture', function (req, res, next) {
     var picture = req.params.picture
-    pictureMongodb.getPicture(picture).then((value => {
+    pictureMongodb.getPictureByName(picture).then((value => {
             console.log('outside', value)
             if(value) {
                 res.send(value)
@@ -51,6 +51,22 @@ app.get('/picture/:picture', function (req, res, next) {
 })
 
 
-app.get('pictures/:pictures', function (req, res, next) {
+app.get('/pictures', function (req, res, next) {
+    var date = req.query.date
+    if(date) {
+        pictureMongodb.getPicturesByDate(date).then((value => {
+            console.log('outside', value)
+            if(value) {
+                res.send(value)
+            }
+            else {
+                res.status(404)
+                res.send({value: 'not found'})
+            }
 
+        })).catch(e => {
+            console.log(e)
+            res.send(e)
+        })
+    }
 })
