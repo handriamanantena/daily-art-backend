@@ -1,28 +1,35 @@
-const { MongoClient, ObjectId} = require("mongodb");
-
+import * as mongoDB from "mongodb";
+import {Picture, PictureDB} from "./model/picture";
 const uri =
     "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
-const client = new MongoClient(uri);
+const client: mongoDB.MongoClient = new mongoDB.MongoClient(uri);
 
-class Picturesmongodb {
+export class Picturesmongodb {
 
-    async getPictureByName(pictureName) {
-        let picture = ''
+    async getPictureByName(pictureName : string) : Promise<Picture> {
         try {
             await client.connect();
             const database = client.db('Art');
             const pictures = database.collection('pictures');
             // Query for a movie that has the title 'Back to the Future'
             const query = {url: pictureName};
-            picture = await pictures.findOne(query);
-        } finally {
+            return await pictures.findOne(query).then(value=> {
+                return value as Picture
+            })
+        }
+        catch (e) {
+            return new Promise<Picture>((resolve, reject) => {
+                reject(e)
+            })
+        }
+        finally {
             // Ensures that the client will close when you finish/error
             await client.close();
-            return picture
         }
+
     }
 
-    async getPictureById(id) {
+    /*async getPictureById(id) {
         let picture = {}
         try {
             await client.connect();
@@ -64,7 +71,7 @@ class Picturesmongodb {
             await client.close();
             return gallery
         }
-    }
+    }*/
 }
 
-module.exports = Picturesmongodb
+export default Picturesmongodb

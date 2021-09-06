@@ -1,8 +1,12 @@
-const Picturesmongodb = require('./picturesmongodb.js')
+import {Picture, PictureDB} from "./model/picture";
+import { Picturesmongodb } from "./picturesmongodb";
 const pictureMongodb = new Picturesmongodb();
-const express = require('express')
+import express, {NextFunction} from 'express';
+import type { ErrorRequestHandler } from "express";
+import { HttpError, Http404Error } from "./error/HttpErrors"
 const app = express()
 const port = 3001
+
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
@@ -13,7 +17,7 @@ app.listen(port, () => {
 })
 
 app.get('/file/:name', function (req, res, next) {
-    var options = {
+    let options = {
         root: 'F:\\art\\pictures\\test\\',
         dotfiles: 'deny',
         headers: {
@@ -21,7 +25,7 @@ app.get('/file/:name', function (req, res, next) {
             'x-sent': true
         }
     }
-    var fileName = req.params.name
+    let fileName = req.params.name
 
     res.sendFile(fileName, options, function (err) {
         if (err) {
@@ -33,25 +37,34 @@ app.get('/file/:name', function (req, res, next) {
 })
 
 app.get('/picture/:picture', function (req, res, next) {
-    var picture = req.params.picture
-    pictureMongodb.getPictureByName(picture).then((value => {
+    let picture = req.params.picture
+    pictureMongodb.getPictureByName(picture).then(((value: Picture) => {
             console.log('outside', value)
             if(value) {
                 res.send(value)
             }
             else {
-                res.status(404)
-                res.send({value: 'not found'})
+                throw new Http404Error({
+                    error: {
+                        message: "picture not found",
+                        innerError: {}
+                    }
+                })
             }
         }
-    )).catch(e => {
-        console.log(e)
-        res.send(e)
+    )).catch((e : Error) => {
+        /*next(new HttpError({
+            error: {
+                message: e.message,
+                innerError: e.stack
+            }
+        }))*/
+        next(e)
     })
 })
 
 
-app.get('/pictures', function (req, res, next) {
+/*app.get('/pictures', function (req, res, next) {
     var date = req.query.date
     if(date) {
         pictureMongodb.getPicturesByDate(date).then((value => {
@@ -69,4 +82,26 @@ app.get('/pictures', function (req, res, next) {
             res.send(e)
         })
     }
+})*/
+
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+    if(err instanceof Http404Error) {
+        res.status(404)
+        res.send(err.error)
+    }
+    else if(err instanceof HttpError){
+        res.status(500)
+        res.send(err.error)
+    }
+    else {
+        res.status(500)
+        res.send(err.message)
+        console.error(err)
+    }
+};
+
+app.use(errorHandler)
+
+app.use(function (req, res, next) {
+    res.status(404).send("Sorry can't find that!")
 })
