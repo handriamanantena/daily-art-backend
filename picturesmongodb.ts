@@ -1,5 +1,6 @@
 import * as mongoDB from "mongodb";
 import {Picture, PictureDB} from "./model/picture";
+import {Gallery, GalleryDB} from "./model/Gallery";
 const uri =
     "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
 const client: mongoDB.MongoClient = new mongoDB.MongoClient(uri);
@@ -29,26 +30,23 @@ export class Picturesmongodb {
 
     }
 
-    /*async getPictureById(id) {
-        let picture = {}
+    async getPictureById(id : mongoDB.ObjectId) {
         try {
             await client.connect();
             const database = client.db('Art');
             const pictures = database.collection('pictures');
-            const query = id;
-            picture = await pictures.findOne(query);
+            return await pictures.findOne(id) as PictureDB;
         }
         finally {
             await client.close();
-            return picture
         }
     }
 
-    async getPicturesByIndex() {
+    /*async getPicturesByIndex() {
         let pictures = []
-    }
+    }*/
 
-    async getPicturesByDate(date) {
+    async getPicturesByDate(date: Date) {
         let gallery
         try {
             await client.connect();
@@ -56,22 +54,26 @@ export class Picturesmongodb {
             const galleryCollection = database.collection('gallery');
             // Query for a movie that has the title 'Back to the Future'
             const query = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
-            gallery = await galleryCollection.findOne(query);
+            gallery = await galleryCollection.findOne(query) as GalleryDB;
+            let pictures : Picture[] = []
             console.log(gallery)
-            let pictures = []
-            for (const pictureId of gallery.pictures) {
-                await this.getPictureById(pictureId).then(value => {
-                    pictures.push(value)
-                })
+            if(gallery.pictureIds) {
+                for (const pictureId of gallery.pictureIds) {
+                    console.log(pictureId)
+                    await this.getPictureById(pictureId).then((value : Picture) => {
+                        pictures.push(value)
+                    })
+                }
             }
             gallery.pictures = pictures
+            delete gallery.pictureIds
         }
         finally {
             // Ensures that the client will close when you finish/error
             await client.close();
             return gallery
         }
-    }*/
+    }
 }
 
 export default Picturesmongodb

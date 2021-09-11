@@ -4,9 +4,12 @@ const pictureMongodb = new Picturesmongodb();
 import express, {NextFunction} from 'express';
 import type { ErrorRequestHandler } from "express";
 import { HttpError, Http404Error } from "./error/HttpErrors"
+import cors from 'cors';
+
 const app = express()
 const port = 3001
-
+app.use(cors());
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
@@ -64,11 +67,10 @@ app.get('/picture/:picture', function (req, res, next) {
 })
 
 
-/*app.get('/pictures', function (req, res, next) {
-    var date = req.query.date
+app.get('/pictures', function (req, res, next) {
+    let date = req.query.date as string
     if(date) {
-        pictureMongodb.getPicturesByDate(date).then((value => {
-            console.log('outside', value)
+        pictureMongodb.getPicturesByDate(new Date(date)).then((value => {
             if(value) {
                 res.send(value)
             }
@@ -82,7 +84,7 @@ app.get('/picture/:picture', function (req, res, next) {
             res.send(e)
         })
     }
-})*/
+})
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     if(err instanceof Http404Error) {
