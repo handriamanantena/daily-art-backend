@@ -84,6 +84,24 @@ app.get('/pictures', function (req, res, next) {
             res.send(e)
         })
     }
+    let page = req.query.page
+    if(page) {
+        let pageNumber = Number(page);
+        console.log('inside')
+        pictureMongodb.getGalleryByPage(pageNumber).then((value => {
+            if(value) {
+                res.send(value)
+            }
+            else {
+                res.status(404)
+                res.send({value: 'not found'})
+            }
+
+        })).catch(e => {
+            console.log(e)
+            res.send(e)
+        })
+    }
 })
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {

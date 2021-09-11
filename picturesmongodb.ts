@@ -42,9 +42,24 @@ export class Picturesmongodb {
         }
     }
 
-    /*async getPicturesByIndex() {
-        let pictures = []
-    }*/
+    async getGalleryByPage(page: number) {
+        let gallery
+        try {
+            await client.connect();
+            const database = client.db('Art');
+            const galleryCollection = database.collection('gallery');
+            const query = {page: page};
+            console.log(query)
+            gallery = await galleryCollection.findOne(query) as GalleryDB;
+            console.log(page)
+            gallery = await this.associatePicturesToGallery(gallery)
+        }
+        finally {
+            // Ensures that the client will close when you finish/error
+            await client.close();
+            return gallery
+        }
+    }
 
     async getPicturesByDate(date: Date) {
         let gallery
@@ -55,24 +70,28 @@ export class Picturesmongodb {
             // Query for a movie that has the title 'Back to the Future'
             const query = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
             gallery = await galleryCollection.findOne(query) as GalleryDB;
-            let pictures : Picture[] = []
-            console.log(gallery)
-            if(gallery.pictureIds) {
-                for (const pictureId of gallery.pictureIds) {
-                    console.log(pictureId)
-                    await this.getPictureById(pictureId).then((value : Picture) => {
-                        pictures.push(value)
-                    })
-                }
-            }
-            gallery.pictures = pictures
-            delete gallery.pictureIds
+            gallery = await this.associatePicturesToGallery(gallery)
         }
         finally {
             // Ensures that the client will close when you finish/error
             await client.close();
             return gallery
         }
+    }
+
+    async associatePicturesToGallery(gallery: GalleryDB) {
+        let pictures : Picture[] = []
+        if(gallery && gallery.pictureIds) {
+            for (const pictureId of gallery.pictureIds) {
+                console.log(pictureId)
+                await this.getPictureById(pictureId).then((value : Picture) => {
+                    pictures.push(value)
+                })
+            }
+            gallery.pictures = pictures
+            delete gallery.pictureIds
+        }
+        return gallery
     }
 }
 
