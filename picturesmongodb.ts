@@ -7,6 +7,18 @@ const client: mongoDB.MongoClient = new mongoDB.MongoClient(uri);
 
 export class Picturesmongodb {
 
+    async getAllPictures() {
+        try {
+            await client.connect();
+            const database = client.db('Art');
+            const pictures =  database.collection('pictures');
+            return await pictures.find({}).toArray()
+        }
+        finally {
+            await client.close();
+        }
+    }
+
     async getPictureByName(pictureName : string) : Promise<Picture> {
         try {
             await client.connect();

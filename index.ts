@@ -102,6 +102,21 @@ app.get('/pictures', function (req, res, next) {
             res.send(e)
         })
     }
+    else {
+        pictureMongodb.getAllPictures().then((value => {
+            if(value) {
+                res.send(value)
+            }
+            else {
+                res.status(404)
+                res.send({value: 'pictures not found'})
+            }
+
+        })).catch(e => {
+            console.log(e)
+            res.send(e)
+        })
+    }
 })
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
