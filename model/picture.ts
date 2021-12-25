@@ -6,10 +6,11 @@ export interface Picture {
     tags: string[] | "",
     date: Date  | "",
     height: string,
-    width: string
+    width: string,
+    id?: mongoDB.ObjectId
 }
 
 export interface PictureDB extends Picture{
-    _id: mongoDB.ObjectId
+    _id?: mongoDB.ObjectId
 }
 

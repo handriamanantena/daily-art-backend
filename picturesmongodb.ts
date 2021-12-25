@@ -12,7 +12,13 @@ export class Picturesmongodb {
             await client.connect();
             const database = client.db('Art');
             const pictures =  database.collection('pictures');
-            return await pictures.find({}).toArray()
+            let picturesArray =  await pictures.find({}).toArray()
+            return picturesArray.map(pictureDB => {
+                pictureDB["id"] = pictureDB["_id"]
+                delete pictureDB["_id"]
+                let picture = pictureDB as Picture
+                return picture;
+            }) as Picture[]
         }
         finally {
             await client.close();
@@ -47,7 +53,11 @@ export class Picturesmongodb {
             await client.connect();
             const database = client.db('Art');
             const pictures = database.collection('pictures');
-            return await pictures.findOne(id) as PictureDB;
+            let pictureDB = await pictures.findOne(id) as PictureDB;
+            pictureDB["id"] = pictureDB["_id"]
+            delete pictureDB["_id"]
+            let picture = pictureDB as Picture
+            return picture;
         }
         finally {
             await client.close();
