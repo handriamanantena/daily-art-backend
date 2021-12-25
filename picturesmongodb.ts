@@ -48,7 +48,12 @@ export class Picturesmongodb {
 
     }
 
-    async getPictureById(id : mongoDB.ObjectId) {
+    async getPictureById(id: string) {
+        let objectId = new mongoDB.ObjectId(id)
+        return await this.getPictureByObjectId(objectId) as Picture
+    }
+
+    async getPictureByObjectId(id : mongoDB.ObjectId) {
         try {
             await client.connect();
             const database = client.db('Art');
@@ -106,7 +111,7 @@ export class Picturesmongodb {
         if(gallery && gallery.pictureIds) {
             for (const pictureId of gallery.pictureIds) {
                 console.log(pictureId)
-                await this.getPictureById(pictureId).then((value : Picture) => {
+                await this.getPictureByObjectId(pictureId).then((value : Picture) => {
                     pictures.push(value)
                 })
             }

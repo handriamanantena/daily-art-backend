@@ -39,9 +39,9 @@ app.get('/file/:name', function (req, res, next) {
     })
 })
 
-app.get('/picture/:picture', function (req, res, next) {
-    let picture = req.params.picture
-    pictureMongodb.getPictureByName(picture).then(((value: Picture) => {
+app.get('/pictures/:id', function (req, res, next) {
+    let pictureId = req.params.id
+    pictureMongodb.getPictureById(pictureId).then(((value: Picture) => {
             console.log('outside', value)
             if(value) {
                 res.send(value)
@@ -69,6 +69,7 @@ app.get('/picture/:picture', function (req, res, next) {
 
 app.get('/pictures', function (req, res, next) {
     let date = req.query.date as string
+    let name = req.query.name as string
     if(date) {
         pictureMongodb.getPicturesByDate(new Date(date)).then((value => {
             if(value) {
@@ -100,6 +101,24 @@ app.get('/pictures', function (req, res, next) {
         })).catch(e => {
             console.log(e)
             res.send(e)
+        })
+    }
+    else if(name) {
+        pictureMongodb.getPictureByName(name).then(((value: Picture) => {
+                if(value) {
+                    res.send(value)
+                }
+                else {
+                    throw new Http404Error({
+                        error: {
+                            message: "picture not found",
+                            innerError: {}
+                        }
+                    })
+                }
+            }
+        )).catch((e : Error) => {
+            next(e)
         })
     }
     else {
