@@ -7,13 +7,25 @@ const client: mongoDB.MongoClient = new mongoDB.MongoClient(uri);
 
 export class Picturesmongodb {
 
+
+    async getPicturesCollection() {
+        await client.connect();
+        const database = client.db('Art');
+        return database.collection('pictures');
+    }
+
+    async getGalleryCollection() {
+        await client.connect();
+        const database = client.db('Art');
+        return database.collection('gallery');
+    }
+
     async getAllPictures() {
+        let allPictures : Picture[] = []
         try {
-            await client.connect();
-            const database = client.db('Art');
-            const pictures =  database.collection('pictures');
+            const pictures = await this.getPicturesCollection()
             let picturesArray =  await pictures.find({}).toArray()
-            return picturesArray.map(pictureDB => {
+            allPictures = picturesArray.map(pictureDB => {
                 pictureDB["id"] = pictureDB["_id"]
                 delete pictureDB["_id"]
                 let picture = pictureDB as Picture
@@ -21,18 +33,18 @@ export class Picturesmongodb {
             }) as Picture[]
         }
         finally {
+            return allPictures;
             await client.close();
         }
     }
 
-    async getPictureByName(pictureName : string) : Promise<Picture> {
+    async getPictureByName(pictureName : string) {
+        let picture : Picture = {};
         try {
-            await client.connect();
-            const database = client.db('Art');
-            const pictures = database.collection('pictures');
+            const pictures = await this.getPicturesCollection()
             // Query for a movie that has the title 'Back to the Future'
             const query = {url: pictureName};
-            return await pictures.findOne(query).then(value=> {
+            picture = await pictures.findOne(query).then(value=> {
                 return value as Picture
             })
         }
@@ -43,38 +55,37 @@ export class Picturesmongodb {
         }
         finally {
             // Ensures that the client will close when you finish/error
+            return picture;
             await client.close();
         }
 
     }
 
     async getPictureById(id: string) {
+        console.log(id)
         let objectId = new mongoDB.ObjectId(id)
         return await this.getPictureByObjectId(objectId) as Picture
     }
 
     async getPictureByObjectId(id : mongoDB.ObjectId) {
+        let picture = {}
         try {
-            await client.connect();
-            const database = client.db('Art');
-            const pictures = database.collection('pictures');
+            const pictures = await this.getPicturesCollection()
             let pictureDB = await pictures.findOne(id) as PictureDB;
             pictureDB["id"] = pictureDB["_id"]
             delete pictureDB["_id"]
-            let picture = pictureDB as Picture
-            return picture;
+            picture = pictureDB as Picture
         }
         finally {
+            return picture;
             await client.close();
         }
     }
 
     async getGalleryByPage(page: number) {
-        let gallery
+        let gallery : GalleryDB = {}
         try {
-            await client.connect();
-            const database = client.db('Art');
-            const galleryCollection = database.collection('gallery');
+            const galleryCollection = await this.getGalleryCollection();
             const query = {page: page};
             console.log(query)
             gallery = await galleryCollection.findOne(query) as GalleryDB;
@@ -83,17 +94,15 @@ export class Picturesmongodb {
         }
         finally {
             // Ensures that the client will close when you finish/error
-            await client.close();
             return gallery
+            await client.close();
         }
     }
 
     async getPicturesByDate(date: Date) {
         let gallery
         try {
-            await client.connect();
-            const database = client.db('Art');
-            const galleryCollection = database.collection('gallery');
+            const galleryCollection = await this.getGalleryCollection();
             // Query for a movie that has the title 'Back to the Future'
             const query = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
             gallery = await galleryCollection.findOne(query) as GalleryDB;
@@ -101,8 +110,8 @@ export class Picturesmongodb {
         }
         finally {
             // Ensures that the client will close when you finish/error
-            await client.close();
             return gallery
+            await client.close();
         }
     }
 

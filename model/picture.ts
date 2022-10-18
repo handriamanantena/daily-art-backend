@@ -1,12 +1,13 @@
 import * as mongoDB from "mongodb"
 
 export interface Picture {
-    pictureName: string | "",
-    url: string | "",
-    tags: string[] | "",
-    date: Date  | "",
-    height: string,
-    width: string,
+    pictureName?: string | "",
+    url?: string | "",
+    tags?: string[] | "",
+    date?: Date  | "",
+    height?: string,
+    width?: string,
+    author?: string,
     id?: mongoDB.ObjectId
 }
 
