@@ -1,6 +1,8 @@
 import * as mongoDB from "mongodb";
 import {Picture, PictureDB} from "./model/picture";
 import {Gallery, GalleryDB} from "./model/Gallery";
+import {Comment} from "./model/Comment";
+import config from "./config/config";
 const uri =
     "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
 const client: mongoDB.MongoClient = new mongoDB.MongoClient(uri);
@@ -42,7 +44,6 @@ export class Picturesmongodb {
         let picture : Picture = {};
         try {
             const pictures = await this.getPicturesCollection()
-            // Query for a movie that has the title 'Back to the Future'
             const query = {url: pictureName};
             picture = await pictures.findOne(query).then(value=> {
                 return value as Picture
@@ -128,6 +129,33 @@ export class Picturesmongodb {
             delete gallery.pictureIds
         }
         return gallery
+    }
+
+    async insertComment(comment :Comment, pictureId : string) {
+        let picture = await this.getPictureById(pictureId) as Picture
+        console.log(picture)
+        if(picture.recentComments == undefined) {
+            picture.recentComments = []
+        }
+        if(picture.recentComments.length < config.comments.maxRecentComments) {
+            try {
+                console.info("inside")
+                const pictures = await this.getPicturesCollection()
+                let objectId = new mongoDB.ObjectId(pictureId)
+
+                let pushValues =  { $push: {recentComments: comment}}
+                let result  = await pictures.updateOne({_id: objectId}, pushValues);
+                console.log("the result is ", result)
+                return result
+            }
+            catch (e) {
+                console.log(e)
+            }
+            finally {
+                await client.close();
+            }
+
+        }
     }
 }
 

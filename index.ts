@@ -1,10 +1,13 @@
 import {Picture, PictureDB} from "./model/picture";
 import { Picturesmongodb } from "./picturesmongodb";
+import { Commentmongodb } from "./commentmongodb";
 const pictureMongodb = new Picturesmongodb();
+const commentMongodb = new Commentmongodb();
 import express, {NextFunction} from 'express';
 import type { ErrorRequestHandler } from "express";
 import { HttpError, Http404Error } from "./error/HttpErrors"
 import cors from 'cors';
+import config from "./config/config";
 
 const app = express()
 const port = 3001
@@ -136,6 +139,17 @@ app.get('/pictures', function (req, res, next) {
             res.send(e)
         })
     }
+})
+
+//TODO create seperate file for this
+app.post('/updateComment/', function(req, res) {
+    let pictureId = req.query.pictureId as string
+    console.log("picture id {}", pictureId)
+    console.log("body {}", req.body)
+    commentMongodb.insertComment(req.body, pictureId).then((value) => res.send(value)).catch(e => {
+        console.log(e)
+        res.send(e)
+    })
 })
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
