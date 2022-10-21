@@ -142,7 +142,7 @@ app.get('/pictures', function (req, res, next) {
 })
 
 //TODO create seperate file for this
-app.post('/updateComment/', function(req, res) {
+app.post('/comment/', function(req, res) {
     let pictureId = req.query.pictureId as string
     console.log("picture id {}", pictureId)
     console.log("body {}", req.body)

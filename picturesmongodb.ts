@@ -131,30 +131,40 @@ export class Picturesmongodb {
         return gallery
     }
 
-    async insertComment(comment :Comment, pictureId : string) {
-        let picture = await this.getPictureById(pictureId) as Picture
-        console.log(picture)
-        if(picture.recentComments == undefined) {
-            picture.recentComments = []
-        }
-        if(picture.recentComments.length < config.comments.maxRecentComments) {
-            try {
-                console.info("inside")
-                const pictures = await this.getPicturesCollection()
-                let objectId = new mongoDB.ObjectId(pictureId)
-
-                let pushValues =  { $push: {recentComments: comment}}
-                let result  = await pictures.updateOne({_id: objectId}, pushValues);
-                console.log("the result is ", result)
-                return result
+    async insertRecentComment(comment: Comment, pictureId: string) {
+        try {
+            const pictures = await this.getPicturesCollection()
+            let objectId = new mongoDB.ObjectId(pictureId)
+            let pushValues =
+                {
+                    $push: {
+                        recentComments: {
+                            $each: [comment],
+                            $position: 0
+                        }
+                    }
+                }
+            let result = await pictures.updateOne({_id: objectId}, pushValues);
+            console.log("insert comment result ", result)
+            let picture = await pictures.findOne({_id: objectId}) as Picture
+            if(picture.recentComments == undefined) {
+                throw new Error("no recent comments")
             }
-            catch (e) {
-                console.log(e)
+            console.log("length: ", picture.recentComments.length)
+            if (picture.recentComments.length > config.comments.maxRecentComments) { // check logic here, can have multiple comments inserted at same time
+                await pictures.updateOne({_id: objectId}, {$pop: {recentComments: 1}});
+                console.log("list of comments in memory", picture.recentComments)
+                let lastComment = picture.recentComments.pop()
+                console.log("pop last comment ", lastComment)
+                return lastComment
             }
-            finally {
-                await client.close();
+            else {
+                return undefined;
             }
-
+        } catch (e) {
+            console.log(e)
+        } finally {
+            await client.close();
         }
     }
 }

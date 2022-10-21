@@ -36,9 +36,9 @@ export class Commentmongodb {
             commentDB["id"] = commentDB["_id"]?.toHexString() // TODO check this
             delete commentDB["_id"]
             comment = commentDB as Comment
+            return comment;
         }
         finally {
-            return comment;
             await client.close();
         }
     }
@@ -50,15 +50,30 @@ export class Commentmongodb {
                 let comment = await this.getCommentByObjectId(commentId)
                 comments.push(comment)
             }
+            return comments;
         }
         finally {
-            return comments;
             await client.close();
         }
     }
 
     async insertComment(comment : Comment, pictureId: string) {
-        return await this.pictureMongoDB.insertComment(comment, pictureId)
+        let picture = await this.pictureMongoDB.getPictureById(pictureId) as Picture
+        if (picture.recentComments == undefined) {
+            picture.recentComments = []
+        }
+        let latestComment = await this.pictureMongoDB.insertRecentComment(comment, pictureId)
+        console.log("last comment in comment code", latestComment)
+        if(latestComment != undefined) {
+            try {
+                let commentDB = await this.getCommentCollection()
+                return await commentDB.insertOne(latestComment)
+            }
+            finally {
+                await client.close();
+            }
+
+        }
     }
 
 
