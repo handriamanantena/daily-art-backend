@@ -141,12 +141,35 @@ app.get('/pictures', function (req, res, next) {
     }
 })
 
+app.patch('/pictures/', function(req, res) {
+    let pictureId = req.query.pictureId as string
+    console.log(pictureId)
+    pictureMongodb.insertReplyOnRecentComment(req.body, pictureId).then(value => {
+        res.send(value)
+    }).catch(e => {
+        console.log(e)
+        res.send(e)
+    })
+})
+
+
+
 //TODO create seperate file for this
 app.post('/comment/', function(req, res) {
     let pictureId = req.query.pictureId as string
     console.log("picture id {}", pictureId)
     console.log("body {}", req.body)
     commentMongodb.insertComment(req.body, pictureId).then((value) => res.send(value)).catch(e => {
+        console.log(e)
+        res.send(e)
+    })
+})
+
+app.patch('/comment/', function(req, res) {
+    let commentId = req.query.commentId as string
+    commentMongodb.insertReplyOnPastComment(req.body, commentId).then(value => {
+        res.send(value)
+    }).catch(e => {
         console.log(e)
         res.send(e)
     })

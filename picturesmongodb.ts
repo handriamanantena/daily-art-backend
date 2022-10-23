@@ -1,7 +1,7 @@
 import * as mongoDB from "mongodb";
 import {Picture, PictureDB} from "./model/picture";
 import {Gallery, GalleryDB} from "./model/Gallery";
-import {Comment} from "./model/Comment";
+import {Comment, CommentDB, Reply} from "./model/Comment";
 import config from "./config/config";
 const uri =
     "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
@@ -135,11 +135,13 @@ export class Picturesmongodb {
         try {
             const pictures = await this.getPicturesCollection()
             let objectId = new mongoDB.ObjectId(pictureId)
+            let commentWitObjectId = comment as CommentDB
+            commentWitObjectId._id = new mongoDB.ObjectId()
             let pushValues =
                 {
                     $push: {
                         recentComments: {
-                            $each: [comment],
+                            $each: [commentWitObjectId],
                             $position: 0
                         }
                     }
@@ -148,10 +150,10 @@ export class Picturesmongodb {
             console.log("insert comment result ", result)
             let picture = await pictures.findOne({_id: objectId}) as Picture
             if(picture.recentComments == undefined) {
-                throw new Error("no recent comments")
+                throw new Error("picture does not exist")
             }
             console.log("length: ", picture.recentComments.length)
-            if (picture.recentComments.length > config.comments.maxRecentComments) { // check logic here, can have multiple comments inserted at same time
+            if (picture.recentComments.length > config.comments.maxRecentComments) {
                 await pictures.updateOne({_id: objectId}, {$pop: {recentComments: 1}});
                 console.log("list of comments in memory", picture.recentComments)
                 let lastComment = picture.recentComments.pop()
@@ -167,6 +169,23 @@ export class Picturesmongodb {
             await client.close();
         }
     }
+
+    async insertReplyOnRecentComment(reply: Reply, pictureId: string) {
+        let pictureDB = await this.getPicturesCollection()
+        let pushValues =
+            {
+                $push: {
+                    replies: {
+                        $each: [reply],
+                        $position: 0
+                    }
+                }
+            }
+        let objectId = new mongoDB.ObjectId(pictureId)
+        let result = await pictureDB.updateOne({_id: objectId}, pushValues)
+        return result
+    }
+
 }
 
 export default Picturesmongodb

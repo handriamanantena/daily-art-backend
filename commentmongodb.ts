@@ -3,7 +3,7 @@ import * as mongoDB from "mongodb";
 import {Picture, PictureDB} from "./model/picture";
 import {Gallery, GalleryDB} from "./model/Gallery";
 import {ObjectId} from "mongodb";
-import {Comment, CommentDB} from "./model/Comment";
+import {Comment, CommentDB, Reply} from "./model/Comment";
 import config from "./config/config";
 const uri =
     "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
@@ -62,7 +62,7 @@ export class Commentmongodb {
         if (picture.recentComments == undefined) {
             picture.recentComments = []
         }
-        let latestComment = await this.pictureMongoDB.insertRecentComment(comment, pictureId)
+        let latestComment = await this.pictureMongoDB.insertRecentComment(comment, pictureId) as CommentDB
         console.log("last comment in comment code", latestComment)
         if(latestComment != undefined) {
             try {
@@ -76,7 +76,26 @@ export class Commentmongodb {
         }
     }
 
-
+    async insertReplyOnPastComment(reply: Reply, commentId : string) {
+        let commentDB = await this.getCommentCollection()
+        let objectId = new mongoDB.ObjectId(commentId)
+        let pushValues =
+            {
+                $push: {
+                    replies: {
+                        $each: [reply],
+                        $position: 0
+                    }
+                }
+            }
+        try {
+            let result = await commentDB.updateOne({_id: objectId}, pushValues);
+            return result
+        }
+        finally {
+            await client.close()
+        }
+    }
 
 }
 

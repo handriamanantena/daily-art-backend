@@ -12,12 +12,12 @@ export interface Comment {
 }
 
 export interface Reply extends Comment {
-    nameOfOriginalCommenter: string,
-    nameOfOriginalCommenterId: string,
+    nameOfOriginalCommenter?: string,
+    originalCommenterId?: string,
 }
 
 export interface ReplyDB extends Reply {
-    nameOfOriginalCommenterObjectId: mongoDB.ObjectId,
+    nameOfOriginalCommenterObjectId?: mongoDB.ObjectId,
 }
 
 export interface CommentDB extends Comment {
