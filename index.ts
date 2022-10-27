@@ -1,16 +1,19 @@
 import {Picture, PictureDB} from "./model/picture";
 import { Picturesmongodb } from "./picturesmongodb";
 import { Commentmongodb } from "./commentmongodb";
-const pictureMongodb = new Picturesmongodb();
-const commentMongodb = new Commentmongodb();
+
 import express, {NextFunction} from 'express';
 import type { ErrorRequestHandler } from "express";
 import { HttpError, Http404Error } from "./error/HttpErrors"
 import cors from 'cors';
-import config from "./config/config";
+import {GoogleLogin} from "./authentication/googleLogin"
 
 const app = express()
 const port = 3001
+const pictureMongodb = new Picturesmongodb();
+const commentMongodb = new Commentmongodb();
+const googleLogin = new GoogleLogin();
+
 app.use(cors());
 app.use(express.json());
 
@@ -20,6 +23,18 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
+})
+
+app.post('/login', async function (req, res) {
+    if(req.header("Authorization") != undefined) {
+        let token = req.header("Authorization")
+        if(token) {
+            token = token.replace("Bearer ", "")
+        }
+        let response = await googleLogin.verify(token)
+        console.log(response)
+        res.send(response)
+    }
 })
 
 app.get('/file/:name', function (req, res, next) {
