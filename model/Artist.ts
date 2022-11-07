@@ -2,8 +2,8 @@ import * as mongoDB from "mongodb"
 import {Picture} from "./picture";
 
 export interface Artist {
-    name: string,
-    pictures: Picture[],
+    userName: string,
+    pictures: Picture[], //only include url and id
     email: string,
     password: string,
     profilePicture: string,

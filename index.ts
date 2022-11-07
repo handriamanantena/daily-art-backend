@@ -7,12 +7,15 @@ import type { ErrorRequestHandler } from "express";
 import { HttpError, Http404Error } from "./error/HttpErrors"
 import cors from 'cors';
 import {GoogleLogin} from "./authentication/googleLogin"
+import {ArtistMongodb} from "./authentication/artistmongodb";
+import {Artist} from "./model/Artist";
 
 const app = express()
 const port = 3001
 const pictureMongodb = new Picturesmongodb();
 const commentMongodb = new Commentmongodb();
 const googleLogin = new GoogleLogin();
+const loginClient = new ArtistMongodb();
 
 app.use(cors());
 app.use(express.json());
@@ -25,15 +28,29 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
 
-app.post('/login', async function (req, res) {
-    if(req.header("Authorization") != undefined) {
-        let token = req.header("Authorization")
-        if(token) {
-            token = token.replace("Bearer ", "")
+app.post('/artist', async function (req, res) {
+    let platform = req.query.platform
+    if(platform == 'google') {
+        if(req.header("Authorization") != undefined) {
+            let token = req.header("Authorization")
+            if(token) {
+                token = token.replace("Bearer ", "")
+            }
+            let googleAccount = await googleLogin.verify(token)
+            if(googleAccount && googleAccount.email != undefined) {
+                let artist = await loginClient.getArtistByEmail(googleAccount.email) as Artist
+                if(!artist) {
+                    let artistDB = {
+                        userName: googleAccount.name,
+                        email: googleAccount.email,
+                        password: '',
+                        profilePicture: googleAccount.picture,
+                    } as Artist
+                    let response = await loginClient.addNewArtist(artistDB)
+                    res.send(response)
+                }
+            }
         }
-        let response = await googleLogin.verify(token)
-        console.log(response)
-        res.send(response)
     }
 })
 
