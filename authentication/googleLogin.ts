@@ -14,7 +14,6 @@ export class GoogleLogin {
             audience: config.authentication.google.client_id
         });
         const payload = ticket.getPayload() as GoogleOauth2;
-        console.debug(payload.email)
         if(payload.iss == 'https://accounts.google.com' || payload.iss == 'accounts.google.com') {
             if(payload.aud == config.authentication.google.client_id) {
                 let secondsSinceEpoch = new Date().getTime() / 1000;

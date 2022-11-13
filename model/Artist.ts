@@ -5,7 +5,7 @@ export interface Artist {
     userName: string,
     pictures: Picture[], //only include url and id
     email: string,
-    password: string,
+    password?: string,
     profilePicture: string,
 }
 

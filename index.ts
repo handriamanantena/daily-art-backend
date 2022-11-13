@@ -5,20 +5,37 @@ import { Commentmongodb } from "./commentmongodb";
 import express, {NextFunction} from 'express';
 import type { ErrorRequestHandler } from "express";
 import { HttpError, Http404Error } from "./error/HttpErrors"
-import cors from 'cors';
 import {GoogleLogin} from "./authentication/googleLogin"
 import {ArtistMongodb} from "./authentication/artistmongodb";
 import {Artist} from "./model/Artist";
-
+import config from "./config/config";
+import {Session, SessionData} from "express-session";
 const app = express()
 const port = 3001
+// creating 24 hours from milliseconds
+const oneDay = 1000 * 60 * 60 * 24;
+let cors = require('cors')
 const pictureMongodb = new Picturesmongodb();
 const commentMongodb = new Commentmongodb();
 const googleLogin = new GoogleLogin();
 const loginClient = new ArtistMongodb();
+const sessions = require('express-session');
 
-app.use(cors());
+app.use(sessions({
+    secret: config.session.secret,
+    saveUninitialized:true,
+    cookie: { maxAge: oneDay },
+    resave: false
+}));
+
+
+app.use(cors({
+    origin : "http://" + config.host + ":3000",
+    credentials: true,
+}));
 app.use(express.json());
+
+
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
@@ -29,7 +46,13 @@ app.listen(port, () => {
 })
 
 app.post('/artist', async function (req, res) {
+    let session = req.session;
     let platform = req.query.platform
+    //res.header("Access-Control-Allow-Origin", "http://localhost:3000")
+    if(session.artist) {
+        console.log("returning artist in session")
+        return res.send(session.artist)
+    }
     if(platform == 'google') {
         if(req.header("Authorization") != undefined) {
             let token = req.header("Authorization")
@@ -39,6 +62,8 @@ app.post('/artist', async function (req, res) {
             let googleAccount = await googleLogin.verify(token)
             if(googleAccount && googleAccount.email != undefined) {
                 let artist = await loginClient.getArtistByEmail(googleAccount.email) as Artist
+                delete artist['password'];
+                session.artist = artist;
                 if(!artist) {
                     let artistDB = {
                         userName: googleAccount.name,
@@ -47,8 +72,8 @@ app.post('/artist', async function (req, res) {
                         profilePicture: googleAccount.picture,
                     } as Artist
                     let response = await loginClient.addNewArtist(artistDB)
-                    res.send(response)
                 }
+                return res.send(artist)
             }
         }
     }
