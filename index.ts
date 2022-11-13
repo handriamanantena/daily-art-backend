@@ -30,7 +30,7 @@ app.use(sessions({
 
 
 app.use(cors({
-    origin : "http://" + config.host + ":3000",
+    origin : config.host + ":3000",
     credentials: true,
 }));
 app.use(express.json());
