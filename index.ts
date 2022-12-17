@@ -7,9 +7,10 @@ import type { ErrorRequestHandler } from "express";
 import { HttpError, Http404Error } from "./error/HttpErrors"
 import {GoogleLogin} from "./authentication/googleLogin"
 import {ArtistMongodb} from "./authentication/artistmongodb";
-import {Artist} from "./model/Artist";
+import {Artist, ArtistDB} from "./model/Artist";
 import config from "./config/config";
 import {Session, SessionData} from "express-session";
+import jwt from "jsonwebtoken";
 const app = express()
 const port = 3001
 // creating 24 hours from milliseconds
@@ -20,6 +21,8 @@ const commentMongodb = new Commentmongodb();
 const googleLogin = new GoogleLogin();
 const loginClient = new ArtistMongodb();
 const sessions = require('express-session');
+const loginroute = require("./router/login")
+const cookies = require("cookie-parser");
 
 app.use(sessions({
     secret: config.session.secret,
@@ -34,7 +37,8 @@ app.use(cors({
     credentials: true,
 }));
 app.use(express.json());
-
+//app.use("/", loginroute);
+app.use(cookies())
 
 
 app.get('/', (req, res) => {
@@ -45,14 +49,70 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
 
+app.post("/login", (req, res) => {
+    console.log("inside router")
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+        console.log("Bad Bearer")
+        res.sendStatus(401);
+    }
+    const token = authHeader?.split(' ')[1];
+    console.log(token);
+    if(token) {
+        console.log("verify login")
+        jwt.verify(
+            token,
+            config.token.secret,
+            (err, decoded) => {
+                if (err) {
+                    console.log("cant verify login")
+                    res.status(403);
+                    res.send();
+                } //invalid token
+            }
+        );
+    }
+    else {
+        res.status(200);
+        res.send();
+    }
+})
+
+app.post("/refresh", (req, res) => {
+    const cookies = req.cookies
+    console.log("cookies :" + cookies.jwt);
+    if (!cookies?.jwt) {
+        console.log("bad cookie");
+        return res.sendStatus(401);
+    }
+    const refreshToken = cookies.jwt;
+
+    // evaluate jwt
+    jwt.verify(
+        refreshToken,
+        config.refreshToken.secret,
+        (err: any, decoded: any) => {
+            if(err) {
+                res.sendStatus(403);
+            }
+            const accessToken = jwt.sign(
+                {},
+                config.token.secret,
+                { expiresIn: config.token.expire }
+            );
+            res.send({ accessToken })
+        }
+    );
+})
+
 app.post('/artist', async function (req, res) {
     let session = req.session;
-    let platform = req.query.platform
+    let platform = req.query.platform;
     //res.header("Access-Control-Allow-Origin", "http://localhost:3000")
-    if(session.artist) {
+    /*if(session.artist) {
         console.log("returning artist in session")
         return res.send(session.artist)
-    }
+    }*/
     if(platform == 'google') {
         if(req.header("Authorization") != undefined) {
             let token = req.header("Authorization")
@@ -71,9 +131,18 @@ app.post('/artist', async function (req, res) {
                         password: '',
                         profilePicture: googleAccount.picture,
                     } as Artist
-                    let response = await loginClient.addNewArtist(artistDB)
+                    await loginClient.addNewArtist(artistDB)
                 }
-                return res.send(artist)
+                let accessToken = jwt.sign(artist, config.token.secret, {expiresIn: config.token.expire});
+                const refreshToken = jwt.sign(
+                    { "username": artist.userName },
+                    config.refreshToken.secret,
+                    { expiresIn: config.refreshToken.expire }
+                );
+                //    if (allowedOrigins.includes(origin))
+                res.header('Access-Control-Allow-Credentials', "true"); // TODO check allowed origins
+                res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+                return res.send({accessToken});
             }
         }
     }
@@ -200,7 +269,6 @@ app.get('/pictures', function (req, res, next) {
 
 app.patch('/pictures/', function(req, res) {
     let pictureId = req.query.pictureId as string
-    console.log(pictureId)
     pictureMongodb.insertReplyOnRecentComment(req.body, pictureId).then(value => {
         res.send(value)
     }).catch(e => {

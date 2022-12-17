@@ -63,7 +63,6 @@ export class Picturesmongodb {
     }
 
     async getPictureById(id: string) {
-        console.log(id)
         let objectId = new mongoDB.ObjectId(id)
         return await this.getPictureByObjectId(objectId) as Picture
     }
@@ -120,7 +119,6 @@ export class Picturesmongodb {
         let pictures : Picture[] = []
         if(gallery && gallery.pictureIds) {
             for (const pictureId of gallery.pictureIds) {
-                console.log(pictureId)
                 await this.getPictureByObjectId(pictureId).then((value : Picture) => {
                     pictures.push(value)
                 })

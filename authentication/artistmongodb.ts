@@ -31,7 +31,6 @@ export class ArtistMongodb {
         try{
             let artists = await this.getArtistCollection()
             let response = await artists.insertOne(artist)
-            console.log(response)
             return response;
         }
         finally {
