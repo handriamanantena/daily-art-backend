@@ -2,7 +2,7 @@ import {Picture, PictureDB} from "./model/picture";
 import { Picturesmongodb } from "./picturesmongodb";
 import { Commentmongodb } from "./commentmongodb";
 
-import express, {NextFunction} from 'express';
+import express, {NextFunction, Request, Response} from 'express';
 import type { ErrorRequestHandler } from "express";
 import { HttpError, Http404Error } from "./error/HttpErrors"
 import {GoogleLogin} from "./authentication/googleLogin"
@@ -11,6 +11,8 @@ import {Artist, ArtistDB} from "./model/Artist";
 import config from "./config/config";
 import {Session, SessionData} from "express-session";
 import jwt from "jsonwebtoken";
+import authController from "./controllers/authController";
+import * as core from "express-serve-static-core";
 const app = express()
 const port = 3001
 // creating 24 hours from milliseconds
@@ -21,7 +23,7 @@ const commentMongodb = new Commentmongodb();
 const googleLogin = new GoogleLogin();
 const loginClient = new ArtistMongodb();
 const sessions = require('express-session');
-const loginroute = require("./router/login")
+const authenticate  = require("./router/authenticate")
 const cookies = require("cookie-parser");
 
 app.use(sessions({
@@ -37,7 +39,20 @@ app.use(cors({
     credentials: true,
 }));
 app.use(express.json());
-//app.use("/", loginroute);
+
+let unless = (middleware : core.Router, paths : string[]) => {
+    return function(req : Request, res : Response, next: NextFunction) {
+        console.log("testing path " + req.path);
+        const pathCheck = paths.some(path => req.path.match(path));
+        pathCheck ? next() : middleware(req, res, next);
+    };
+}
+app.use(unless(authenticate, ["/login", "/artist", "\/pictures.*", "\/file\/.*", "/refresh"]));
+
+
+//app.use("/", authenticate);
+
+
 app.use(cookies())
 
 
