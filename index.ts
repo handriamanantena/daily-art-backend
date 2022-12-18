@@ -47,7 +47,7 @@ let unless = (middleware : core.Router, paths : string[]) => {
         pathCheck ? next() : middleware(req, res, next);
     };
 }
-app.use(unless(authenticate, ["/login", "/artist", "\/pictures.*", "\/file\/.*", "/refresh"]));
+app.use(unless(authenticate, ["/login", "/artist", "\/pictures.*", "\/file\/.*", "/refresh", "/logout"]));
 
 
 //app.use("/", authenticate);
@@ -62,6 +62,12 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
+})
+
+app.get("/logout", (req, res, next) => {
+    console.log("logging out");
+    res.clearCookie("jwt");
+    res.send({});
 })
 
 app.post("/login", (req, res) => {
