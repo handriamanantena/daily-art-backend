@@ -3,29 +3,29 @@ import {Picture, PictureDB} from "./model/picture";
 import {Gallery, GalleryDB} from "./model/Gallery";
 import {Comment, CommentDB, Reply} from "./model/Comment";
 import config from "./config/config";
-const uri =
-    "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
-const client: mongoDB.MongoClient = new mongoDB.MongoClient(uri);
+import {collections} from "./dbConnection/dbConn";
+
 
 export class Picturesmongodb {
 
 
     async getPicturesCollection() {
-        await client.connect();
-        const database = client.db('Art');
-        return database.collection('pictures');
+        return collections.pictures;
     }
 
+
     async getGalleryCollection() {
-        await client.connect();
-        const database = client.db('Art');
-        return database.collection('gallery');
+        return collections.gallery;
     }
 
     async getAllPictures() {
         let allPictures : Picture[] = []
         try {
             const pictures = await this.getPicturesCollection()
+            if(pictures == undefined) {
+                console.error("pictures collection missing");
+                throw new Error("pictures collection missing");
+            }
             let picturesArray =  await pictures.find({}).toArray()
             allPictures = picturesArray.map(pictureDB => {
                 pictureDB["id"] = pictureDB["_id"]
@@ -36,7 +36,6 @@ export class Picturesmongodb {
         }
         finally {
             return allPictures;
-            await client.close();
         }
     }
 
@@ -44,6 +43,10 @@ export class Picturesmongodb {
         let picture : Picture = {};
         try {
             const pictures = await this.getPicturesCollection()
+            if(pictures == undefined) {
+                console.error("pictures collection missing");
+                throw new Error("pictures collection missing");
+            }
             const query = {url: pictureName};
             picture = await pictures.findOne(query).then(value=> {
                 return value as Picture
@@ -57,7 +60,6 @@ export class Picturesmongodb {
         finally {
             // Ensures that the client will close when you finish/error
             return picture;
-            await client.close();
         }
 
     }
@@ -71,6 +73,10 @@ export class Picturesmongodb {
         let picture = {}
         try {
             const pictures = await this.getPicturesCollection()
+            if(pictures == undefined) {
+                console.error("pictures collection missing");
+                throw new Error("pictures collection missing");
+            }
             let pictureDB = await pictures.findOne(id) as PictureDB;
             pictureDB["id"] = pictureDB["_id"]
             delete pictureDB["_id"]
@@ -78,7 +84,6 @@ export class Picturesmongodb {
         }
         finally {
             return picture;
-            await client.close();
         }
     }
 
@@ -88,6 +93,10 @@ export class Picturesmongodb {
             const galleryCollection = await this.getGalleryCollection();
             const query = {page: page};
             console.log(query)
+            if(galleryCollection == undefined) {
+                console.error("gallery collection missing");
+                throw new Error("gallery collection missing");
+            }
             gallery = await galleryCollection.findOne(query) as GalleryDB;
             console.log(page)
             gallery = await this.associatePicturesToGallery(gallery)
@@ -95,7 +104,6 @@ export class Picturesmongodb {
         finally {
             // Ensures that the client will close when you finish/error
             return gallery
-            await client.close();
         }
     }
 
@@ -105,13 +113,16 @@ export class Picturesmongodb {
             const galleryCollection = await this.getGalleryCollection();
             // Query for a movie that has the title 'Back to the Future'
             const query = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
+            if(galleryCollection == undefined) {
+                console.error("gallery collection missing");
+                throw new Error("gallery collection missing");
+            }
             gallery = await galleryCollection.findOne(query) as GalleryDB;
             gallery = await this.associatePicturesToGallery(gallery)
         }
         finally {
             // Ensures that the client will close when you finish/error
             return gallery
-            await client.close();
         }
     }
 
@@ -144,6 +155,10 @@ export class Picturesmongodb {
                         }
                     }
                 }
+            if(pictures == undefined) {
+                console.error("pictures collection missing");
+                throw new Error("pictures collection missing");
+            }
             let result = await pictures.updateOne({_id: objectId}, pushValues);
             console.log("insert comment result ", result)
             let picture = await pictures.findOne({_id: objectId}) as Picture
@@ -163,8 +178,6 @@ export class Picturesmongodb {
             }
         } catch (e) {
             console.log(e)
-        } finally {
-            await client.close();
         }
     }
 
@@ -180,6 +193,10 @@ export class Picturesmongodb {
                 }
             }
         let objectId = new mongoDB.ObjectId(pictureId)
+        if(pictureDB == undefined) {
+            console.error("pictures collection missing");
+            throw new Error("pictures collection missing");
+        }
         let result = await pictureDB.updateOne({_id: objectId}, pushValues)
         return result
     }
