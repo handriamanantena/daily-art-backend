@@ -181,6 +181,28 @@ export class Picturesmongodb {
         }
     }
 
+    // TODO need to add reply on recent comment. might already be done in comment mongodb
+    async insertReplyOnPicture(reply: Reply, pictureId: string) {
+        let pictureDB = await this.getPicturesCollection()
+        let pushValues =
+            {
+                $push: {
+                    replies: {
+                        $each: [reply],
+                        $position: 0
+                    }
+                }
+            }
+        let objectId = new mongoDB.ObjectId(pictureId)
+        if(pictureDB == undefined) {
+            console.error("pictures collection missing");
+            throw new Error("pictures collection missing");
+        }
+        let result = await pictureDB.updateOne({_id: objectId}, pushValues)
+        return result
+    }
+
+    //@Depricated
     async insertReplyOnRecentComment(reply: Reply, pictureId: string) {
         let pictureDB = await this.getPicturesCollection()
         let pushValues =

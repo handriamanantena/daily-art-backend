@@ -4,9 +4,9 @@ const picturesController = require('../../controllers/pictures');
 
 picturesRouter.route('/')
     .get(picturesController.getPictures)
-    //.patch(picturesController.updatePicture)
+    .patch(picturesController.addReplyToPicture)
 
-/*picturesRouter.route('/:id')
-    .get(picturesController.getPicture);*/
+picturesRouter.route('/:id')
+    .get(picturesController.getPicture);
 
 module.exports = picturesRouter;

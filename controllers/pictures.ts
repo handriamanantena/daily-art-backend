@@ -77,3 +77,36 @@ export async function getPictures (req: Request, res: Response, next: NextFuncti
         })
     }
 }
+
+export async function getPicture (req: Request, res: Response, next: NextFunction) {
+    let pictureId = req.params.id
+    pictureMongodb.getPictureById(pictureId).then(((value: Picture) => {
+            console.log('outside', value)
+            if(value) {
+                res.send(value)
+            }
+            else {
+                throw new Http404Error({
+                    error: {
+                        message: "picture not found",
+                        innerError: {}
+                    }
+                })
+            }
+        }
+    )).catch((e : Error) => {
+        next(e)
+    })
+}
+
+export async function addReplyToPicture (req: Request, res: Response, next: NextFunction) {
+    let pictureId = req.query.pictureId as string
+    pictureMongodb.insertReplyOnPicture(req.body, pictureId).then(value => {
+        res.send(value)
+    }).catch(e => {
+        console.log(e)
+        next(e)
+    })
+}
+
+
