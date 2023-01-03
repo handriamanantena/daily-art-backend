@@ -11,9 +11,4 @@ authentication.route('/login')
 authentication.route('/refresh')
     .post(controller.refresh)
 
-
-
-/*authentication.route('/:id')
-    .get(picturesController.getPicture);*/
-
 module.exports = authentication;

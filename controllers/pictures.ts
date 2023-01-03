@@ -109,4 +109,24 @@ export async function addReplyToPicture (req: Request, res: Response, next: Next
     })
 }
 
+export async function getFile (req: Request, res: Response, next: NextFunction) {
+    let options = {
+        root: 'F:\\art\\pictures\\test\\', // TODO need to configure path
+        dotfiles: 'deny',
+        headers: {
+            'x-timestamp': Date.now(),
+            'x-sent': true
+        }
+    }
+    let fileName = req.params.name
+
+    res.sendFile(fileName, options, function (err) {
+        if (err) {
+            next(err)
+        } else {
+            console.log('Sent:', fileName)
+        }
+    })
+}
+
 
