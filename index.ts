@@ -31,6 +31,11 @@ let unless = (middleware : core.Router, paths : string[]) => {
 app.use(cookies())
 
 app.use('/pictures', require('./router/api/pictures'));
+app.use('/logout', require('./router/authentication'));
+app.use('/login', require('./router/authentication'));
+app.use('/refresh', require('./router/authentication'));
+/*app.use('/file', require('./router/api/pictures')); //TODO
+app.use('/comment', require('./router/api/pictures')); //TODO*/
 
 
 connectToDatabase()
