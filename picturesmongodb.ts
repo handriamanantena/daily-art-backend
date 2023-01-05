@@ -223,6 +223,21 @@ export class Picturesmongodb {
         return result
     }
 
+    async addPicture(picture: Picture) {
+        try{
+            let collection = await this.getPicturesCollection()
+            if(collection == undefined) {
+                console.error("picture collection missing");
+                throw new Error("picture collection missing");
+            }
+            let response = await collection.insertOne(picture)
+            return response;
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
 }
 
 export default Picturesmongodb

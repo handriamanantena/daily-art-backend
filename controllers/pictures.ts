@@ -129,4 +129,12 @@ export async function getFile (req: Request, res: Response, next: NextFunction) 
     })
 }
 
+export async function addPicture (req: Request, res: Response, next: NextFunction) {
+    pictureMongodb.addPicture(req.body).then(value => {
+        res.send(value)
+    }).catch(e => {
+        console.log(e)
+        next(e)
+    })
+}
 

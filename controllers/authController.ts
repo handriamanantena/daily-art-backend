@@ -27,7 +27,9 @@ export const handleAuth = async (req : Request, res : Response, next: NextFuncti
         );
     }
     else {
-        next()
+        console.log("missing token");
+        res.status(403);
+        res.send();
     }
 }
 

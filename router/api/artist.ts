@@ -1,5 +1,4 @@
 import express from "express";
-import {authentication} from "../authentication";
 const artistRouter = express.Router();
 const artistController = require('../../controllers/artist');
 
