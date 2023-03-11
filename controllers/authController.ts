@@ -39,8 +39,8 @@ export const logout = (req : Request, res : Response, next: NextFunction) => {
     res.send({});
 }
 
-export const login = (req : Request, res : Response, next: NextFunction) => {
-    console.log("inside router")
+export const verifyJwt = (req : Request, res : Response, next: NextFunction) => {
+    console.log("verify jwt")
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith('Bearer ')) {
         console.log("Bad Bearer")

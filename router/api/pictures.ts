@@ -10,8 +10,8 @@ picturesRouter.route('/')
 picturesRouter.route('/:id')
     .get(picturesController.getPicture);
 
-picturesRouter.route('/')
-    .post(authenticate);
+/*picturesRouter.route('/')
+    .post(authenticate);*/
 
 picturesRouter.route('/')
     .post(picturesController.addPicture);

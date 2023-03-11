@@ -1,8 +1,9 @@
-import {connectToDatabase} from "./dbConnection/dbConn";
+import {collections, connectToDatabase} from "./dbConnection/dbConn";
 import express, {NextFunction, Request, Response} from "express";
 import sessions from "express-session";
 import config from "./config/config";
 import * as core from "express-serve-static-core";
+import {registerRouter} from "./router/testUniqueIndex";
 const authenticate  = require("./router/authenticate")
 let cors = require('cors')
 const cookies = require("cookie-parser");
@@ -31,11 +32,31 @@ let unless = (middleware : core.Router, paths : string[]) => {
 app.use(cookies())
 
 app.use('/pictures', require('./router/api/pictures'));
-app.use('/logout', require('./router/authentication'));
-app.use('/login', require('./router/authentication'));
+app.use('/logout', require('./router/logout'));
+app.use('/jwt', require('./router/jwt'));
 app.use('/refresh', require('./router/authentication'));
 app.use('/artist', require('./router/api/artist'));
 app.use('/file', require('./router/api/file'));
+app.use('/register', require('./router/register'));
+app.get('/testUniqueIndex', (async (req, resp, next) => {
+
+    try{
+        let artists = await collections.artist;
+        if(artists == undefined) {
+            console.error("artists collection missing");
+            throw new Error("artists collection missing");
+        }
+        let test = await artists.createIndex({emails : "text"}, {unique : true});
+        console.log(test);
+        return resp.send(test);
+    }
+    catch (e) {
+        console.log(e);
+        return resp.send(e);
+    }
+
+
+}));
 /*app.use('/comment', require('./router/api/pictures')); //TODO*/
 
 

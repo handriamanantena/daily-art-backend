@@ -1,14 +1,16 @@
 import {NextFunction, Request, Response} from "express";
-import {Artist} from "../model/Artist";
+import {Artist, ArtistDB} from "../model/Artist";
 import jwt from "jsonwebtoken";
 import config from "../config/config";
 import {GoogleLogin} from "../authentication/googleLogin";
 import {ArtistMongodb} from "../authentication/artistmongodb";
+import {InsertOneResult} from "mongodb";
+import * as mongoDB from "mongodb";
 const googleLogin = new GoogleLogin();
 const loginClient = new ArtistMongodb();
+const bcrypt = require('bcryptjs');
 
-
-export async function addArtist (req: Request, res: Response, next: NextFunction) {
+export async function getArtist (req: Request, res: Response, next: NextFunction) {
     //let session = req.session;
     let platform = req.query.platform;
     //res.header("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -36,17 +38,84 @@ export async function addArtist (req: Request, res: Response, next: NextFunction
                     } as Artist
                     await loginClient.addNewArtist(artistDB)
                 }
-                let accessToken = jwt.sign(artist, config.token.secret, {expiresIn: config.token.expire});
-                const refreshToken = jwt.sign(
-                    { "username": artist.userName },
-                    config.refreshToken.secret,
-                    { expiresIn: config.refreshToken.expire }
-                );
-                //    if (allowedOrigins.includes(origin))
-                res.header('Access-Control-Allow-Credentials', "true"); // TODO check allowed origins
-                res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
-                return res.send({accessToken});
+                let response = await generateTokens(artist, res);
+                console.log("the response: " + JSON.stringify(response))
+                return res.send(response);
             }
         }
     }
+    else {
+        let password = req.body.password;
+        let userName = req.body.userName;
+        //let objectId = new mongoDB.ObjectId(userID);
+        let artist : ArtistDB = await loginClient.getArtistByUserName(userName); //TODO user is entering their email need to change front end
+        console.log(artist)
+        if(artist == undefined || artist?._id == undefined) {
+            res.status(404);
+            res.send("User Id does not exist");
+        }
+        console.log(artist);
+        console.log(req.body);
+        const match = await bcrypt.compare(password, artist.password /* hashed */);
+        console.log("is match: ", match);
+        if(match) {
+            let response = generateTokens(artist, res);
+            res.send(response);
+        }
+        else {
+            res.status(401);
+            res.send("Unauthorized");
+        }
+    }
+}
+
+export async function registerArtist (req: Request, res: Response, next: NextFunction) {
+    console.log("inside register")
+    let artistInfo = req.body;
+    console.log("body of register is", req.body)
+    if(artistInfo.password == '' || artistInfo.email == '') {
+        res.status(400);
+        return res.send("password or email is blank");
+    }
+    let hashedPassword = await bcrypt.hash(artistInfo.password, config.database.passwordSaltRounds);
+    let artist : Artist = {
+        email: artistInfo.email,
+        pictures: [],
+        profilePicture: "",
+        userName: "",
+        password: hashedPassword
+    }
+    if(artistInfo.email.includes("harrison") || artistInfo.email.includes("anosirrah")) { // TODO need SCHEMA to make email unique
+        res.status(409);
+        return res.send("email already in use");
+    }
+    let dbResponse = await loginClient.addNewArtist(artist);
+    if(dbResponse && dbResponse.acknowledged && dbResponse.insertedId) {
+        let artist : ArtistDB = artistInfo;
+        artist._id = dbResponse.insertedId;
+        let response = generateTokens(artist, res);
+        res.status(201);
+        return res.send(response);
+    }
+    else {
+        res.status(500);
+        return res.send("issue registering account");
+    }
+}
+
+async function generateTokens(artist : Artist, res : Response) {
+    let accessToken = jwt.sign(artist, config.token.secret, {expiresIn: config.token.expire});
+    const refreshToken = jwt.sign(
+        { "username": artist.userName },
+        config.refreshToken.secret,
+        { expiresIn: config.refreshToken.expire }
+    );
+    //    if (allowedOrigins.includes(origin))
+    res.header('Access-Control-Allow-Credentials', "true"); // TODO check allowed origins
+    res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+    let response = {
+        artist,
+        accessToken
+    };
+    return response;
 }
