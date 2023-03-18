@@ -1,8 +1,8 @@
 import express, {Router} from "express";
-export const authentication : Router = express.Router();
+export const refresh : Router = express.Router();
 const controller = require('../controllers/authController');
 
-authentication.route('/')
+refresh.route('/')
     .post(controller.refresh)
 
-module.exports = authentication;
+module.exports = refresh;

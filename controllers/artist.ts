@@ -104,9 +104,9 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
 }
 
 async function generateTokens(artist : Artist, res : Response) {
-    let accessToken = jwt.sign(artist, config.token.secret, {expiresIn: config.token.expire});
+    let accessToken = jwt.sign({ username: artist.userName, email: artist.email }, config.token.secret, {expiresIn: config.token.expire});
     const refreshToken = jwt.sign(
-        { "username": artist.userName },
+        { username: artist.userName, email: artist.email },
         config.refreshToken.secret,
         { expiresIn: config.refreshToken.expire }
     );
@@ -118,4 +118,8 @@ async function generateTokens(artist : Artist, res : Response) {
         accessToken
     };
     return response;
+}
+
+export function updateArtist(req: Request, res: Response, next: NextFunction) {
+        return res.send();
 }

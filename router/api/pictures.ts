@@ -1,19 +1,18 @@
 import express, { Request, Response } from "express";
-const picturesRouter = express.Router();
+export const publicPicturesRouter = express.Router();
+export const protectedPicturesRouter = express.Router();
 const picturesController = require('../../controllers/pictures');
 const authenticate  = require("../../router/authenticate")
 
-picturesRouter.route('/')
+publicPicturesRouter.route('/')
     .get(picturesController.getPictures)
     .patch(picturesController.addReplyToPicture)
 
-picturesRouter.route('/:id')
+publicPicturesRouter.route('/:id')
     .get(picturesController.getPicture);
 
 /*picturesRouter.route('/')
     .post(authenticate);*/
 
-picturesRouter.route('/')
+protectedPicturesRouter.route('/')
     .post(picturesController.addPicture);
-
-module.exports = picturesRouter;

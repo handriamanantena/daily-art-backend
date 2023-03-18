@@ -1,8 +1,5 @@
-import express, {Router} from "express";
-export const jwtRouter : Router = express.Router();
+import express from "express";
+export const jwtRouter = express.Router();
 const controller = require('../controllers/authController');
 
-jwtRouter.route('/')
-    .post(controller.verifyJwt);
-
-module.exports = jwtRouter;
+jwtRouter.use('/', controller.verifyJwt);

@@ -1,8 +1,9 @@
 import express from "express";
-const artistRouter = express.Router();
+export const publicArtistRouter = express.Router();
+export const protectedArtistRouter = express.Router();
 const artistController = require('../../controllers/artist');
 
-artistRouter.route('/')
-    .post(artistController.getArtist);
+publicArtistRouter.route('/')
+    .post(artistController.getArtist); //TODO move to login
 
-module.exports = artistRouter;
+protectedArtistRouter.route('/').put(artistController.updateArtist);

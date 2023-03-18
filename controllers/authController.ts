@@ -1,34 +1,33 @@
 import jwt from "jsonwebtoken";
 import config from "../config/config";
 import {NextFunction, Request, Response} from "express";
+import {ArtistDB} from "../model/Artist";
+import {ArtistMongodb} from "../authentication/artistmongodb";
+const bcrypt = require('bcryptjs');
+const loginClient = new ArtistMongodb();
 
 
-export const handleAuth = async (req : Request, res : Response, next: NextFunction) => {
+export const handleAuthentication = async (req : Request, res : Response, next: NextFunction) => {
     console.log("inside middleware")
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
-        console.log("Bad Bearer")
-        res.sendStatus(401);
+    let password = req.body.password;
+    let userName = req.body.userName;
+    //let objectId = new mongoDB.ObjectId(userID);
+    let artist : ArtistDB = await loginClient.getArtistByUserName(userName); //TODO user is entering their email need to change front end
+    console.log(artist)
+    if(artist == undefined || artist?._id == undefined) {
+        res.status(401);
+        res.send("User not Unauthorized");
     }
-    const token = authHeader?.split(' ')[1];
-    console.log(token);
-    if(token) {
-        console.log("verify token")
-        jwt.verify(
-            token,
-            config.token.secret,
-            (err, decoded) => {
-                if (err) {
-                    console.log("verify token failed")
-                    res.status(403);
-                    res.send();
-                } //invalid token
-            }
-        );
+    console.log(artist);
+    console.log(req.body);
+    const match = await bcrypt.compare(password, artist.password /* hashed */);
+    console.log("is match: ", match);
+    if(match) {
+        next();
     }
     else {
-        console.log("missing token");
-        res.status(403);
+        res.status(401);
         res.send();
     }
 }
@@ -39,12 +38,13 @@ export const logout = (req : Request, res : Response, next: NextFunction) => {
     res.send({});
 }
 
-export const verifyJwt = (req : Request, res : Response, next: NextFunction) => {
+export function verifyJwt (req : Request, res : Response, next: NextFunction) {
     console.log("verify jwt")
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith('Bearer ')) {
         console.log("Bad Bearer")
-        res.sendStatus(401);
+        res.status(401);
+        return res.send();
     }
     const token = authHeader?.split(' ')[1];
     console.log(token);
@@ -56,15 +56,18 @@ export const verifyJwt = (req : Request, res : Response, next: NextFunction) => 
             (err, decoded) => {
                 if (err) {
                     console.log("cant verify login")
-                    res.status(403);
-                    res.send();
-                } //invalid token
+                    res.status(401);
+                    return res.send();
+                }
+                else {
+                    next();
+                }
             }
         );
     }
     else {
-        res.status(200);
-        res.send();
+        res.status(401);
+        return res.send();
     }
 }
 
@@ -96,4 +99,4 @@ export const refresh = (req : Request, res : Response, next: NextFunction) => {
 }
 
 
-export default {handleAuth};
+export default {handleAuth: handleAuthentication};
