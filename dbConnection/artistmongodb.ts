@@ -1,6 +1,6 @@
 import {Artist, ArtistDB} from "../model/Artist";
 
-import {collections} from "../dbConnection/dbConn";
+import {collections} from "./dbConn";
 import * as mongoDB from "mongodb";
 import {Picture} from "../model/picture";
 

@@ -1,7 +1,8 @@
 import * as mongoDB from "mongodb"
 import {Picture} from "./picture";
+import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
-export interface Gallery {
+export interface Gallery extends MongoDBEntity {
     startMonth?: Date,
     endMonth?: Date,
     pictures?: Picture[],

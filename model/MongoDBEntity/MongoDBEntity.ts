@@ -1,5 +1,5 @@
 import * as mongoDB from "mongodb"
 
 export interface MongoDBEntity {
-    _id: mongoDB.ObjectId;
+    _id?: mongoDB.ObjectId;
 }

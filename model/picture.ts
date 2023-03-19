@@ -1,7 +1,8 @@
 import * as mongoDB from "mongodb"
 import {Comment} from "./Comment";
+import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
-export interface Picture {
+export interface Picture extends MongoDBEntity {
     pictureName?: string | "",
     url?: string | "",
     tags?: string[] | "",

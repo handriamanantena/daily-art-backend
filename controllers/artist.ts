@@ -3,11 +3,13 @@ import {Artist, ArtistDB} from "../model/Artist";
 import jwt from "jsonwebtoken";
 import config from "../config/config";
 import {GoogleLogin} from "../authentication/googleLogin";
-import {ArtistMongodb} from "../authentication/artistmongodb";
+import {ArtistMongodb} from "../dbConnection/artistmongodb";
 import {InsertOneResult} from "mongodb";
 import * as mongoDB from "mongodb";
+import {MongoDBClient} from "../dbConnection/MongoDBClient";
 const googleLogin = new GoogleLogin();
-const loginClient = new ArtistMongodb();
+//const loginClient = new ArtistMongodb();
+const mongodbClient = new MongoDBClient();
 const bcrypt = require('bcryptjs');
 
 export async function getArtist (req: Request, res: Response, next: NextFunction) {
@@ -26,7 +28,7 @@ export async function getArtist (req: Request, res: Response, next: NextFunction
             }
             let googleAccount = await googleLogin.verify(token)
             if(googleAccount && googleAccount.email != undefined) {
-                let artist = await loginClient.getArtistByEmail(googleAccount.email) as Artist
+                let artist = await mongodbClient.getOneResource<Artist>("artist", {email: googleAccount.email}) as Artist
                 delete artist['password'];
                 //session.artist = artist;
                 if(!artist) {
@@ -36,7 +38,7 @@ export async function getArtist (req: Request, res: Response, next: NextFunction
                         password: '',
                         profilePicture: googleAccount.picture,
                     } as Artist
-                    await loginClient.addNewArtist(artistDB)
+                    await mongodbClient.addNewResource("artist", artistDB);
                 }
                 let response = await generateTokens(artist, res);
                 console.log("the response: " + JSON.stringify(response))
@@ -48,7 +50,7 @@ export async function getArtist (req: Request, res: Response, next: NextFunction
         let password = req.body.password;
         let userName = req.body.userName;
         //let objectId = new mongoDB.ObjectId(userID);
-        let artist : ArtistDB = await loginClient.getArtistByUserName(userName); //TODO user is entering their email need to change front end
+        let artist : ArtistDB = await mongodbClient.getOneResource("artist", {userName : userName}); //TODO user is entering their email need to change front end
         console.log(artist)
         if(artist == undefined || artist?._id == undefined) {
             res.status(404);
@@ -89,7 +91,7 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
         res.status(409);
         return res.send("email already in use");
     }
-    let dbResponse = await loginClient.addNewArtist(artist);
+    let dbResponse = await mongodbClient.addNewResource("artist", artist);
     if(dbResponse && dbResponse.acknowledged && dbResponse.insertedId) {
         let artist : ArtistDB = artistInfo;
         artist._id = dbResponse.insertedId;

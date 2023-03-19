@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import config from "../config/config";
 import {NextFunction, Request, Response} from "express";
 import {ArtistDB} from "../model/Artist";
-import {ArtistMongodb} from "../authentication/artistmongodb";
+import {ArtistMongodb} from "../dbConnection/artistmongodb";
 const bcrypt = require('bcryptjs');
 const loginClient = new ArtistMongodb();
 
