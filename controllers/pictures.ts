@@ -1,11 +1,53 @@
 import express, {NextFunction, Request, Response} from "express";
-import {Picture} from "../model/picture";
+import {Picture, PictureDB} from "../model/picture";
 import {Http404Error} from "../error/HttpErrors";
 import {collections} from "../dbConnection/dbConn";
 import {Picturesmongodb} from "../picturesmongodb";
+import {MongoDBClient} from "../dbConnection/MongoDBClient";
+import * as mongoDB from "mongodb";
+import {ObjectId} from "mongodb";
+const mongoDBClient = new MongoDBClient();
 const pictureMongodb = new Picturesmongodb();
 
 
+
+export async function filterPictures (req: Request, res: Response, next: NextFunction) {
+    let urlQuery = req.query;
+    let query = {};
+    console.log(urlQuery);
+    if(urlQuery) {
+        let id = urlQuery.id as string;
+        let date = urlQuery.date as string;
+        let search = urlQuery.search as string;
+        if(id != undefined && id != "") {
+            query = {_id: new ObjectId(id)};
+            let picture : Picture = await mongoDBClient.getOneResource<PictureDB>("pictures", query);
+            if(picture) {
+                return res.send(picture);
+            }
+            else {
+                res.status(404);
+                return res.send();
+            }
+        }
+        else if(search){ //TODO search by picture name
+            query = { $text: { $search: search }};
+            let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", query);
+            if(pictures) {
+                return res.send(pictures);
+            }
+            else {
+                res.status(404);
+                return res.send();
+            }
+        }
+    }
+    /*const query1 = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
+
+    let pictures = await mongoDBClient.getResources("pictures", query);
+    console.log(pictures);
+    res.send();*/
+}
 
 export async function getPictures (req: Request, res: Response, next: NextFunction) {
     let date = req.query.date as string

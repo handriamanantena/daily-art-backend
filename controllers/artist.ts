@@ -3,12 +3,8 @@ import {Artist, ArtistDB} from "../model/Artist";
 import jwt from "jsonwebtoken";
 import config from "../config/config";
 import {GoogleLogin} from "../authentication/googleLogin";
-import {ArtistMongodb} from "../dbConnection/artistmongodb";
-import {InsertOneResult} from "mongodb";
-import * as mongoDB from "mongodb";
 import {MongoDBClient} from "../dbConnection/MongoDBClient";
 const googleLogin = new GoogleLogin();
-//const loginClient = new ArtistMongodb();
 const mongodbClient = new MongoDBClient();
 const bcrypt = require('bcryptjs');
 
@@ -28,7 +24,7 @@ export async function getArtist (req: Request, res: Response, next: NextFunction
             }
             let googleAccount = await googleLogin.verify(token)
             if(googleAccount && googleAccount.email != undefined) {
-                let artist = await mongodbClient.getOneResource<Artist>("artist", {email: googleAccount.email}) as Artist
+                let artist = await mongodbClient.getOneResource<ArtistDB>("artist", {email: googleAccount.email}) as ArtistDB
                 delete artist['password'];
                 //session.artist = artist;
                 if(!artist) {
@@ -50,7 +46,7 @@ export async function getArtist (req: Request, res: Response, next: NextFunction
         let password = req.body.password;
         let userName = req.body.userName;
         //let objectId = new mongoDB.ObjectId(userID);
-        let artist : ArtistDB = await mongodbClient.getOneResource("artist", {userName : userName}); //TODO user is entering their email need to change front end
+        let artist : ArtistDB = await mongodbClient.getOneResource<ArtistDB>("artist", {userName : userName}); //TODO user is entering their email need to change front end
         console.log(artist)
         if(artist == undefined || artist?._id == undefined) {
             res.status(404);

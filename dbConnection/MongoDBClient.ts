@@ -41,6 +41,23 @@ export class MongoDBClient {
         }
     }
 
+    async getResources<T extends MongoDBEntity>(collectionName: "pictures" | "artist" | "gallery", query : {}) : Promise<T[] | any>{
+        try{
+            let collection = collections[collectionName];
+            if(collection == undefined) {
+                console.error(collectionName + " collection missing");
+                throw new Error(collectionName +" collection missing");
+            }
+            let entity : T[]= await collection.find(query).toArray() as T[];
+
+            return entity;
+        }
+        catch (e) {
+            console.log(e);
+            return {};
+        }
+    }
+
     private logMissingCollection(collection: mongoDB.MongoClient, collectionName: "pictures" | "artist" | "gallery") {
         if(collection == undefined) {
             console.error(collection + " collection missing");

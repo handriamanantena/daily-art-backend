@@ -2,9 +2,9 @@ import jwt from "jsonwebtoken";
 import config from "../config/config";
 import {NextFunction, Request, Response} from "express";
 import {ArtistDB} from "../model/Artist";
-import {ArtistMongodb} from "../dbConnection/artistmongodb";
+import {MongoDBClient} from "../dbConnection/MongoDBClient";
 const bcrypt = require('bcryptjs');
-const loginClient = new ArtistMongodb();
+const mongoDBClient = new MongoDBClient();
 
 
 export const handleAuthentication = async (req : Request, res : Response, next: NextFunction) => {
@@ -13,7 +13,7 @@ export const handleAuthentication = async (req : Request, res : Response, next: 
     let password = req.body.password;
     let userName = req.body.userName;
     //let objectId = new mongoDB.ObjectId(userID);
-    let artist : ArtistDB = await loginClient.getArtistByUserName(userName); //TODO user is entering their email need to change front end
+    let artist : ArtistDB = await mongoDBClient.getOneResource<ArtistDB>("artist", {userName: userName}); //TODO user is entering their email need to change front end
     console.log(artist)
     if(artist == undefined || artist?._id == undefined) {
         res.status(401);
