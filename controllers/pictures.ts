@@ -30,8 +30,23 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                 return res.send();
             }
         }
-        else if(search){ //TODO search by picture name
+        else if(search){
             query = { $text: { $search: search }};
+            let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", query);
+            if(pictures) {
+                return res.send(pictures);
+            }
+            else {
+                res.status(404);
+                return res.send();
+            }
+        }
+        else if(date) {
+            console.log(date)
+            query = { date: {
+                    $gt: new Date(date),
+                    $lt: new Date()
+                }};
             let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", query);
             if(pictures) {
                 return res.send(pictures);

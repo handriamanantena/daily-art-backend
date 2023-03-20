@@ -28,4 +28,5 @@ export async function connectToDatabase () {
 async function configureIndexes(db: mongoDB.Db) {
     const picturesCollection: mongoDB.Collection = db.collection("pictures");
     await picturesCollection.createIndex({ pictureName : "text", tags : "text", artistUsername: "text"}, { default_language: "english" });
+    await picturesCollection.createIndex({ date : 1});
 }
