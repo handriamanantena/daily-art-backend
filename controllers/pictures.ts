@@ -19,6 +19,8 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
         let id = urlQuery.id as string;
         let date = urlQuery.date as string;
         let search = urlQuery.search as string;
+        let pageIndex = urlQuery.pageIndex as string;
+        let pageSize = +(urlQuery.pageSize as string);
         if(id != undefined && id != "") {
             query = {_id: new ObjectId(id)};
             let picture : Picture = await mongoDBClient.getOneResource<PictureDB>("pictures", query);
@@ -30,15 +32,23 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                 return res.send();
             }
         }
-        else if(search){
-            query = { $text: { $search: search }};
-            let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", query);
-            if(pictures) {
+        else if(search && pageSize){
+            let pictures: Picture[];
+
+            if(pageIndex) {
+                pictures = await mongoDBClient.getResourcePage<Picture>("pictures",
+                    {$and: [{_id: {$gt: new ObjectId(pageIndex)}},  { $text: { $search: search }}]}, pageSize);
+            }
+            else {
+                pictures = await mongoDBClient.getResourcePage<Picture>("pictures",
+                    {$text: { $search: search }}, pageSize);
+            }
+            if(pictures && pictures.length > 0) {
                 return res.send(pictures);
             }
             else {
                 res.status(404);
-                return res.send();
+                return res.send([]);
             }
         }
         else if(date) {
@@ -55,6 +65,10 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                 res.status(404);
                 return res.send();
             }
+        }
+        else {
+            res.status(500);
+            return res.send();
         }
     }
     /*const query1 = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};

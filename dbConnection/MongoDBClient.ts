@@ -2,7 +2,7 @@ import {collections} from "./dbConn";
 import {Artist, ArtistDB} from "../model/Artist";
 import {MongoDBEntity} from "../model/MongoDBEntity/MongoDBEntity";
 import * as mongoDB from "mongodb";
-import {InsertOneResult} from "mongodb";
+import {InsertOneResult, ObjectId} from "mongodb";
 
 
 export class MongoDBClient {
@@ -49,6 +49,25 @@ export class MongoDBClient {
                 throw new Error(collectionName +" collection missing");
             }
             let entity : T[]= await collection.find(query).toArray() as T[];
+
+            return entity;
+        }
+        catch (e) {
+            console.log(e);
+            return {};
+        }
+    }
+    //const query1 = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
+
+    async getResourcePage<T>(collectionName: "pictures" | "artist" | "gallery", query : {$and: [{_id: {$gt: ObjectId}}, any]} |  any, pageSize: number) : Promise<T[] | any>{
+
+        try{
+            let collection = collections[collectionName];
+            if(collection == undefined) {
+                console.error(collectionName + " collection missing");
+                throw new Error(collectionName +" collection missing");
+            }
+            let entity : T[]= await collection.find(query).limit(pageSize).toArray() as T[];
 
             return entity;
         }
