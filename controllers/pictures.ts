@@ -32,16 +32,19 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                 return res.send();
             }
         }
-        else if(search && pageSize){
+        else if(pageSize){
             let pictures: Picture[];
 
-            if(pageIndex) {
+            if(search && pageIndex) {
                 pictures = await mongoDBClient.getResourcePage<Picture>("pictures",
-                    {$and: [{_id: {$gt: new ObjectId(pageIndex)}},  { $text: { $search: search }}]}, pageSize);
+                    {$and: [{_id: {$gt: new ObjectId(pageIndex)}},  { $text: { $search: search }}]}, pageSize, false);
             }
-            else {
+            else if(search) {
                 pictures = await mongoDBClient.getResourcePage<Picture>("pictures",
                     {$text: { $search: search }}, pageSize);
+            }
+            else {
+                pictures = await mongoDBClient.getResourcePage<Picture>("pictures", {}, pageSize, true);
             }
             if(pictures && pictures.length > 0) {
                 return res.send(pictures);
@@ -201,11 +204,13 @@ export async function getFile (req: Request, res: Response, next: NextFunction) 
 }
 
 export async function addPicture (req: Request, res: Response, next: NextFunction) {
-    pictureMongodb.addPicture(req.body).then(value => {
-        res.send(value)
-    }).catch(e => {
-        console.log(e)
-        next(e)
-    })
+    let response = await mongoDBClient.createResource("pictures", req.body);
+    if(response.acknowledged) {
+        res.status(201);
+    }
+    else {
+        res.status(409);
+    }
+    res.send(response);
 }
 

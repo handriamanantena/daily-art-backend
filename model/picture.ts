@@ -10,7 +10,7 @@ export interface Picture extends MongoDBEntity {
     height?: string,
     width?: string,
     artistId? : mongoDB.ObjectId,
-    artistUsername: string,
+    artistUsername?: string,
     recentComments? :Comment[],
     pastCommentsIds?: string[],
     id?: mongoDB.ObjectId
