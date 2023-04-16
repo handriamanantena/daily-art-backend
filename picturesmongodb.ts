@@ -29,7 +29,7 @@ export class Picturesmongodb {
             let picturesArray =  await pictures.find({}).toArray()
             allPictures = picturesArray.map(pictureDB => {
                 pictureDB["id"] = pictureDB["_id"]
-                delete pictureDB["_id"]
+                //delete pictureDB["_id"]
                 let picture = pictureDB as Picture
                 return picture;
             }) as Picture[]
@@ -79,7 +79,7 @@ export class Picturesmongodb {
             }
             let pictureDB = await pictures.findOne(id) as PictureDB;
             pictureDB["id"] = pictureDB["_id"]
-            delete pictureDB["_id"]
+            //delete pictureDB["_id"]
             picture = pictureDB as Picture
         }
         finally {

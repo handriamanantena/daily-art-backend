@@ -7,10 +7,10 @@ const authenticate  = require("../../router/authenticate")
 
 /*publicPicturesRouter.route('/')
     .get(picturesController.getPictures)
-    .patch(picturesController.addReplyToPicture)
+    .patch(picturesController.addReplyToPicture)*/
 
 publicPicturesRouter.route('/:id')
-    .get(picturesController.getPicture);*/
+    .get(picturesController.getPicture);
 
 publicPicturesRouter.route('/').get(picturesController.filterPictures)
 

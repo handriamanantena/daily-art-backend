@@ -75,8 +75,19 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
             }
         }
         else {
-            res.status(500);
-            return res.send();
+            pictureMongodb.getAllPictures().then((value => {
+                if(value) {
+                    res.send(value)
+                }
+                else {
+                    res.status(404)
+                    res.send({value: 'pictures not found'})
+                }
+
+            })).catch(e => {
+                console.log("error getting picture")
+                res.send(e)
+            })
         }
     }
     /*const query1 = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
@@ -151,7 +162,7 @@ export async function getPictures (req: Request, res: Response, next: NextFuncti
             }
 
         })).catch(e => {
-            console.log(e)
+            console.log("error getting picture")
             res.send(e)
         })
     }
@@ -159,6 +170,7 @@ export async function getPictures (req: Request, res: Response, next: NextFuncti
 
 export async function getPicture (req: Request, res: Response, next: NextFunction) {
     let pictureId = req.params.id
+    console.log(pictureId);
     pictureMongodb.getPictureById(pictureId).then(((value: Picture) => {
             console.log('outside', value)
             if(value) {
