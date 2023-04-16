@@ -59,7 +59,7 @@ export class MongoDBClient {
     }
     //const query1 = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
 
-    async getResourcePage<T>(collectionName: "pictures" | "artist" | "gallery", query : {$and: [{_id: {$gt: ObjectId}}, any]} |  any, pageSize: number, isDescending?: boolean) : Promise<T[]> {
+    async getResourcePage<T>(collectionName: "pictures" | "artist" | "gallery", query : {$and: [{_id: {$gt: ObjectId}}, any]} |  any, pageSize: number, sort: any) : Promise<T[]> {
 
         try{
             let collection = collections[collectionName];
@@ -68,13 +68,7 @@ export class MongoDBClient {
                 console.error(collectionName + " collection missing");
                 throw new Error(collectionName +" collection missing");
             }
-            if(isDescending) {
-                 entity = await collection.find(query).limit(pageSize).sort({_id : -1}).toArray() as T[];
-            }
-            else {
-                entity = await collection.find(query).limit(pageSize).toArray() as T[];
-            }
-
+            entity = await collection.find(query).limit(pageSize).sort(sort).toArray() as T[];
             return entity;
         }
         catch (e) {

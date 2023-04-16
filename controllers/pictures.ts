@@ -37,14 +37,19 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
 
             if(search && pageIndex) {
                 pictures = await mongoDBClient.getResourcePage<Picture>("pictures",
-                    {$and: [{_id: {$gt: new ObjectId(pageIndex)}},  { $text: { $search: search }}]}, pageSize, false);
+                    {$and: [{_id: {$gt: new ObjectId(pageIndex)}},  { $text: { $search: search }}]}, pageSize, {});
             }
             else if(search) {
                 pictures = await mongoDBClient.getResourcePage<Picture>("pictures",
-                    {$text: { $search: search }}, pageSize);
+                    {$text: { $search: search }}, pageSize, {});
+            }
+            else if(date) { //example date 2023-04-15T20:57:15.729%2B00:00
+                pictures = await mongoDBClient.getResourcePage<Picture>("pictures",
+                    { date: { $lt: new Date(date)}}, pageSize, {date: -1});
+                console.log(date)
             }
             else {
-                pictures = await mongoDBClient.getResourcePage<Picture>("pictures", {}, pageSize, true);
+                pictures = await mongoDBClient.getResourcePage<Picture>("pictures", {}, pageSize, {_id : -1});
             }
             if(pictures && pictures.length > 0) {
                 return res.send(pictures);
