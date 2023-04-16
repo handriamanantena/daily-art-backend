@@ -75,19 +75,8 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
             }
         }
         else {
-            pictureMongodb.getAllPictures().then((value => {
-                if(value) {
-                    res.send(value)
-                }
-                else {
-                    res.status(404)
-                    res.send({value: 'pictures not found'})
-                }
-
-            })).catch(e => {
-                console.log("error getting picture")
-                res.send(e)
-            })
+            let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", {});
+            return res.send(pictures);
         }
     }
     /*const query1 = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
