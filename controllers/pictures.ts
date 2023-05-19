@@ -79,6 +79,9 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                 return res.send();
             }
         }
+        else if(artistId) {
+            return getPicturesByArtist(req, res, next); // TODO need to simply if statements
+        }
         /*else {
             let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", {});
             return res.send(pictures);
@@ -96,18 +99,26 @@ export async function getPicturesByArtist(req: Request, res: Response, next: Nex
     console.log(urlQuery);
     if(urlQuery) {
         let artistId = urlQuery.artist as string;
-        let pageIndex = +(urlQuery.pageIndex as string);
-        let pageSize = +(urlQuery.pageSize as string);
-        let pictureIds = await mongoDBClient.getResourcesProject<mongoDB.ObjectId>("artist",
-            {_id: new ObjectId(artistId)}, {"pictures": { $slice : [pageIndex, pageSize] }});
-        // @ts-ignore
-        let pictureMongoIds = pictureIds[0].pictures.map(value => {
-            return new ObjectId(value);
-        });
-        console.log("the picture ids" + JSON.stringify(pictureMongoIds));
-        let pictures = await mongoDBClient.getResources<mongoDB.ObjectId>("pictures",
-            {_id: { $in : pictureMongoIds}}, {});
-        console.log("the pictures" + JSON.stringify(pictures));
+        let artist;
+        let pictures;
+        if(urlQuery.pageIndex != undefined && urlQuery.pageSize != undefined) {
+            let pageIndex = +(urlQuery.pageIndex as string);
+            let pageSize = +(urlQuery.pageSize as string);
+            let cursor = await mongoDBClient.getResourcesProjection("artist",
+                {_id: new ObjectId(artistId)}, {pictures: {$slice: [pageIndex, pageSize]}});
+            for await (const doc of cursor) {
+                if (doc) {
+                    artist = doc;
+                    console.log("the picture ids" + JSON.stringify(artist.pictures));
+                    break;
+                }
+            }
+        }
+        else {
+            artist = await mongoDBClient.getOneResource<Picture>("artist", {_id: new ObjectId(artistId)});
+        }
+        pictures = await mongoDBClient.getResources<mongoDB.ObjectId>("pictures",
+            {_id: {$in: artist.pictures}}, {});
         if(pictures) {
             return res.send(pictures);
         }
