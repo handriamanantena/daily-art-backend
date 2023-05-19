@@ -2,7 +2,7 @@ import {collections} from "./dbConn";
 import {Artist, ArtistDB} from "../model/Artist";
 import {MongoDBEntity} from "../model/MongoDBEntity/MongoDBEntity";
 import * as mongoDB from "mongodb";
-import {InferIdType, InsertOneResult, ObjectId} from "mongodb";
+import {Document, FindOptions, InferIdType, InsertOneResult, ObjectId} from "mongodb";
 
 
 export class MongoDBClient {
@@ -41,14 +41,14 @@ export class MongoDBClient {
         }
     }
 
-    async getResources<T extends MongoDBEntity>(collectionName: "pictures" | "artist" | "gallery", query : {}) : Promise<T[] | any>{
+    async getResources<T>(collectionName: "pictures" | "artist" | "gallery", query : {}, findOptions : FindOptions | {}) : Promise<T[] | any>{
         try{
             let collection = collections[collectionName];
             if(collection == undefined) {
                 console.error(collectionName + " collection missing");
                 throw new Error(collectionName +" collection missing");
             }
-            let entity : T[]= await collection.find(query).toArray() as T[];
+            let entity : T[]= await collection.find(query, findOptions).toArray() as T[];
 
             return entity;
         }
@@ -57,6 +57,25 @@ export class MongoDBClient {
             return {};
         }
     }
+
+
+    async getResourcesProject<T>(collectionName: "pictures" | "artist" | "gallery", query : {}, document : Document | {}) : Promise<T[] | any>{
+        try{
+            let collection = collections[collectionName];
+            if(collection == undefined) {
+                console.error(collectionName + " collection missing");
+                throw new Error(collectionName +" collection missing");
+            }
+            let entity : T[]= await collection.find(query).project(document).toArray() as T[];
+
+            return entity;
+        }
+        catch (e) {
+            console.log(e);
+            return {};
+        }
+    }
+
     //const query1 = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
 
     async getResourcePage<T>(collectionName: "pictures" | "artist" | "gallery", query : {$and: [{_id: {$gt: ObjectId}}, any]} |  any, pageSize: number, sort: any) : Promise<T[]> {

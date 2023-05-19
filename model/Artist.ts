@@ -4,7 +4,7 @@ import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
 export interface Artist extends MongoDBEntity {
     userName: string,
-    pictures: Picture[], //only include url and id
+    pictures: mongoDB.ObjectId[], //only include url and id
     email: string,
     password?: string,
     profilePicture: string,

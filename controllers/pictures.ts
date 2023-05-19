@@ -6,6 +6,7 @@ import {Picturesmongodb} from "../picturesmongodb";
 import {MongoDBClient} from "../dbConnection/MongoDBClient";
 import * as mongoDB from "mongodb";
 import {ObjectId} from "mongodb";
+import {Artist} from "../model/Artist";
 const mongoDBClient = new MongoDBClient();
 const pictureMongodb = new Picturesmongodb();
 
@@ -21,6 +22,7 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
         let search = urlQuery.search as string;
         let pageIndex = urlQuery.pageIndex as string;
         let pageSize = +(urlQuery.pageSize as string);
+        let artistId = urlQuery.artist as string;
         if(id != undefined && id != "") {
             query = {_id: new ObjectId(id)};
             let picture : Picture = await mongoDBClient.getOneResource<PictureDB>("pictures", query);
@@ -48,6 +50,9 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                     { date: { $lt: new Date(date)}}, pageSize, {date: -1});
                 console.log(date)
             }
+            else if(artistId) {
+                return getPicturesByArtist(req, res, next);
+            }
             else {
                 pictures = await mongoDBClient.getResourcePage<Picture>("pictures", {}, pageSize, {_id : -1});
             }
@@ -65,7 +70,7 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                     $gt: new Date(date),
                     $lt: new Date()
                 }};
-            let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", query);
+            let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", query, {});
             if(pictures) {
                 return res.send(pictures);
             }
@@ -74,16 +79,43 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                 return res.send();
             }
         }
-        else {
+        /*else {
             let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", {});
             return res.send(pictures);
-        }
+        }*/
     }
     /*const query1 = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
 
     let pictures = await mongoDBClient.getResources("pictures", query);
     console.log(pictures);
     res.send();*/
+}
+
+export async function getPicturesByArtist(req: Request, res: Response, next: NextFunction) {
+    let urlQuery = req.query;
+    console.log(urlQuery);
+    if(urlQuery) {
+        let artistId = urlQuery.artist as string;
+        let pageIndex = +(urlQuery.pageIndex as string);
+        let pageSize = +(urlQuery.pageSize as string);
+        let pictureIds = await mongoDBClient.getResourcesProject<mongoDB.ObjectId>("artist",
+            {_id: new ObjectId(artistId)}, {"pictures": { $slice : [pageIndex, pageSize] }});
+        // @ts-ignore
+        let pictureMongoIds = pictureIds[0].pictures.map(value => {
+            return new ObjectId(value);
+        });
+        console.log("the picture ids" + JSON.stringify(pictureMongoIds));
+        let pictures = await mongoDBClient.getResources<mongoDB.ObjectId>("pictures",
+            {_id: { $in : pictureMongoIds}}, {});
+        console.log("the pictures" + JSON.stringify(pictures));
+        if(pictures) {
+            return res.send(pictures);
+        }
+        else {
+            res.status(404);
+            return res.send();
+        }
+    }
 }
 
 export async function getPictures (req: Request, res: Response, next: NextFunction) {
