@@ -101,6 +101,19 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
     }
 }
 
+export async function getArtistUserNames(req: Request, res: Response, next: NextFunction) {
+    let usernames = await (await mongodbClient.getDistinctResources("artist", {}, {userName: 1}));
+    console.log(usernames);
+    if(usernames) {
+        res.status(200);
+        return res.send(usernames);
+    }
+    else {
+        res.status(404);
+        return res.send(usernames);
+    }
+}
+
 async function generateTokens(artist : Artist, res : Response) {
     let accessToken = jwt.sign({ username: artist.userName, email: artist.email }, config.token.secret, {expiresIn: config.token.expire});
     const refreshToken = jwt.sign(

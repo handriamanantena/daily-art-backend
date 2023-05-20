@@ -23,6 +23,8 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
         let pageIndex = urlQuery.pageIndex as string;
         let pageSize = +(urlQuery.pageSize as string);
         let artistId = urlQuery.artist as string;
+        let userName = urlQuery.userName as string;
+        let fields = urlQuery.fields as string;
         if(id != undefined && id != "") {
             query = {_id: new ObjectId(id)};
             let picture : Picture = await mongoDBClient.getOneResource<PictureDB>("pictures", query);
@@ -50,7 +52,7 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                     { date: { $lt: new Date(date)}}, pageSize, {date: -1});
                 console.log(date)
             }
-            else if(artistId) {
+            else if(artistId || userName) {
                 return getPicturesByArtist(req, res, next);
             }
             else {
@@ -82,10 +84,10 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
         else if(artistId) {
             return getPicturesByArtist(req, res, next); // TODO need to simply if statements
         }
-        /*else {
-            let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", {});
+        else { // TODO need to refactor this to not return all picture data
+            let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", {}, {});
             return res.send(pictures);
-        }*/
+        }
     }
     /*const query1 = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
 
@@ -96,21 +98,33 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
 
 export async function getPicturesByArtist(req: Request, res: Response, next: NextFunction) {
     let urlQuery = req.query;
-    console.log(urlQuery);
+    console.log("getPicturesByArtist");
     if(urlQuery) {
         let artistId = urlQuery.artist as string;
+        let userName = urlQuery.userName as string;
         let artist;
         let pictures;
         if(urlQuery.pageIndex != undefined && urlQuery.pageSize != undefined) {
             let pageIndex = +(urlQuery.pageIndex as string);
             let pageSize = +(urlQuery.pageSize as string);
-            let cursor = await mongoDBClient.getResourcesProjection("artist",
-                {_id: new ObjectId(artistId)}, {pictures: {$slice: [pageIndex, pageSize]}});
-            for await (const doc of cursor) {
-                if (doc) {
-                    artist = doc;
-                    console.log("the picture ids" + JSON.stringify(artist.pictures));
-                    break;
+            let cursor;
+            if(artistId) {
+                console.log("artistId");
+                cursor = await mongoDBClient.getResourcesProjection("artist",
+                    {_id: new ObjectId(artistId)}, {pictures: {$slice: [pageIndex, pageSize]}});
+            }
+            else if(userName) {
+                console.log("userName");
+                cursor = await mongoDBClient.getResourcesProjection("artist",
+                    {userName: userName}, {pictures: {$slice: [pageIndex, pageSize]}});
+            }
+            if(cursor) {
+                for await (const doc of cursor) {
+                    if (doc) {
+                        artist = doc;
+                        console.log("the picture ids" + JSON.stringify(artist.pictures));
+                        break;
+                    }
                 }
             }
         }

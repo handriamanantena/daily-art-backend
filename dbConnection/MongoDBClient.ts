@@ -69,6 +69,16 @@ export class MongoDBClient {
         return entity;
     }
 
+    async getDistinctResources(collectionName: "pictures" | "artist" | "gallery", query : {}, document: Document ) : Promise<any>{
+        let collection = collections[collectionName];
+        if (collection == undefined) {
+            console.error(collectionName + " collection missing");
+            throw new Error(collectionName + " collection missing");
+        }
+        let entity = await collection.distinct("userName");
+        return entity;
+    }
+
     //const query1 = {$and: [ { startMonth: { $lte:new Date(date)} }, { endMonth: {$gte : new Date(date)} }]};
 
     async getResourcePage<T>(collectionName: "pictures" | "artist" | "gallery", query : {$and: [{_id: {$gt: ObjectId}}, any]} |  any, pageSize: number, sort: any) : Promise<T[]> {
