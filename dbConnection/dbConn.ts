@@ -1,17 +1,15 @@
 import * as mongoDB from "mongodb";
 import {Picture} from "../model/picture";
+import {MongoDBClient} from "./MongoDBClient";
 
-const uri =
-    "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
-
+let connection : mongoDB.MongoClient;
 export const collections: { pictures?: mongoDB.Collection, artist?: mongoDB.Collection, gallery?: mongoDB.Collection } = {}
 
-export async function connectToDatabase () {
-    const client: mongoDB.MongoClient = new mongoDB.MongoClient(uri);
+export async function connectToDatabase (uri : string, connectionOptions: mongoDB.MongoClientOptions, dbName: string) {
 
-    await client.connect();
+    connection = await mongoDB.MongoClient.connect(uri, connectionOptions);
 
-    const db: mongoDB.Db = client.db("Art");
+    const db: mongoDB.Db = connection.db(dbName);
 
     await configureIndexes(db);
 
@@ -23,6 +21,10 @@ export async function connectToDatabase () {
     collections.gallery = galleryCollection;
 
     console.log(`Successfully connected to database: ${db.databaseName} and collection: ${artistCollection.collectionName}`);
+}
+
+export async function closeConnection() {
+    await connection.close();
 }
 
 async function configureIndexes(db: mongoDB.Db) {

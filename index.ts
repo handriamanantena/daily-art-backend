@@ -4,16 +4,25 @@ import sessions from "express-session";
 import config from "./config/config";
 import * as core from "express-serve-static-core";
 import {publicPicturesRouter, protectedPicturesRouter} from "./router/api/pictures";
-import {registerRouter} from "./router/testUniqueIndex";
 import {jwtRouter} from "./router/jwt";
 import {publicArtistRouter, protectedArtistRouter} from "./router/api/artist";
+const mongoSanitize = require('express-mongo-sanitize');
 const authenticate  = require("./router/authenticate")
 let cors = require('cors')
 const http = require('http')
 const cookies = require("cookie-parser");
 const port = 3001
-const app = express()
+const app = express();
+import * as mongoDB from "mongodb";
 
+// By default, $ and . characters are removed completely from user-supplied input in the following places:
+// - req.body
+// - req.query
+// - req.params
+// - req.headers
+
+// To remove data using these defaults:
+app.use(mongoSanitize());
 app.use(cors({
     origin : config.host + ":3000",
     credentials: true,
@@ -40,12 +49,15 @@ app.use(express.json());
 
 app.use(cookies())
 
-app.use('/pictures', publicPicturesRouter);
+
 app.use('/logout', require('./router/logout'));
 app.use('/refresh', require('./router/refresh'));
-app.use('/artist', publicArtistRouter); // TODO move to login
 app.use('/file', require('./router/api/file'));
 app.use('/register', require('./router/register'));
+
+// CRUD API
+app.use('/pictures', publicPicturesRouter);
+app.use('/artist', publicArtistRouter); // TODO move to login
 
 // authorization required
 app.use(jwtRouter);
@@ -75,7 +87,10 @@ app.use('/artist', protectedArtistRouter);
 /*app.use('/comment', require('./router/api/pictures')); //TODO*/
 
 
-connectToDatabase()
+const uri =
+    "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
+
+connectToDatabase(uri, {}, "Art")
     .then(() => {
 
         app.listen(port, () => {

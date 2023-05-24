@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import {filterPictures} from "../../controllers/pictures";
+import {filterPictures, getPictures} from "../../controllers/pictures";
 export const publicPicturesRouter = express.Router();
 export const protectedPicturesRouter = express.Router();
 const picturesController = require('../../controllers/pictures');
@@ -12,7 +12,8 @@ const authenticate  = require("../../router/authenticate")
 publicPicturesRouter.route('/:id')
     .get(picturesController.getPicture);
 
-publicPicturesRouter.route('/').get(picturesController.filterPictures)
+//publicPicturesRouter.route('/').get(picturesController.filterPictures)
+publicPicturesRouter.route('/').get(picturesController.getPictures)
 
 /*picturesRouter.route('/')
     .post(authenticate);*/

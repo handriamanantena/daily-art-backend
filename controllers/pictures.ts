@@ -7,6 +7,9 @@ import {MongoDBClient} from "../dbConnection/MongoDBClient";
 import * as mongoDB from "mongodb";
 import {ObjectId} from "mongodb";
 import {Artist} from "../model/Artist";
+import {getResources} from "./genericApi";
+import {ParsedQs} from "qs";
+import {Comment} from "../model/Comment";
 const mongoDBClient = new MongoDBClient();
 const pictureMongodb = new Picturesmongodb();
 
@@ -143,7 +146,7 @@ export async function getPicturesByArtist(req: Request, res: Response, next: Nex
     }
 }
 
-export async function getPictures (req: Request, res: Response, next: NextFunction) {
+/*export async function getPictures (req: Request, res: Response, next: NextFunction) {
     let date = req.query.date as string
     let name = req.query.name as string
     if(date) {
@@ -212,7 +215,7 @@ export async function getPictures (req: Request, res: Response, next: NextFuncti
             res.send(e)
         })
     }
-}
+}*/
 
 export async function getPicture (req: Request, res: Response, next: NextFunction) {
     let pictureId = req.params.id
@@ -277,3 +280,86 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
     res.send(response);
 }
 
+export async function getPictures (req: Request, res: Response, next: NextFunction) {
+    let pictures = await getResources(req, res, next, setKeysForFilter, getPage);
+    console.log("inside" + JSON.stringify(pictures));
+    if(pictures) {
+        return res.send(pictures);
+    }
+    else {
+        res.status(404);
+        return res.send();
+    }
+}
+
+function setKeysForFilter(urlQuery : ParsedQs) : {[key: string]: any} {
+    let date = urlQuery.date as string;
+    let artist = urlQuery.artist as string;
+    let userName = urlQuery.userName as string;
+    let filterKeys: {[key: string]: any} | undefined = {};
+    if(date) {
+
+        filterKeys.date = { $lt: new Date(date)};
+    }
+    else if(artist) {
+        filterKeys.artist = artist;
+    }
+    else if(userName) {
+        filterKeys.userName = userName;
+    }
+    /*let artistId = urlQuery.artist as string;
+    let userName = urlQuery.userName as string;
+    let filterKeys: {[key: string]: any} = {};
+    if(date) {
+        filterKeys.date = new Date(date);
+    }
+    else if(artistId) {
+        try {
+            filterKeys._id = new ObjectId(artistId);
+        }
+        catch (e) {
+            console.error(e);
+            throw e;
+        }
+    }
+    else if(userName) {
+        filterKeys.userName = userName;
+    }*/
+    return filterKeys;
+
+}
+async function getPage(pageIndex: string, pageSize: number, filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1|0}) {
+       /* let cursor;
+        if(filterTerms.artiist) {
+            let artistId;
+            try{
+                artistId = new ObjectId(filterTerms.artiist);
+            }
+            catch (e) {
+                console.error("bad artistId {}", artistId);
+                throw e;
+            }
+            cursor = await mongoDBClient.getResourcesProjection("artist",
+                {_id: new ObjectId(artistId)}, {pictures: {$slice: [pageIndex, pageSize]}});
+        }
+        else if(filterTerms.userName) {
+            console.log("userName");
+            cursor = await mongoDBClient.getResourcesProjection("artist",
+                {userName: filterTerms.userName}, {pictures: {$slice: [pageIndex, pageSize]}});
+        }
+        if(cursor) {
+            for await (const doc of cursor) {
+                if (doc) {
+                    artist = doc;
+                    console.log("the picture ids" + JSON.stringify(artist.pictures));
+                    break;
+                }
+            }
+        }
+        pictures = await mongoDBClient.getResources<mongoDB.ObjectId>("pictures",
+            {_id: {$in: artist.pictures}}, {});
+
+    else {*/
+        return await mongoDBClient.getResourceByPage("pictures", pageIndex, pageSize, filterTerms, searchText, fields);
+   // }
+}
