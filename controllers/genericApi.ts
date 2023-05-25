@@ -15,7 +15,12 @@ export const getResources = async <T>(req : Request, res : Response, next: NextF
     if (search == undefined) {
         search = "";
     }
+    console.log("filterTerms " + JSON.stringify(filterTerms));
+    console.log("searchText " + JSON.stringify(search));
+    console.log("pageSize " + JSON.stringify(pageSize));
+    console.log("pageIndex " + JSON.stringify(pageIndex));
     let fields = splitFields(urlQuery);
+    console.log("fields " + JSON.stringify(fields));
     let pictures = await getResourceByPage(pageIndex, pageSize, filterTerms, search, fields);
     console.log("generic " + JSON.stringify(pictures));
     return pictures;

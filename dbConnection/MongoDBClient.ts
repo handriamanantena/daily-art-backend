@@ -125,11 +125,7 @@ export class MongoDBClient {
                 throw new Error(collectionName +" collection missing");
             }
             let id : mongoDB.ObjectId;
-            console.log("filterTerms " + JSON.stringify(filterTerms));
-            console.log("searchText " + JSON.stringify(searchText));
-            console.log("fields " + JSON.stringify(fields));
-            console.log("pageSize " + JSON.stringify(pageSize));
-            if(pageIndex != "" && pageIndex != undefined) {
+            if(pageIndex != "" && pageIndex != undefined && pageIndex != "0") {
                 try{
                     id = new ObjectId(pageIndex);
                     console.log("getting resouces " + JSON.stringify(id));
@@ -141,7 +137,7 @@ export class MongoDBClient {
                     }
                 }
                 catch (e) {
-                    console.error("bad page index {}", pageIndex);
+                    console.error("bad page index " + pageIndex);
                     throw e;
                 }
             }

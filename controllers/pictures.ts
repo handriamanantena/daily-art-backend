@@ -298,7 +298,6 @@ function setKeysForFilter(urlQuery : ParsedQs) : {[key: string]: any} {
     let userName = urlQuery.userName as string;
     let filterKeys: {[key: string]: any} | undefined = {};
     if(date) {
-
         filterKeys.date = { $lt: new Date(date)};
     }
     else if(artist) {
