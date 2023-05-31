@@ -270,14 +270,21 @@ export async function getFile (req: Request, res: Response, next: NextFunction) 
 }
 
 export async function addPicture (req: Request, res: Response, next: NextFunction) {
-    let response = await mongoDBClient.createResource("pictures", req.body);
-    if(response.acknowledged) {
-        res.status(201);
+    let artistUserName = req.params.artistUserName;
+    if(artistUserName == res.locals.user?.username) {
+        let response = await mongoDBClient.createResource("pictures", req.body);
+        if(response.acknowledged) {
+            res.status(201);
+        }
+        else {
+            res.status(409);
+        }
+        return res.send(response);
     }
     else {
-        res.status(409);
+        res.status(401);
+        return res.send();
     }
-    res.send(response);
 }
 
 export async function getPictures (req: Request, res: Response, next: NextFunction) {

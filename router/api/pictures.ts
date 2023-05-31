@@ -18,5 +18,5 @@ publicPicturesRouter.route('/').get(picturesController.getPictures)
 /*picturesRouter.route('/')
     .post(authenticate);*/
 
-protectedPicturesRouter.route('/')
+protectedPicturesRouter.route('/:artistUserName')
     .post(picturesController.addPicture);

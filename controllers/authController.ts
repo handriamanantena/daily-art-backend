@@ -60,6 +60,7 @@ export function verifyJwt (req : Request, res : Response, next: NextFunction) {
                     return res.send();
                 }
                 else {
+                    res.locals.user = decoded;
                     next();
                 }
             }
