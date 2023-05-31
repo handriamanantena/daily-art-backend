@@ -120,7 +120,4 @@ dist
 # .idea
 /.idea/
 /picturesApi.iml
-/config/*
-/config/
-/config
 /config/config.ts
