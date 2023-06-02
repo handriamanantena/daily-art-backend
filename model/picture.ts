@@ -3,14 +3,13 @@ import {Comment} from "./Comment";
 import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
 export interface Picture extends MongoDBEntity {
-    pictureName?: string | "",
-    url?: string | "",
-    tags?: string[] | "",
-    date?: Date  | "",
+    pictureName: string,
+    url?: string,
+    tags?: string[],
+    date: Date,
     height?: string,
     width?: string,
-    userName : string,
-    artistUsername?: string,
+    userName: string,
     recentComments? :Comment[],
     pastCommentsIds?: string[],
     id?: mongoDB.ObjectId

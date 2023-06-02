@@ -10,6 +10,7 @@ import {Artist} from "../model/Artist";
 import {getResources} from "./genericApi";
 import {ParsedQs} from "qs";
 import {Comment} from "../model/Comment";
+import {checkFields} from "../common/parser/genericTypeCheck";
 const mongoDBClient = new MongoDBClient();
 const pictureMongodb = new Picturesmongodb();
 
@@ -272,7 +273,22 @@ export async function getFile (req: Request, res: Response, next: NextFunction) 
 export async function addPicture (req: Request, res: Response, next: NextFunction) {
     let artistUserName = req.params.artistUserName;
     if(artistUserName == res.locals.user?.username) {
-        let response = await mongoDBClient.createResource("pictures", req.body);
+        let picture : Picture = req.body;
+        let missingFields;
+        try {
+            missingFields = checkFields(picture);
+            if(missingFields != "") {
+                throw new Error("Bad input, fields missing: " + missingFields);
+            }
+            picture.date = new Date();
+            picture.userName = artistUserName;
+        }
+        catch (e) {
+            console.error(e);
+            res.status(400);
+            return res.send("Bad input, fields missing: " + missingFields);
+        }
+        let response = await mongoDBClient.createResource("pictures", picture);
         if(response.acknowledged) {
             res.status(201);
         }
