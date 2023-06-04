@@ -6,6 +6,9 @@ import {MongoDBClient} from "../dbConnection/MongoDBClient";
 const bcrypt = require('bcryptjs');
 const mongoDBClient = new MongoDBClient();
 
+/**
+ * Default alg HS256
+ * */
 
 export const handleAuthentication = async (req : Request, res : Response, next: NextFunction) => {
     console.log("inside middleware")
@@ -90,7 +93,10 @@ export const refresh = (req : Request, res : Response, next: NextFunction) => {
                 res.sendStatus(403);
             }
             const accessToken = jwt.sign(
-                {},
+                {
+                    username: decoded.username,
+                    email: decoded.email
+                },
                 config.token.secret,
                 { expiresIn: config.token.expire }
             );
