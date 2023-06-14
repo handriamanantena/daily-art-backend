@@ -63,6 +63,7 @@ export function verifyJwt (req : Request, res : Response, next: NextFunction) {
                     return res.send();
                 }
                 else {
+                    console.log("JWT verified");
                     res.locals.user = decoded;
                     next();
                 }
@@ -94,7 +95,7 @@ export const refresh = (req : Request, res : Response, next: NextFunction) => {
             }
             const accessToken = jwt.sign(
                 {
-                    username: decoded.username,
+                    userName: decoded.userName,
                     email: decoded.email
                 },
                 config.token.secret,

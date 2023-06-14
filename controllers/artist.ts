@@ -115,9 +115,9 @@ export async function getArtistUserNames(req: Request, res: Response, next: Next
 }
 
 async function generateTokens(artist : Artist, res : Response) {
-    let accessToken = jwt.sign({ username: artist.userName, email: artist.email }, config.token.secret, {expiresIn: config.token.expire});
+    let accessToken = jwt.sign({ userName: artist.userName, email: artist.email }, config.token.secret, {expiresIn: config.token.expire});
     const refreshToken = jwt.sign(
-        { username: artist.userName, email: artist.email },
+        { userName: artist.userName, email: artist.email },
         config.refreshToken.secret,
         { expiresIn: config.refreshToken.expire }
     );
@@ -127,7 +127,7 @@ async function generateTokens(artist : Artist, res : Response) {
     let response = {
         artist,
         accessToken
-    };
+    }; // TODO try setting jwt token in cookie instead httpOnly true, however return artist info as well. store artist info Context in front end
     return response;
 }
 

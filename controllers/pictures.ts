@@ -272,7 +272,7 @@ export async function getFile (req: Request, res: Response, next: NextFunction) 
 
 export async function addPicture (req: Request, res: Response, next: NextFunction) {
     let artistUserName = req.params.artistUserName;
-    if(artistUserName == res.locals.user?.username) {
+    if(artistUserName == res.locals.user?.userName) {
         let picture : Picture = req.body as Picture;
         let missingFields;
         try {
@@ -299,6 +299,7 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
     }
     else {
         res.status(401);
+        console.log("error: artistUserName " + artistUserName + " locals user name: " + res.locals.user?.username);
         return res.send();
     }
 }
