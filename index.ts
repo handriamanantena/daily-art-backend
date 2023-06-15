@@ -13,16 +13,8 @@ const http = require('http')
 const cookies = require("cookie-parser");
 const port = 3001
 const app = express();
-import * as mongoDB from "mongodb";
 
-// By default, $ and . characters are removed completely from user-supplied input in the following places:
-// - req.body
-// - req.query
-// - req.params
-// - req.headers
 
-// To remove data using these defaults:
-app.use(mongoSanitize());
 app.use(cors({
     origin : config.host + ":3000",
     credentials: true,
@@ -48,6 +40,15 @@ app.use(express.json());
 
 
 app.use(cookies())
+// By default, $ and . characters are removed completely from user-supplied input in the following places:
+// - req.body
+// - req.query
+// - req.params
+// - req.headers
+
+// To remove data using these defaults:
+app.use(mongoSanitize());
+app.use(require('sanitize').middleware);
 
 
 app.use('/logout', require('./router/logout'));
