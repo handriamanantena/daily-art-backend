@@ -8,6 +8,8 @@ export interface Artist extends MongoDBEntity {
     email: string,
     password?: string,
     profilePicture: string,
+    bestStreak?: number,
+    streak?: number,
 }
 
 export interface ArtistDB extends Artist {

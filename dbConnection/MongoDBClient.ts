@@ -1,8 +1,9 @@
 import {collections} from "./dbConn";
-import {Artist, ArtistDB} from "../model/Artist";
 import {MongoDBEntity} from "../model/MongoDBEntity/MongoDBEntity";
 import * as mongoDB from "mongodb";
-import {Document, FindCursor, FindOptions, InferIdType, InsertOneResult, ObjectId} from "mongodb";
+import {Document, Filter, FindCursor, FindOptions, InferIdType, InsertOneResult, ObjectId} from "mongodb";
+import {UpdateResult} from "mongodb";
+import {Sort} from "mongodb";
 
 
 export class MongoDBClient {
@@ -41,21 +42,25 @@ export class MongoDBClient {
         }
     }
 
-    async getResources(collectionName: "pictures" | "artist" | "gallery", query : {}, findOptions : FindOptions | {}) : Promise<[] | any>{
+    async getResources(collectionName: "pictures" | "artist" | "gallery", query : {}, projection : Document | {}, sort: Sort, limit: number | undefined) : Promise<[] | any> {
         try{
             let collection = collections[collectionName];
             if(collection == undefined) {
                 console.error(collectionName + " collection missing");
                 throw new Error(collectionName +" collection missing");
             }
-            let entity : []= await collection.find(query, findOptions).toArray() as [];
-
-            return entity;
+            if(limit) {
+                return await collection.find(query).project(projection).sort(sort).limit(limit).toArray() as [];
+            }
+            else {
+                return await collection.find(query).project(projection).sort(sort).toArray() as [];
+            }
         }
         catch (e) {
             console.log(e);
             return {};
         }
+
     }
 
 
@@ -106,6 +111,15 @@ export class MongoDBClient {
             throw new Error(collectionName + " collection missing");
         }
         return await collection.insertOne(resource);
+    }
+
+    async updateResource<T extends MongoDBEntity>(collectionName: "pictures" | "artist" | "gallery", filter : any, update: any) : Promise<UpdateResult> {
+        let collection = collections[collectionName];
+        if (collection == undefined) {
+            console.error(collectionName + " collection missing");
+            throw new Error(collectionName + " collection missing");
+        }
+        return await collection.updateOne(filter, update);
     }
 
     private logMissingCollection(collection: mongoDB.MongoClient, collectionName: "pictures" | "artist" | "gallery") {

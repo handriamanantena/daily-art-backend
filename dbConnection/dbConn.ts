@@ -1,6 +1,4 @@
 import * as mongoDB from "mongodb";
-import {Picture} from "../model/picture";
-import {MongoDBClient} from "./MongoDBClient";
 
 let connection : mongoDB.MongoClient;
 export const collections: { pictures?: mongoDB.Collection, artist?: mongoDB.Collection, gallery?: mongoDB.Collection } = {}
@@ -31,4 +29,9 @@ async function configureIndexes(db: mongoDB.Db) {
     const picturesCollection: mongoDB.Collection = db.collection("pictures");
     await picturesCollection.createIndex({ pictureName : "text", tags : "text", artistUsername: "text"}, { default_language: "english" });
     await picturesCollection.createIndex({ date : 1});
+
+    const artistCollection : mongoDB.Collection = db.collection("artist");
+    await artistCollection.createIndex({ userName : 1}, { unique: true});
+    await artistCollection.createIndex({ email : 1}, { unique: true});
+
 }

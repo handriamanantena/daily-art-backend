@@ -11,6 +11,7 @@ import {getResources} from "./genericApi";
 import {ParsedQs} from "qs";
 import {Comment} from "../model/Comment";
 import {checkFields} from "../common/parser/genericTypeCheck";
+import {addPictureToDB} from "../dbConnection/pictureMongoConnection";
 const mongoDBClient = new MongoDBClient();
 const pictureMongodb = new Picturesmongodb();
 
@@ -76,7 +77,7 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                     $gt: new Date(date),
                     $lt: new Date()
                 }};
-            let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", query, {});
+            let pictures: Picture[] = await mongoDBClient.getResources("pictures", query, {}, {}, undefined);
             if(pictures) {
                 return res.send(pictures);
             }
@@ -89,7 +90,7 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
             return getPicturesByArtist(req, res, next); // TODO need to simply if statements
         }
         else { // TODO need to refactor this to not return all picture data
-            let pictures: Picture[] = await mongoDBClient.getResources<Picture>("pictures", {}, {});
+            let pictures: Picture[] = await mongoDBClient.getResources("pictures", {}, {}, {}, undefined);
             return res.send(pictures);
         }
     }
@@ -135,8 +136,7 @@ export async function getPicturesByArtist(req: Request, res: Response, next: Nex
         else {
             artist = await mongoDBClient.getOneResource<Picture>("artist", {_id: new ObjectId(artistId)});
         }
-        pictures = await mongoDBClient.getResources<mongoDB.ObjectId>("pictures",
-            {_id: {$in: artist.pictures}}, {});
+        pictures = await mongoDBClient.getResources("pictures", {_id: {$in: artist.pictures}}, {}, {}, undefined);
         if(pictures) {
             return res.send(pictures);
         }
@@ -288,14 +288,14 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
             res.status(400);
             return res.send("Bad input, fields missing: " + missingFields);
         }
-        let response = await mongoDBClient.createResource("pictures", picture);
-        if(response.acknowledged) {
+        let pictureResponse = await addPictureToDB(picture);
+        if(pictureResponse.acknowledged) {
             res.status(201);
         }
         else {
             res.status(409);
         }
-        return res.send(response);
+        return res.send(pictureResponse);
     }
     else {
         res.status(401);

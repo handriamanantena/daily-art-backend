@@ -5,7 +5,7 @@ const mongoDBClient = new MongoDBClient();
 import {picturesDB} from "./pictureArray";
 import {Picture} from "../../model/picture";
 // @ts-ignore
-describe('test get api', () => {
+describe('test get picture', () => {
     let connection;
     let db;
 

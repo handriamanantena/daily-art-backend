@@ -289,7 +289,8 @@ export let picturesDB = [{
   ],
   "date": new Date("2023-05-16T03:15:37.443Z"),
   "width": "1035",
-  "height": "1228"
+  "height": "1228",
+  "userName" : "username4"
 },{
   "_id": new ObjectId("6467d2a9f0067f9f2733bd6f"),
   "pictureName": "Madara",
@@ -300,5 +301,6 @@ export let picturesDB = [{
   ],
   "date": new Date("2023-05-16T04:15:37.443Z"),
   "width": "1035",
-  "height": "1228"
+  "height": "1228",
+  "userName": "username2"
 }]
