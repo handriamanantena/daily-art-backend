@@ -9,14 +9,11 @@ import {publicArtistRouter, protectedArtistRouter} from "./router/api/artist";
 const mongoSanitize = require('express-mongo-sanitize');
 const authenticate  = require("./router/authenticate")
 let cors = require('cors')
+const http = require('http')
 const cookies = require("cookie-parser");
 const port = 3001
 const app = express();
-let fs = require('fs');
-let http = require('http');
-let https = require('https');
-let privateKey  = fs.readFileSync(config.ssl.keyPath, 'utf8');
-let certificate = fs.readFileSync(config.ssl.certPath, 'utf8');
+
 
 app.use(cors({
     origin : config.host + ":3000",
@@ -89,9 +86,6 @@ app.use('/artist', protectedArtistRouter);
 
 }));*/
 /*app.use('/comment', require('./router/api/pictures')); //TODO*/
-let credentials = {key: privateKey, cert: certificate};
-let httpServer = http.createServer(app);
-let httpsServer = https.createServer(credentials, app);
 
 
 const uri =
@@ -100,11 +94,8 @@ const uri =
 connectToDatabase(uri, {}, "Art")
     .then(() => {
 
-        httpServer.listen(port, ()=> {
+        app.listen(port, () => {
             console.log(`Server started at http://localhost:${port}`);
-        });
-        httpsServer.listen(443, ()=> {
-            console.log(`Server started at https://localhost:${443}`);
         });
     })
     .catch((error: Error) => {
