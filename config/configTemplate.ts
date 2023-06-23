@@ -18,12 +18,17 @@ const config = {
         secret: 'TODO',
         expire: '7d',
     },
+    ssl: {
+        certPath: "TODO",
+        keyPath: "TODO"
+    },
     host: "http://localhost",
     database: {
         conn: "",
         dbname: "",
         passwordSaltRounds: 10
-    }
-}
+    },
+    filePath: "./public/files/"
+};
 
 export default config;
