@@ -18,7 +18,8 @@ const config = {
         secret: 'TODO',
         expire: '7d',
     },
-    host: "http://localhost",
+    frontEndHost: "http://localhost",
+    frontEndPort: ":3000",
     database: {
         conn: "",
         dbname: "",

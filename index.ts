@@ -16,7 +16,7 @@ const app = express();
 
 
 app.use(cors({
-    origin : config.host + ":3000",
+    origin : config.frontEndHost + config.frontEndPort,
     credentials: true,
 }));
 app.use(express.json());
