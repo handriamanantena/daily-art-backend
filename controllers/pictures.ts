@@ -45,15 +45,15 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
             let pictures: Picture[];
 
             if(search && pageIndex) {
-                pictures = await mongoDBClient.getResourcePage<Picture>("pictures",
+                pictures = await mongoDBClient.getResourcePage("pictures",
                     {$and: [{_id: {$gt: new ObjectId(pageIndex)}},  { $text: { $search: search }}]}, pageSize, {});
             }
             else if(search) {
-                pictures = await mongoDBClient.getResourcePage<Picture>("pictures",
+                pictures = await mongoDBClient.getResourcePage("pictures",
                     {$text: { $search: search }}, pageSize, {});
             }
             else if(date) { //example date 2023-04-15T20:57:15.729%2B00:00
-                pictures = await mongoDBClient.getResourcePage<Picture>("pictures",
+                pictures = await mongoDBClient.getResourcePage("pictures",
                     { date: { $lt: new Date(date)}}, pageSize, {date: -1});
                 console.log(date)
             }
@@ -61,7 +61,7 @@ export async function filterPictures (req: Request, res: Response, next: NextFun
                 return getPicturesByArtist(req, res, next);
             }
             else {
-                pictures = await mongoDBClient.getResourcePage<Picture>("pictures", {}, pageSize, {_id : -1});
+                pictures = await mongoDBClient.getResourcePage("pictures", {}, pageSize, {_id : -1});
             }
             if(pictures && pictures.length > 0) {
                 return res.send(pictures);

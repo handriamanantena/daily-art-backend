@@ -39,8 +39,8 @@ export class Picturesmongodb {
         }
     }
 
-    async getPictureByName(pictureName : string) {
-        let picture : Picture = {};
+   /* async getPictureByName(pictureName : string) {
+        let picture : Picture;
         try {
             const pictures = await this.getPicturesCollection()
             if(pictures == undefined) {
@@ -62,7 +62,7 @@ export class Picturesmongodb {
             return picture;
         }
 
-    }
+    }*/
 
     async getPictureById(id: string) {
         let objectId = new mongoDB.ObjectId(id)
@@ -87,7 +87,7 @@ export class Picturesmongodb {
         }
     }
 
-    async getGalleryByPage(page: number) {
+    /*async getGalleryByPage(page: number) {
         let gallery : GalleryDB = {}
         try {
             const galleryCollection = await this.getGalleryCollection();
@@ -105,9 +105,9 @@ export class Picturesmongodb {
             // Ensures that the client will close when you finish/error
             return gallery
         }
-    }
+    }*/
 
-    async getPicturesByDate(date: Date) {
+    /*async getPicturesByDate(date: Date) {
         let gallery
         try {
             const galleryCollection = await this.getGalleryCollection();
@@ -124,9 +124,9 @@ export class Picturesmongodb {
             // Ensures that the client will close when you finish/error
             return gallery
         }
-    }
+    }*/
 
-    async associatePicturesToGallery(gallery: GalleryDB) {
+    /*async associatePicturesToGallery(gallery: GalleryDB) {
         let pictures : Picture[] = []
         if(gallery && gallery.pictureIds) {
             for (const pictureId of gallery.pictureIds) {
@@ -138,7 +138,7 @@ export class Picturesmongodb {
             delete gallery.pictureIds
         }
         return gallery
-    }
+    }*/
 
     async insertRecentComment(comment: Comment, pictureId: string) {
         try {

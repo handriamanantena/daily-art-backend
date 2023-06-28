@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "build": "tsc --project tsconfig.build.json",
     "start": "ts-node-dev --transpile-only index.ts",
-    "start-original": "ts-node-dev index.ts"
+    "start:prod": "node build/index.js"
   },
   "keywords": [],
   "author": "",
