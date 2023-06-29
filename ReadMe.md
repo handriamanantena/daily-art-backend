@@ -46,3 +46,40 @@ TODO need to dockerize mock data
 
 ## Run tests
 ```npm test``` Will run jest test
+
+## Run in production
+Create build
+```
+npm run build
+```
+Run forever
+
+In the linux machine you will need to run 
+```
+sudo npm install pm2@latest -g
+```
+Then run 
+```
+pm2 start build/index.js
+```
+
+```index.js``` is located where you specified the build in ```tsconfig.json``` under the ```outDir``` setting.
+
+##PM2
+
+####To start
+```pm2 start hello.js```
+
+####To stop
+```pm2 stop app_name_or_id```
+
+####To restart
+```pm2 restart app_name_or_id```
+
+####PM2 to list
+```pm2 list```
+
+####PM2 for logs
+```tail -f ~/.pm2/logs/index-out.log```
+
+
