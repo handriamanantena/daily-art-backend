@@ -299,7 +299,7 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
     }
     else {
         res.status(401);
-        console.log("error: artistUserName [" + artistUserName + "] locals user name: [" + res.locals.user?.username + "]");
+        console.log("error: artistUserName [" + artistUserName + "] locals user name: [" + res.locals.user?.userName + "]");
         return res.send();
     }
 }
