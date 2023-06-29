@@ -290,10 +290,17 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
         }
         let pictureResponse = await addPictureToDB(picture);
         if(pictureResponse.acknowledged) {
-            res.status(201);
+            // TODO need to add file extension
+            let updateStatus = await mongoDBClient.updateResource("pictures", {_id : new mongoDB.ObjectId(pictureResponse.insertedId)}, {$set: {url: pictureResponse.insertedId}});
+            if(updateStatus.modifiedCount == 1) {
+                res.status(201);
+            }
+            else {
+                // TODO need to delete picture
+            }
         }
         else {
-            res.status(409);
+            res.status(500);
         }
         return res.send(pictureResponse);
     }
