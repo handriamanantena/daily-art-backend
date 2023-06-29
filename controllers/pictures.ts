@@ -271,7 +271,7 @@ export async function getFile (req: Request, res: Response, next: NextFunction) 
 }
 
 export async function addPicture (req: Request, res: Response, next: NextFunction) {
-    let artistUserName = req.params.artistUserName;
+    let artistUserName = req.params.userName;
     if(artistUserName == res.locals.user?.userName) {
         let picture : Picture = req.body as Picture;
         let missingFields;

@@ -4,8 +4,6 @@ export const publicPicturesRouter = express.Router();
 export const protectedPicturesRouter = express.Router();
 const picturesController = require('../../controllers/pictures');
 const authenticate  = require("../../router/authenticate")
-const multer  = require('multer')
-const upload = multer({ dest: './public/files/', limits: { fileSize: 50 * 1024 * 1024  }})
 
 /*publicPicturesRouter.route('/')
     .get(picturesController.getPictures)
@@ -20,5 +18,5 @@ publicPicturesRouter.route('/').get(picturesController.getPictures)
 /*picturesRouter.route('/')
     .post(authenticate);*/
 
-protectedPicturesRouter.route('/:artistUserName')
-    .post(upload.single('file'), picturesController.addPicture);
+protectedPicturesRouter.route('/:userName')
+    .post(picturesController.addPicture);

@@ -16,7 +16,7 @@ const app = express();
 
 
 app.use(cors({
-    origin : config.frontEndHost + config.frontEndPort,
+    origin : [config.frontEndHost + config.frontEndPort, config.cloudflareWorker],
     credentials: true,
 }));
 app.use(express.json());
