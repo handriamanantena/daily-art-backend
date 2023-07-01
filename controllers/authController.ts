@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import config from "../config/config";
 import {NextFunction, Request, Response} from "express";
 import {ArtistDB} from "../model/Artist";
 import {MongoDBClient} from "../dbConnection/MongoDBClient";
@@ -53,9 +52,9 @@ export function verifyJwt (req : Request, res : Response, next: NextFunction) {
     console.log(token);
     if(token) {
         console.log("verify login")
-        jwt.verify(
-            token,
-            config.token.secret,
+        jwt.verify(token,
+            // @ts-ignore
+            process.env.TOKEN_SECRET,
             (err, decoded) => {
                 if (err) {
                     console.log("cant verify login")
@@ -88,7 +87,8 @@ export const refresh = (req : Request, res : Response, next: NextFunction) => {
     // evaluate jwt
     jwt.verify(
         refreshToken,
-        config.refreshToken.secret,
+        //@ts-ignore
+        process.env.REFRESH_TOKEN_SECRET,
         (err: any, decoded: any) => {
             if(err) {
                 res.sendStatus(403);
@@ -98,8 +98,9 @@ export const refresh = (req : Request, res : Response, next: NextFunction) => {
                     userName: decoded.userName,
                     email: decoded.email
                 },
-                config.token.secret,
-                { expiresIn: config.token.expire }
+                //@ts-ignore
+                process.env.TOKEN_SECRET,
+                { expiresIn: process.env.TOKEN_EXPIRE }
             );
             res.send({ accessToken })
         }

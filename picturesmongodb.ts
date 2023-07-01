@@ -2,7 +2,6 @@ import * as mongoDB from "mongodb";
 import {Picture, PictureDB} from "./model/picture";
 import {Gallery, GalleryDB} from "./model/Gallery";
 import {Comment, CommentDB, Reply} from "./model/Comment";
-import config from "./config/config";
 import {collections} from "./dbConnection/dbConn";
 
 
@@ -165,13 +164,14 @@ export class Picturesmongodb {
             if(picture.recentComments == undefined) {
                 throw new Error("picture does not exist")
             }
-            console.log("length: ", picture.recentComments.length)
-            if (picture.recentComments.length > config.comments.maxRecentComments) {
+            console.log("length: ", picture.recentComments.length);
+            //@ts-ignore
+            if (picture.recentComments.length > +process.env.MAX_RECENT_COMMITS) {
                 await pictures.updateOne({_id: objectId}, {$pop: {recentComments: 1}});
-                console.log("list of comments in memory", picture.recentComments)
-                let lastComment = picture.recentComments.pop()
-                console.log("pop last comment ", lastComment)
-                return lastComment
+                console.log("list of comments in memory", picture.recentComments);
+                let lastComment = picture.recentComments.pop();
+                console.log("pop last comment ", lastComment);
+                return lastComment;
             }
             else {
                 return undefined;

@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {Artist, ArtistDB} from "../model/Artist";
 import jwt from "jsonwebtoken";
-import config from "../config/config";
 import {GoogleLogin} from "../authentication/googleLogin";
 import {MongoDBClient} from "../dbConnection/MongoDBClient";
 const googleLogin = new GoogleLogin();
@@ -33,7 +32,7 @@ export async function getArtist (req: Request, res: Response, next: NextFunction
                         email: googleAccount.email,
                         password: '',
                         profilePicture: googleAccount.picture,
-                    } as Artist
+                    } as Artist;
                     await mongodbClient.addNewResource("artist", artistDB);
                 }
                 let response = await generateTokens(artist, res);
@@ -75,7 +74,7 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
         res.status(400);
         return res.send("password or email is blank");
     }
-    let hashedPassword = await bcrypt.hash(artistInfo.password, config.database.passwordSaltRounds);
+    let hashedPassword = await bcrypt.hash(artistInfo.password, process.env.DATABASE_SALT_ROUNDS);
     let artist : Artist = {
         email: artistInfo.email,
         pictures: [],
@@ -115,13 +114,12 @@ export async function getArtistUserNames(req: Request, res: Response, next: Next
 }
 
 async function generateTokens(artist : Artist, res : Response) {
-    let accessToken = jwt.sign({ userName: artist.userName, email: artist.email }, config.token.secret, {expiresIn: config.token.expire});
-    const refreshToken = jwt.sign(
-        { userName: artist.userName, email: artist.email },
-        config.refreshToken.secret,
-        { expiresIn: config.refreshToken.expire }
+    // @ts-ignore
+    let accessToken = jwt.sign({ userName: artist.userName, email: artist.email }, process.env.TOKEN_SECRET, {expiresIn: process.env.TOKEN_EXPIRE});
+    // @ts-ignore
+    const refreshToken = jwt.sign({ userName: artist.userName, email: artist.email }, process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: process.env.REFRESH_TOKEN_EXPIRE }
     );
-    //    if (allowedOrigins.includes(origin))
     res.header('Access-Control-Allow-Credentials', "true"); // TODO check allowed origins
     res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
     let response = {

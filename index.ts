@@ -1,7 +1,6 @@
 import {collections, connectToDatabase} from "./dbConnection/dbConn";
 import express, {NextFunction, Request, Response} from "express";
 import sessions from "express-session";
-import config from "./config/config";
 import * as core from "express-serve-static-core";
 import {publicPicturesRouter, protectedPicturesRouter} from "./router/api/pictures";
 import {jwtRouter} from "./router/jwt";
@@ -16,7 +15,8 @@ const app = express();
 
 
 app.use(cors({
-    origin : [config.frontEndHost + config.frontEndPort, config.cloudflareWorker],
+    //@ts-ignore
+    origin : [process.env.FRONT_END_HOST + process.env.FRONT_END_PORT, process.env.CLOUDFLARE_WORKER],
     credentials: true,
 }));
 app.use(express.json());
@@ -89,7 +89,7 @@ app.use('/artist', protectedArtistRouter);
 
 
 const uri =
-    `mongodb+srv://${config.database.user}:${config.database.password}@${config.database.cluster}/?retryWrites=true&w=majority`;
+    `mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_CLUSTER}/?retryWrites=true&w=majority`;
 
 connectToDatabase(uri, {}, "Art")
     .then(() => {

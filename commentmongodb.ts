@@ -4,7 +4,6 @@ import {Picture, PictureDB} from "./model/picture";
 import {Gallery, GalleryDB} from "./model/Gallery";
 import {ObjectId} from "mongodb";
 import {Comment, CommentDB, Reply} from "./model/Comment";
-import config from "./config/config";
 const uri =
     "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
 const client: mongoDB.MongoClient = new mongoDB.MongoClient(uri);
