@@ -89,7 +89,7 @@ app.use('/artist', protectedArtistRouter);
 
 
 const uri =
-    "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
+    `mongodb+srv://${config.database.user}:${config.database.password}@${config.database.cluster}/?retryWrites=true&w=majority`;
 
 connectToDatabase(uri, {}, "Art")
     .then(() => {

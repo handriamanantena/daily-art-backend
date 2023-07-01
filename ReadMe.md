@@ -14,6 +14,10 @@ example: ```mongod --dbpath /f/art/data/db```
 ```docker-compose up -d```
 Currently there is no mock data. I still need to configure mongo-init.js
 
+###Connect to local databse
+```
+mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false
+```
 
 ###Configure config.ts
 Before you start the back end server you will need to configure configTemplate.ts.
