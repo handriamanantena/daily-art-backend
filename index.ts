@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import {collections, connectToDatabase} from "./dbConnection/dbConn";
 import express, {NextFunction, Request, Response} from "express";
 import sessions from "express-session";
