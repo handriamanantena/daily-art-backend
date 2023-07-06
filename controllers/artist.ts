@@ -24,8 +24,9 @@ export async function getArtist (req: Request, res: Response, next: NextFunction
             let googleAccount = await googleLogin.verify(token)
             if(googleAccount && googleAccount.email != undefined) {
                 let artist = await mongodbClient.getOneResource<ArtistDB>("artist", {email: googleAccount.email}) as ArtistDB
-                delete artist['password'];
+                //delete artist['password'];
                 //session.artist = artist;
+                console.log(googleAccount);
                 if(!artist) {
                     let artistDB = {
                         userName: googleAccount.name,
@@ -74,29 +75,32 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
         res.status(400);
         return res.send("password or email is blank");
     }
-    let hashedPassword = await bcrypt.hash(artistInfo.password, process.env.DATABASE_SALT_ROUNDS);
+    //@ts-ignore
+    let hashedPassword = await bcrypt.hash(artistInfo.password, +(process.env.DATABASE_SALT_ROUNDS));
     let artist : Artist = {
         email: artistInfo.email,
         pictures: [],
         profilePicture: "",
-        userName: "",
         password: hashedPassword
+    };
+    try {
+        let dbResponse = await mongodbClient.addNewResource("artist", artist);
+        console.log("response " + dbResponse);
+        if (dbResponse && dbResponse.acknowledged && dbResponse.insertedId) {
+            let artist: ArtistDB = artistInfo;
+            artist._id = dbResponse.insertedId;
+            let response = generateTokens(artist, res);
+            res.status(201);
+            return res.send(response);
+        }
+        else {
+            res.status(500);
+            return res.send("issue registering account");
+        }
     }
-    if(artistInfo.email.includes("harrison") || artistInfo.email.includes("anosirrah")) { // TODO need SCHEMA to make email unique
+    catch (e) {
         res.status(409);
-        return res.send("email already in use");
-    }
-    let dbResponse = await mongodbClient.addNewResource("artist", artist);
-    if(dbResponse && dbResponse.acknowledged && dbResponse.insertedId) {
-        let artist : ArtistDB = artistInfo;
-        artist._id = dbResponse.insertedId;
-        let response = generateTokens(artist, res);
-        res.status(201);
-        return res.send(response);
-    }
-    else {
-        res.status(500);
-        return res.send("issue registering account");
+        return res.send("email/username already exist");
     }
 }
 

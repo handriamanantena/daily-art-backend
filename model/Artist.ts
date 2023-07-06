@@ -3,7 +3,7 @@ import {Picture} from "./picture";
 import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
 export interface Artist extends MongoDBEntity {
-    userName: string,
+    userName?: string,
     pictures: mongoDB.ObjectId[], //only include url and id
     email: string,
     password?: string,

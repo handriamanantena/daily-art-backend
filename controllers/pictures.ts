@@ -12,6 +12,7 @@ import {ParsedQs} from "qs";
 import {Comment} from "../model/Comment";
 import {checkFields} from "../common/parser/genericTypeCheck";
 import {addPictureToDB} from "../dbConnection/pictureMongoConnection";
+import {DeleteResult} from "mongodb";
 const mongoDBClient = new MongoDBClient();
 const pictureMongodb = new Picturesmongodb();
 
@@ -308,6 +309,19 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
         res.status(401);
         console.log("error: artistUserName [" + artistUserName + "] locals user name: [" + res.locals.user?.userName + "]");
         return res.send();
+    }
+}
+
+export async function deletePicture(req: Request, res: Response, next: NextFunction) {
+    let result : DeleteResult = await mongoDBClient.deleteOneResource("pictures", {_id: req.body.pictureId});
+    if(result.deletedCount == 1) {
+        res.status(200);
+        return res.send("deleted image " + req.body.pictureId);
+    }
+    else {
+        res.status(500);
+        console.error("failed to delete image id " + req.body.pictureId);
+        return res.send("failed to delete image " + req.body.pictureId);
     }
 }
 

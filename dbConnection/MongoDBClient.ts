@@ -27,19 +27,14 @@ export class MongoDBClient {
         }
     }
 
-    async addNewResource<T extends MongoDBEntity>(collectionName: "pictures" | "artist" | "gallery", query : {}) : Promise<InsertOneResult | any> {
-        try{
-            let collection = collections[collectionName];
-            if(collection == undefined) {
-                console.error(collectionName + " collection missing");
-                throw new Error(collectionName +" collection missing");
-            }
-            let response : InsertOneResult = await collection.insertOne(query);
-            return response;
+    async addNewResource<T extends MongoDBEntity>(collectionName: "pictures" | "artist" | "gallery", query : {}) : Promise<InsertOneResult> {
+        let collection = collections[collectionName];
+        if (collection == undefined) {
+            console.error(collectionName + " collection missing");
+            throw new Error(collectionName + " collection missing");
         }
-        catch (e) {
-            console.log(e)
-        }
+        let response: InsertOneResult = await collection.insertOne(query);
+        return response;
     }
 
     async getResources(collectionName: "pictures" | "artist" | "gallery", query : {}, projection : Document | {}, sort: Sort, limit: number | undefined) : Promise<[] | any> {
@@ -120,6 +115,15 @@ export class MongoDBClient {
             throw new Error(collectionName + " collection missing");
         }
         return await collection.updateOne(filter, update);
+    }
+
+    async deleteOneResource(collectionName: "pictures" | "artist" | "gallery", filter : any) {
+        let collection = collections[collectionName];
+        if (collection == undefined) {
+            console.error(collectionName + " collection missing");
+            throw new Error(collectionName + " collection missing");
+        }
+        return await collection.deleteOne(filter);
     }
 
     private logMissingCollection(collection: mongoDB.MongoClient, collectionName: "pictures" | "artist" | "gallery") {
