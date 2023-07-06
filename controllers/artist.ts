@@ -10,97 +10,104 @@ const bcrypt = require('bcryptjs');
 export async function getArtist (req: Request, res: Response, next: NextFunction) {
     //let session = req.session;
     let platform = req.query.platform;
-    //res.header("Access-Control-Allow-Origin", "http://localhost:3000")
     /*if(session.artist) {
         console.log("returning artist in session")
         return res.send(session.artist)
     }*/
+    let artist: Artist;
     if(platform == 'google') {
         if(req.header("Authorization") != undefined) {
             let token = req.header("Authorization")
             if(token) {
                 token = token.replace("Bearer ", "")
             }
-            let googleAccount = await googleLogin.verify(token)
+            let googleAccount = await googleLogin.verify(token);
             if(googleAccount && googleAccount.email != undefined) {
-                let artist = await mongodbClient.getOneResource<ArtistDB>("artist", {email: googleAccount.email}) as ArtistDB
-                //delete artist['password'];
-                //session.artist = artist;
-                console.log(googleAccount);
+                artist = await mongodbClient.getOneResource<ArtistDB>("artist", {email: googleAccount.email}) as ArtistDB
                 if(!artist) {
-                    let artistDB = {
-                        userName: googleAccount.name,
-                        email: googleAccount.email,
-                        password: '',
-                        profilePicture: googleAccount.picture,
-                    } as Artist;
-                    await mongodbClient.addNewResource("artist", artistDB);
+                    res.locals.googleAccount = googleAccount;
+                    return registerArtist(req, res, next);
                 }
-                let response = await generateTokens(artist, res);
-                console.log("the response: " + JSON.stringify(response))
-                return res.send(response);
             }
+        }
+        else {
+            res.status(401);
+            return res.send("Unauthorized");
         }
     }
     else {
         let password = req.body.password;
         let userName = req.body.userName;
-        //let objectId = new mongoDB.ObjectId(userID);
-        let artist : ArtistDB = await mongodbClient.getOneResource<ArtistDB>("artist", {userName : userName}); //TODO user is entering their email need to change front end
+        artist = await mongodbClient.getOneResource<ArtistDB>("artist", {userName : userName}); //TODO user is entering their email need to change front end
         console.log(artist)
         if(artist == undefined || artist?._id == undefined) {
             res.status(404);
-            res.send("User Id does not exist");
+            return res.send("User Id does not exist");
         }
         console.log(artist);
         console.log(req.body);
         const match = await bcrypt.compare(password, artist.password /* hashed */);
         console.log("is match: ", match);
-        if(match) {
-            let response = generateTokens(artist, res);
-            res.send(response);
-        }
-        else {
+        if(!match) {
             res.status(401);
-            res.send("Unauthorized");
+            return res.send("Unauthorized");
         }
+    }
+    // @ts-ignore
+    if(artist) {
+        delete artist['password'];
+        let response = generateTokens(artist, res);
+        res.status(200);
+        return res.send(response);
+    }
+    else {
+        res.status(500);
+        return res.send("Unable to retrieve artist");
     }
 }
 
 export async function registerArtist (req: Request, res: Response, next: NextFunction) {
-    console.log("inside register")
-    let artistInfo = req.body;
-    console.log("body of register is", req.body)
-    if(artistInfo.password == '' || artistInfo.email == '') {
-        res.status(400);
-        return res.send("password or email is blank");
-    }
-    //@ts-ignore
-    let hashedPassword = await bcrypt.hash(artistInfo.password, +(process.env.DATABASE_SALT_ROUNDS));
-    let artist : Artist = {
-        email: artistInfo.email,
-        pictures: [],
-        profilePicture: "",
-        password: hashedPassword
-    };
     try {
-        let dbResponse = await mongodbClient.addNewResource("artist", artist);
-        console.log("response " + dbResponse);
-        if (dbResponse && dbResponse.acknowledged && dbResponse.insertedId) {
-            let artist: ArtistDB = artistInfo;
-            artist._id = dbResponse.insertedId;
-            let response = generateTokens(artist, res);
-            res.status(201);
-            return res.send(response);
+        let artist : Artist;
+        let dbResponse;
+        if(res.locals?.googleAccount) {
+            artist = {
+                userName: res.locals?.googleAccount.name, //TODO need to generate username in case someone else using this username
+                email: res.locals.googleAccount.email,
+                profilePicture: res.locals.googleAccount.picture,
+            } as Artist;
         }
         else {
-            res.status(500);
-            return res.send("issue registering account");
+            let artistInfo = req.body;
+            console.log("body of register is", req.body)
+            //@ts-ignore
+            let hashedPassword = await bcrypt.hash(artistInfo.password, +(process.env.DATABASE_SALT_ROUNDS));
+            if(artistInfo.password == '' || artistInfo.email == '') {
+                res.status(400);
+                return res.send("password or email is blank");
+            }
+            artist = {
+                email: artistInfo.email,
+                profilePicture: "",
+                password: hashedPassword
+            };
         }
+        dbResponse = await mongodbClient.addNewResource("artist", artist);
+        console.log("db response " + dbResponse);
+        if (dbResponse && dbResponse.acknowledged && dbResponse.insertedId) {
+            delete artist.password;
+            artist._id = dbResponse.insertedId;
+        }
+        let response = generateTokens(artist, res);
+        console.log("response " + response);
+        res.status(201);
+        return res.send(response);
     }
     catch (e) {
-        res.status(409);
-        return res.send("email/username already exist");
+        console.log(e);
+        //if (e.toString().contains("sdf"))
+        res.status(500);
+        return res.send("can not register user");
     }
 }
 
@@ -117,7 +124,7 @@ export async function getArtistUserNames(req: Request, res: Response, next: Next
     }
 }
 
-async function generateTokens(artist : Artist, res : Response) {
+export function generateTokens(artist : Artist, res : Response) {
     // @ts-ignore
     let accessToken = jwt.sign({ userName: artist.userName, email: artist.email }, process.env.TOKEN_SECRET, {expiresIn: process.env.TOKEN_EXPIRE});
     // @ts-ignore
@@ -130,6 +137,7 @@ async function generateTokens(artist : Artist, res : Response) {
         artist,
         accessToken
     }; // TODO try setting jwt token in cookie instead httpOnly true, however return artist info as well. store artist info Context in front end
+    console.log("generated token" + JSON.stringify(response));
     return response;
 }
 
