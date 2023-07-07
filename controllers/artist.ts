@@ -72,7 +72,7 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
         let dbResponse;
         if(res.locals?.googleAccount) {
             artist = {
-                userName: res.locals?.googleAccount.name, //TODO need to generate username in case someone else using this username
+                userName: await generateUniqueUserNameFromEmail(res.locals?.googleAccount.name),
                 email: res.locals.googleAccount.email,
                 profilePicture: res.locals.googleAccount.picture,
             } as Artist;
@@ -109,6 +109,23 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
         res.status(500);
         return res.send("can not register user");
     }
+}
+
+export async function generateUniqueUserNameFromEmail(userName: string) : Promise<string>{
+    let isUnique = false;
+    while(!isUnique) {
+        console.log("loop");
+        let tempUserName = userName;
+        let resource = await mongodbClient.getOneResource("artist", {userName: tempUserName});
+        if(resource) {
+            userName+=Math.floor((Math.random() * 100000) + 1).toString();
+        }
+        else {
+            isUnique = true;
+            userName = tempUserName;
+        }
+    }
+    return userName;
 }
 
 export async function getArtistUserNames(req: Request, res: Response, next: NextFunction) {

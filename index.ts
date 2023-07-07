@@ -17,7 +17,7 @@ const app = express();
 
 app.use(cors({
     //@ts-ignore
-    origin : [process.env.FRONT_END_HOST + process.env.FRONT_END_PORT, process.env.CLOUDFLARE_WORKER],
+    origin : [process.env.FRONT_END_HOST + process.env.FRONT_END_PORT, process.env.CLOUDFLARE_WORKER, process.env.OTHER_CORS],
     credentials: true,
 }));
 app.use(express.json());
@@ -89,8 +89,8 @@ app.use('/artist', protectedArtistRouter);
 /*app.use('/comment', require('./router/api/pictures')); //TODO*/
 
 
-const uri =
-    `mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_CLUSTER}/?retryWrites=true&w=majority`;
+//const uri = `mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_CLUSTER}/?retryWrites=true&w=majority`;
+const uri= "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
 
 connectToDatabase(uri, {}, "Art")
     .then(() => {

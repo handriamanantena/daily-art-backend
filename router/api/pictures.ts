@@ -20,3 +20,6 @@ publicPicturesRouter.route('/').get(picturesController.getPictures)
 
 protectedPicturesRouter.route('/:userName')
     .post(picturesController.addPicture);
+
+protectedPicturesRouter.route('/:userName')
+    .post(picturesController.deletePicture);
