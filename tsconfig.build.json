@@ -4,6 +4,7 @@
   // name your test files
   "exclude": [
     "test/**/*",
-    "test/**/*"
+    "test/**/*",
+    "dbScripts/**/*"
   ]
 }

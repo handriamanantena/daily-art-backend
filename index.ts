@@ -89,10 +89,10 @@ app.use('/artist', protectedArtistRouter);
 /*app.use('/comment', require('./router/api/pictures')); //TODO*/
 
 
-//const uri = `mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_CLUSTER}/?retryWrites=true&w=majority`;
-const uri= "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
+const uri = `mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_CLUSTER}/?retryWrites=true&w=majority`;
+//const uri= "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
 
-connectToDatabase(uri, {}, "Art")
+connectToDatabase(uri, {}, `${process.env.DATABASE}`)
     .then(() => {
 
         app.listen(port, () => {
