@@ -36,7 +36,7 @@ export const handleAuthentication = async (req : Request, res : Response, next: 
 
 export const logout = (req : Request, res : Response, next: NextFunction) => {
     console.log("logging out");
-    res.clearCookie("jwt");
+    res.clearCookie("jwt", {httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
     res.status(200);
     return res.send("logging out");
 }
