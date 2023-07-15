@@ -37,7 +37,8 @@ export const handleAuthentication = async (req : Request, res : Response, next: 
 export const logout = (req : Request, res : Response, next: NextFunction) => {
     console.log("logging out");
     res.clearCookie("jwt");
-    res.send({});
+    res.status(200);
+    return res.send("logging out");
 }
 
 export function verifyJwt (req : Request, res : Response, next: NextFunction) {
@@ -91,6 +92,7 @@ export const refresh = (req : Request, res : Response, next: NextFunction) => {
         process.env.REFRESH_TOKEN_SECRET,
         (err: any, decoded: any) => {
             if(err) {
+                console.error("refresh failed");
                 res.sendStatus(403);
             }
             const accessToken = jwt.sign(
