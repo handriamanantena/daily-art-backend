@@ -182,5 +182,65 @@ export class MongoDBClient {
         }
     }
 
+    async getAggregate(collectionName: "pictures" | "artist" | "gallery", from: "pictures" | "artist" | "gallery", localField: string,
+                       foreignField: string, as: string, pageIndex: string, pageSize: number, filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1 | 0}) {
+        let collection = collections[collectionName];
+        let entity: any[];
+        if (collection == undefined) {
+            console.error(collectionName + " collection missing");
+            throw new Error(collectionName + " collection missing");
+        }
+        let id : mongoDB.ObjectId;
+
+        if(pageIndex != "" && pageIndex != undefined && pageIndex != "0") {
+            try{
+                id = new ObjectId(pageIndex);
+            }
+            catch (e) {
+                console.error("bad page index " + pageIndex);
+                throw e;
+            }
+            let cursor = collection.aggregate([
+                { $sort : { _id : -1 } },
+                {$match: {
+                        /*$and: [{*/_id: {$lt: id}/*}, filterTerms]*/
+                    }},
+                {$limit: pageSize
+                },
+                {$lookup: {
+                    from: from,
+                    localField: localField,
+                    foreignField: foreignField,
+                    pipeline : [
+                        {$project : { profilePicture : 1}} //TODO need to customize projection
+                    ],
+                    as: as
+                }},
+            ]);
+            //cursor.sort({ _id : -1});
+            return await cursor.toArray();
+        }
+        else {
+            let cursor = collection.aggregate([
+                { $sort : { _id : -1 } },
+                /*{$match: {
+                        $and: [filterTerms]
+                    }},*/
+                {$limit: pageSize
+                },
+                {$lookup: {
+                        from: from,
+                        localField: localField,
+                        foreignField: foreignField,
+                        pipeline : [
+                            {$project : { profilePicture : 1}} //TODO need to customize projection
+                        ],
+                        as: as
+                    }},
+            ]);
+            return await cursor.toArray();
+        }
+    }
+
 
 }

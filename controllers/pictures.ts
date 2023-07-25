@@ -404,6 +404,7 @@ async function getPage(pageIndex: string, pageSize: number, filterTerms : {[key:
             {_id: {$in: artist.pictures}}, {});
 
     else {*/
-        return await mongoDBClient.getResourceByPage("pictures", pageIndex, pageSize, filterTerms, searchText, fields);
+        //return await mongoDBClient.getResourceByPage("pictures", pageIndex, pageSize, filterTerms, searchText, fields);
+        return await mongoDBClient.getAggregate("pictures", "artist", "userName", "userName", "profile", pageIndex, pageSize, filterTerms, searchText, fields);
    // }
 }
