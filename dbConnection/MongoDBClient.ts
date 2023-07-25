@@ -161,7 +161,7 @@ export class MongoDBClient {
             }
             else{
                 if(pageSize == undefined) {
-                    pageSize = 100;
+                    pageSize = 14;
                 }
                 if(searchText == "" || searchText == undefined) {
                     entity = await collection.find(filterTerms, fields).limit(pageSize).sort({ date: -1 }).toArray();
@@ -191,6 +191,8 @@ export class MongoDBClient {
             throw new Error(collectionName + " collection missing");
         }
         let id : mongoDB.ObjectId;
+        console.log(pageSize)
+        pageSize = pageSize ? pageSize : 10;
 
         if(pageIndex != "" && pageIndex != undefined && pageIndex != "0") {
             try{
