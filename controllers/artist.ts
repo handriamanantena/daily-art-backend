@@ -3,11 +3,13 @@ import {Artist, ArtistDB} from "../model/Artist";
 import jwt from "jsonwebtoken";
 import {GoogleLogin} from "../authentication/googleLogin";
 import {MongoDBClient} from "../dbConnection/MongoDBClient";
+import {getResources} from "./genericApi";
+import {ParsedQs} from "qs";
 const googleLogin = new GoogleLogin();
 const mongodbClient = new MongoDBClient();
 const bcrypt = require('bcryptjs');
 
-export async function getArtist (req: Request, res: Response, next: NextFunction) {
+export async function login (req: Request, res: Response, next: NextFunction) {
     //let session = req.session;
     let platform = req.query.platform;
     /*if(session.artist) {
@@ -138,6 +140,31 @@ export async function getArtistUserNames(req: Request, res: Response, next: Next
     else {
         res.status(404);
         return res.send(usernames);
+    }
+}
+
+async function getPage(pageIndex: string, pageSize: number, filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1|0}) {
+    return await mongodbClient.getAggregate("artist", undefined, "", "", "", pageIndex, pageSize, filterTerms, searchText, fields);
+}
+
+function setKeysForFilter(urlQuery : ParsedQs) : {[key: string]: any} {
+    let userName = urlQuery.userName as string;
+    let filterKeys: {[key: string]: any} | undefined = {};
+    if(userName) {
+        filterKeys.userName = userName;
+    }
+    return filterKeys;
+}
+
+export async function getArtists (req: Request, res: Response, next: NextFunction) {
+    let pictures = await getResources(req, res, next, setKeysForFilter, getPage);
+    console.log("inside" + JSON.stringify(pictures));
+    if(pictures) {
+        return res.send(pictures);
+    }
+    else {
+        res.status(404);
+        return res.send();
     }
 }
 

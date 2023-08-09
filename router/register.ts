@@ -4,5 +4,3 @@ const controller = require('../controllers/artist');
 
 registerRouter.route('/')
     .post(controller.registerArtist);
-
-module.exports = registerRouter;
