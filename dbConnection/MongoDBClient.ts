@@ -136,6 +136,16 @@ export class MongoDBClient {
     async getResourceByPage(collectionName: "pictures" | "artist" | "gallery", pageIndex: string, pageSize: number,
                                filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1 | 0}) {
         try{
+            if(Object.keys(fields).length == 0){
+                console.log(JSON.stringify(fields));
+                fields.email = 0; // make this generic for all functions. never return password
+                fields.password = 0; // make this generic for all functions. never return password
+            }
+            else {
+                delete fields.email;
+                delete fields.password;
+            }
+            console.log("fields: " + JSON.stringify(fields));
             let collection = collections[collectionName];
             let entity : any[];
             if(collection == undefined) {
@@ -148,10 +158,10 @@ export class MongoDBClient {
                     id = new ObjectId(pageIndex);
                     console.log("getting resouces " + JSON.stringify(id));
                     if(searchText == "" || searchText == undefined) {
-                        entity = await collection.find({$and: [{_id: {$lt: id}}, filterTerms]}, fields).limit(pageSize).sort({ date: -1 }).toArray();
+                        entity = await collection.find({$and: [{_id: {$lt: id}}, filterTerms]}, {projection: fields}).limit(pageSize).sort({ date: -1 }).toArray();
                     }
                     else {
-                        entity = await collection.find({$and: [{_id: {$lt: id}}, filterTerms, { $text: { $search: searchText }}]}, fields).limit(pageSize).sort({ _id: -1 }).toArray();
+                        entity = await collection.find({$and: [{_id: {$lt: id}}, filterTerms, { $text: { $search: searchText }}]}, {projection: fields}).limit(pageSize).sort({ _id: -1 }).toArray();
                     }
                 }
                 catch (e) {
@@ -164,13 +174,12 @@ export class MongoDBClient {
                     pageSize = 14;
                 }
                 if(searchText == "" || searchText == undefined) {
-                    entity = await collection.find(filterTerms, fields).limit(pageSize).sort({ date: -1 }).toArray();
+                    return await collection.find(filterTerms, {projection: fields}).limit(pageSize).sort({ date: -1 }).toArray();
                 }
                 else {
-                    entity = await collection.find({$and: [filterTerms, { $text: { $search: searchText }}]}, fields)
+                    return await collection.find({$and: [filterTerms, { $text: { $search: searchText }}]}, {projection: fields})
                         .limit(pageSize).sort({ date: -1 }).toArray();
                 }
-                entity = await collection.find(filterTerms, fields).limit(pageSize).sort({ date: -1 }).toArray()
             }
 
             console.log("entity " + JSON.stringify(entity));
@@ -182,7 +191,7 @@ export class MongoDBClient {
         }
     }
 
-    async getAggregate(collectionName: "pictures" | "artist" | "gallery", from: "pictures" | "artist" | "gallery", localField: string,
+    async getAggregate(collectionName: "pictures" | "artist" | "gallery", from: "pictures" | "artist" | "gallery" | undefined, localField: string,
                        foreignField: string, as: string, pageIndex: string, pageSize: number, filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1 | 0}) {
         let collection = collections[collectionName];
         let entity: any[];
@@ -193,6 +202,9 @@ export class MongoDBClient {
         let id : mongoDB.ObjectId;
         console.log(pageSize)
         pageSize = pageSize ? pageSize : 10;
+        if(from == undefined) {
+            return await this.getResourceByPage(collectionName, pageIndex, pageSize, filterTerms, searchText, fields);
+        }
 
         if(pageIndex != "" && pageIndex != undefined && pageIndex != "0") {
             try{
@@ -205,7 +217,7 @@ export class MongoDBClient {
             let cursor = collection.aggregate([
                 { $sort : { _id : -1 } },
                 {$match: {
-                        /*$and: [{*/_id: {$lt: id}/*}, filterTerms]*/
+                        $and: [{_id: {$lt: id}}, filterTerms]
                     }},
                 {$limit: pageSize
                 },
@@ -225,9 +237,9 @@ export class MongoDBClient {
         else {
             let cursor = collection.aggregate([
                 { $sort : { _id : -1 } },
-                /*{$match: {
+                {$match: {
                         $and: [filterTerms]
-                    }},*/
+                    }},
                 {$limit: pageSize
                 },
                 {$lookup: {
