@@ -6,6 +6,7 @@ import * as core from "express-serve-static-core";
 import {publicPicturesRouter, protectedPicturesRouter} from "./router/api/pictures";
 import {jwtRouter} from "./router/jwt";
 import {publicArtistRouter, protectedArtistRouter} from "./router/api/artist";
+import {registerRouter} from "./router/register";
 const mongoSanitize = require('express-mongo-sanitize');
 const authenticate  = require("./router/authenticate")
 let cors = require('cors')
@@ -55,7 +56,7 @@ app.use(require('sanitize').middleware);
 app.use('/logout', require('./router/logout'));
 app.use('/refresh', require('./router/refresh'));
 app.use('/file', require('./router/api/file'));
-app.use('/register', require('./router/register'));
+app.use('/register', registerRouter);
 
 // CRUD API
 app.use('/pictures', publicPicturesRouter);

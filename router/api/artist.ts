@@ -3,10 +3,10 @@ export const publicArtistRouter = express.Router();
 export const protectedArtistRouter = express.Router();
 const artistController = require('../../controllers/artist');
 
-publicArtistRouter.route('/')
-    .post(artistController.getArtist); //TODO move to login
+publicArtistRouter.route('/login')
+    .post(artistController.login); //TODO move to login
 
-publicArtistRouter.route('/username').get(artistController.getArtistUserNames);
+publicArtistRouter.route('/').get(artistController.getArtists);
 
 protectedArtistRouter.route('/').put(artistController.updateArtist);
 
