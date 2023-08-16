@@ -9,8 +9,8 @@ const authenticate  = require("../../router/authenticate")
     .get(picturesController.getPictures)
     .patch(picturesController.addReplyToPicture)*/
 
-publicPicturesRouter.route('/:id')
-    .get(picturesController.getPicture);
+publicPicturesRouter.route('/artists/:id')
+    .get(picturesController.getPictureWithUserInfo);
 
 //publicPicturesRouter.route('/').get(picturesController.filterPictures)
 publicPicturesRouter.route('/').get(picturesController.getPictures)

@@ -191,6 +191,37 @@ export class MongoDBClient {
         }
     }
 
+    async getAggregateOneResource(collectionName: "pictures" | "artist" | "gallery", from: "pictures" | "artist" | "gallery" | undefined, localField: string,
+                                  foreignField: string, queryId: string, as: string, fields: {[key: string]: 1 | 0}, foreignProjection: {[key: string]: 1 | 0}) {
+        let collection = collections[collectionName];
+        if (collection == undefined) {
+            console.error(collectionName + " collection missing");
+            throw new Error(collectionName + " collection missing");
+        }
+        let id : mongoDB.ObjectId;
+        try{
+            id = new ObjectId(queryId);
+        }
+        catch (e) {
+            console.error("bad id" + queryId);
+            throw e;
+        }
+        let cursor = collection.aggregate([
+            { $sort : { _id : -1 } },
+            {$match: {_id : id}},
+            {$lookup: {
+                    from: from,
+                    localField: localField,
+                    foreignField: foreignField,
+                    pipeline : [
+                        {$project : foreignProjection} //TODO need to customize projection
+                    ],
+                    as: as
+                }},
+        ]);
+        return await cursor.toArray();
+    }
+
     async getAggregate(collectionName: "pictures" | "artist" | "gallery", from: "pictures" | "artist" | "gallery" | undefined, localField: string,
                        foreignField: string, as: string, pageIndex: string, pageSize: number, filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1 | 0}) {
         let collection = collections[collectionName];

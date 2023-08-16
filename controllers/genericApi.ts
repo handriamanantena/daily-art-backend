@@ -19,7 +19,9 @@ export const getResources = async <T>(req : Request, res : Response, next: NextF
     console.log("searchText " + JSON.stringify(search));
     console.log("pageSize " + JSON.stringify(pageSize));
     console.log("pageIndex " + JSON.stringify(pageIndex));
-    let fields = splitFields(urlQuery);
+    let fields = {};
+    if(urlQuery.fields != undefined)
+        fields = splitFields(urlQuery.fields as string);
     console.log("fields " + JSON.stringify(fields));
     let resources = await getResourceByPage(pageIndex, pageSize, filterTerms, search, fields);
     console.log("generic " + JSON.stringify(resources));
@@ -37,14 +39,17 @@ const convertQueryToMap = (query: ParsedQs) : any[] => {
     return querySearchTerms;
 }
 
-const splitFields = (query : ParsedQs) : { [key: string]: 1|0 } => {
+export const splitFields = (queryFields : string) : { [key: string]: 1|0 } => {
     let mongoDBProjection : {[key: string]: 1|0 } = {};
     let containsId = false;
-    if(query.fields != undefined) {
-        let fields = decodeURI(query.fields as string).split(",");
+    if(queryFields != "") {
+        let fields = decodeURI(queryFields as string).split(",");
         for(let field of fields) {
             if(field == "_id") {
                 containsId = true;
+            }
+            if(field == "password") {
+                continue;
             }
             mongoDBProjection[field] = 1;
         }
