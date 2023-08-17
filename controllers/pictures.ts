@@ -7,7 +7,7 @@ import {MongoDBClient} from "../dbConnection/MongoDBClient";
 import * as mongoDB from "mongodb";
 import {ObjectId} from "mongodb";
 import {Artist} from "../model/Artist";
-import {getResources} from "./genericApi";
+import {getResources, splitFields} from "./genericApi";
 import {ParsedQs} from "qs";
 import {Comment} from "../model/Comment";
 import {checkFields} from "../common/parser/genericTypeCheck";
@@ -219,26 +219,30 @@ export async function getPicturesByArtist(req: Request, res: Response, next: Nex
     }
 }*/
 
-export async function getPicture (req: Request, res: Response, next: NextFunction) {
-    let pictureId = req.params.id
+export async function getPictureWithUserInfo (req: Request, res: Response, next: NextFunction) {
+    let pictureId = req.params.id;
+    let fields = {};
+    if(req.query.fields != undefined)
+        fields = splitFields(req.query.fields as string);
+    /*let artistProjection : {[key: string]: 1|0 } = {};
+    artistProjection["userName"] = 1;
+    artistProjection["profilePicture"] = 1;*/
+    let artistProjection = {};
+    if(req.query.artistProjection != undefined)
+        artistProjection = splitFields(req.query.artistProjection as string);
+    //"userName" : 1, "profilePicture" : 1
     console.log(pictureId);
-    pictureMongodb.getPictureById(pictureId).then(((value: Picture) => {
-            console.log('outside', value)
-            if(value) {
-                res.send(value)
-            }
-            else {
-                throw new Http404Error({
-                    error: {
-                        message: "picture not found",
-                        innerError: {}
-                    }
-                })
-            }
-        }
-    )).catch((e : Error) => {
-        next(e)
-    })
+    let array =  await mongoDBClient.getAggregateOneResource("pictures", "artist", "userName", "userName", pictureId,
+        "profile", fields, artistProjection);
+    if(array.length == 0) {
+        res.status(404);
+        return res.send();
+    }
+    else {
+        return res.send(array[0]);
+    }
+
+    //return await mongoDBClient.getOneResource("pictures", {_id: new ObjectId(pictureId)});
 }
 
 export async function addReplyToPicture (req: Request, res: Response, next: NextFunction) {
