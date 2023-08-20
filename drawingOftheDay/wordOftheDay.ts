@@ -10,7 +10,7 @@ export const addWordsToDatabase = (file: string, startDate: Date) => {
     fs.createReadStream(file)
         .pipe(parse({ delimiter: ",", from_line :2}))
         .on("data",  async (row : any) => {
-            date = moment(date).add(1, 'd').format("YYYY-MM-DD");
+            date = moment(date).add(1, 'd').format(process.env.DATE_FORMAT);
             count = count + 1;
             //console.log("count inside " + count);
             let wordOfTheDay = {
