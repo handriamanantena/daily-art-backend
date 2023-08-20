@@ -1,7 +1,6 @@
 import Picturesmongodb from "./picturesmongodb";
 import * as mongoDB from "mongodb";
-import {Picture, PictureDB} from "./model/picture";
-import {Gallery, GalleryDB} from "./model/Gallery";
+import {Picture} from "./model/picture";
 import {ObjectId} from "mongodb";
 import {Comment, CommentDB, Reply} from "./model/Comment";
 const uri =

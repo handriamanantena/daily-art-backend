@@ -1,14 +1,13 @@
 Japanese,English,Romaji,Unit
-韓国人,Korean person,kankokujin, Nationality
-アメリカ人,American person,amerikajin, Nationality
-日本人,Japanese person,nihonjin, Nationality
-中国人,Chinese person,chuugokujin, Nationality
-イギリス人,British person,igirisujin, Nationality
+韓国人,Korean,kankokujin, Nationality
+アメリカ人,American,amerikajin, Nationality
+日本人,Japanese,nihonjin, Nationality
+中国人,Chinese,chuugokujin, Nationality
+イギリス人,British,igirisujin, Nationality
 会社員,office worker,kaishain,Profession
 学生,student,gakusei,Profession
 医者,doctor,isha,Profession
 先生,teacher,sensei,Profession
-留学生,foreign student,ryuugakusei,Profession
 男の人,man,otokonohito,Gender
 女の人,woman,onnanohito,Gender
 本,book,hon,Book
@@ -21,10 +20,6 @@ Japanese,English,Romaji,Unit
 カメラ,camera,kamera,Household
 テーブル,table,tēburu,Household
 映画,movie,eiga,Language
-日本語,Japanese language,nihongo,Language
-中国語,Chinese language,chuugokugo,Language
-英語,English language,eigo,Language
-辞書,dictionary,jisho,Daily Supplies
 ハンカチ,handkerchief,hankachi,Daily Supplies
 パソコン,personal computer,pasokon,Daily Supplies
 時計,clock,tokei,Daily Supplies
@@ -55,13 +50,7 @@ Japanese,English,Romaji,Unit
 猫,cat,neko,Humans & Animals
 薬,medicine,kusuri,Location
 箱,box,hako,Location
-隣,next to,tonari,Location
-中,inside,naka,Location
 ベッド,bed,beddo,Location
-上,above,ue,Location
-前,front,mae,Location
-後ろ,behind,ushiro,Location
-下,below,shita,Location
 冷蔵庫,fridge,reizouko,Existence 2
 茶碗,rice bowl,jawan,Existence 2
 りんご,apple,ringo,Existence 2
@@ -69,7 +58,6 @@ Japanese,English,Romaji,Unit
 紅茶,black tea,koucha,Existence 2
 グラス,glass,gurasu,Existence 2
 鳥,bird,tori,Humans & Animals 2
-横,beside,yoko,Humans & Animals ２
 家,house,ie,Humans & Animals 2
 外,outside,soto,Humans & Animals 2
 車,car,kuruma,Humans & Animals 6
@@ -99,15 +87,6 @@ Japanese,English,Romaji,Unit
 七,7,shichi,Number
 九十二,92,kyuujuuni,Number
 四,4,yon,Number
-午後,PM,gogo,Time
-四時,4 o'clock,yoji,Time
-九時,9 o'clock,kuji,Time
-二時十分,2:10,nijijuppun,Time
-十時半,half past 10,juujihan,Time
-八時十五分,8:15,hachijijuugofun,Time
-六時三十分,6:30,rokujisanjuppun,Time
-午前,AM,gozen,Time
-七時,7 o'clock,shichiji,Time
 月曜日,Monday,getsuyoubi,Day
 木曜日,Thursday,mokuyoubi,Day
 水曜日,Wednesday,suiyoubi,Day
@@ -117,19 +96,7 @@ Japanese,English,Romaji,Unit
 女の子,girl,onnanoko,Age
 100,100,hyaku,Shopping
 300,300,sanbyaku,Shopping
-400,400,yonhyaku,Shopping
-600,600,roppyaku,Shopping
-800,800,happyaku,Shopping
-700,700,nanahyaku,Shopping
-200,200,nihyaku,Shopping
-500,500,gohyaku,Shopping
-900,900,kyuuyaku,Shopping
 1000,1000,sen,Shopping
-4000,4000,yonsen,Shopping
-3000,3000,sanzen,Shopping
-7000,7000,nanasen,Shopping
-6000,6000,rokusen,Shopping
-8000,8000,hassen,Shopping
 円,yen,en,Shopping
 10000,10000,ichiman,Shopping
 お父さん,father,otousan,Family
@@ -140,12 +107,8 @@ Japanese,English,Romaji,Unit
 お姉さん,older sister,oneesan,Family
 アメリカ,America,amerika,Family
 日本,Japan,nihon,Family
-母,my mother,haha,Family
-兄,my older brother,ani,Family
-姉,my older sister,ane,Family
 息子,son,musuko,Family
 娘,daughter,musume,Family
-父,my father,chichi,Family
 晴れ,sunny,hare,Weather
 曇り,cloudy,kumori,Weather
 雪,snow,yuki,Weather
@@ -156,10 +119,7 @@ Japanese,English,Romaji,Unit
 春,Spring,haru,Season
 夏,Summer,natsu,Season
 東京,Tokyo,toukyou,Season
-暖かい,warm,atatakai,Season
 暑い,hot,atsui,Season
-涼しい,cool,suzushii,Season
-寒い,cold,samui,Season
 冬,Winter,fuyu,Season
 秋,Autumn,aki,Season
 馬,horse,uma,Animals
@@ -178,17 +138,11 @@ Japanese,English,Romaji,Unit
 動物,animal,doubutsu,Animal 2
 黒い,black,kuroi,Color
 赤い,red,akai,Color
-刺身,sashimi,sashimi,Color
-色,colour,iro,Color
 寿司,sushi,sushi,Color
-白い,white,shiroi,Color
 バナナ,banana,banana,Color
-黄色い,yellow,kiiroi,Color
-青い,blue,aoi,Color
 ジュース,juice,jūsu,Color
 上着,jacket,uwagi,Clothing
 靴下,socks,kutsushita,Clothing
-緑,green,midori,Clothing
 長い,long,nagai,Clothing
 ネクタイ,necktie,nekutai,Clothing
 高い,expensive,takai,Clothing
@@ -199,10 +153,7 @@ Japanese,English,Romaji,Unit
 コート,coat,kōto,Clothing
 ジーンズ,jeans,jīnzu,Clothing
 シャツ,shirt,shatsu,Clothing
-洋服,Western clothes,youfuku,Clothing
-短い,short,mijikai,Clothing
 ズボン,pants,zubon,Clothing
-静か,quiet,shizuka,Adjective
 町,town,machi,Adjective
 にぎやか,lively,nigiyaka,Adjective
 コンビニ,convenience store,kombini,Adjective
@@ -214,30 +165,17 @@ Japanese,English,Romaji,Unit
 きれい,pretty,kirei,Adjective 2
 有名,famous,yuumei,Adjective 2
 料理,cuisine,ryouri,Adjective 2
-買う,to buy,kau,Verb 1
-夫,my husband,otto,Verb 1
 コーヒー,coffee,kōhī,Verb 1
-飲む,to drink,nomu,Verb 1
 書く,to write,kaku,Verb 1
-奥さん,your wife,okusan,Verb 1
-読む,to read,yomu,Verb 1
 音楽,music,ongaku,Verb 1
 パン,bread,pan,Verb 1
-妻,my wife,tsuma,Verb 1
-お茶,tea,ocha,Verb 1
 ラジオ,radio,rajio,Verb 1
 聞く,to listen,kiku,Verb 1
-ご主人,your husband,goshujin,Verb 1
-牛乳,milk,gyuunyuu,Verb 1
-出かける,to go out, dekakeru,Verb 2
-寝る,to sleep,neru,Verb 2
 見る,to see, miru,Verb 2
 卵,egg,tamago,Verb 2
 起きる,to get up,okiru,Verb 2
 晩ご飯,dinner,bangohan,Verb 2
 食べる,to eat,taberu,Verb 2
-朝ご飯,breakfast,asagohan,Verb 2
-昼ご飯,lunch,hirugohan,Verb 2
 出迎える, to greet; to welcome,demukaeru,Verb 2
 中国,China,chuugoku,Verb 3
 出勤する,to go to work,shukkinsuru,Verb 3
@@ -297,21 +235,9 @@ Japanese,English,Romaji,Unit
 サッカー,soccer,sakkā,
 フランス語,French language,furansugo,
 スポーツ,sports,supōtsu,
-アルバイト,part-time job,arubaito,
-授業,lesson,jugyou,
 山,mountain,yama,
-登る,to climb,noboru,
-服,clothes,fuku,
-いつも,always,itsumo,
-よく,often,yoku,
-時々,sometimes,tokidoki,
-たまに,occasionally,tamani,
-あまり,not much,amari,
-ほとんど,rarely,hotondo,
-全然,not at all,zenzen,
 歌う,to sing,utau,
 運転する,to drive,untensuru,
-歌,song,uta,
 暗殺教室,Assassination Classroom,ansatsukyoushitsu,
 字,character,ji,
 地図,map,chizu,
@@ -329,9 +255,7 @@ Japanese,English,Romaji,Unit
 おいしい,delicious,oishii,
 お菓子,sweets,okashi,
 テニス,tennis,tenisu,
-好き,like,zuki,
 水泳,swimming,suiei,
-ジョギング,jogging,jogingu,
 嫌い,hate,kirai,
 バドミントン,badminton,badominton,
 ハイキング,hiking,haikingu,
@@ -340,14 +264,11 @@ Japanese,English,Romaji,Unit
 バスケ,basketball,basuke,
 スキー,skiing,sukī,
 卓球,table tennis,takkyuu,
-下手,bad at,beta,
 人気,popular,ninki,
 太極拳,Tai Chi,taikyokuken,
 北海道,Hokkaido,hokkaidou,
 食べ物,food,tabemono,
 多い,many,ooi,
-沖縄,Okinawa,okinawa,
-少ない,few,sukunai,
 目,eye,me,
 鼻,nose,hana,
 手,hand,te,
@@ -361,7 +282,6 @@ Japanese,English,Romaji,Unit
 お腹,stomach,onaka,
 痛い,painful,itai,
 妹,younger sister,imouto,
-難しい,difficult,muzukashii,
 若い,young,wakai,
 広い,wide,hiroi,
 速い,fast,hayai,
@@ -397,8 +317,6 @@ Japanese,English,Romaji,Unit
 持つ,to carry,motsu,
 着物,kimono,kimono,
 着る,to wear,kiru,
-左,left,hidari,
-右,right,migi,
 東,East,higashi,
 西,West,nishi,
 南,South,minami,
@@ -413,7 +331,6 @@ Japanese,English,Romaji,Unit
 開ける,to open,akeru,
 窓,window,mado,
 閉める,to close,shimeru,
-名前,name,namae,
 待つ,to wait,matsu,
 写真,picture,shashin,
 撮る,to take (a picture),toru,
@@ -428,29 +345,21 @@ Japanese,English,Romaji,Unit
 消す,to turn off,kesu,
 電話,phone,denwa,
 止める,to stop,tomeru,
-歯,teeth,ha,
 磨く,to polish,migaku,
-話す,to talk,hanasu,
-教える,to teach,oshieru,
-通う,to go back and forth,kayou,
 降る,to fall (rain/snow),furu,
 桜,cherry blossom,sakura,
 知る,to know,shiru,
 眼鏡,glasses,megane,
 かける,to make a call,kakeru,
 マスク,mask,masuku,
-かぶる,to put on (hat),kaburu,
 結婚する,to marry,kekkonsuru,
 始まる,to start,hajimaru,
 住む,to live,sumu,
 廊下,hallway,rouka,
 ページ,page,pēji,
-貼る,to stick,haru,
 乗る,to ride,noru,
 切手,stamp,kitte,
 脱ぐ,to take off,nugu,
-平仮名,hiragana,hiragana,
-片仮名,katakana,katakana,
 覚える,to remember,oboeru,
 スーツ,suit,sūtsu,
 水,water,mizu,
@@ -462,7 +371,6 @@ Japanese,English,Romaji,Unit
 叫ぶ,to shout,sakebu,
 夢,dream,yume,
 赤ちゃん,baby,akachan,
-八百屋,greengrocer,yaoya,
 アパート,apartment,apāto,
 飼う,to raise,kau,
 パスポート,passport,pasupōto,
