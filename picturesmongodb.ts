@@ -12,11 +12,6 @@ export class Picturesmongodb {
         return collections.pictures;
     }
 
-
-    async getGalleryCollection() {
-        return collections.gallery;
-    }
-
     async getAllPictures() {
         let allPictures : Picture[] = []
         try {

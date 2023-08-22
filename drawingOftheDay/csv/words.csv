@@ -1,0 +1,376 @@
+Japanese,English,Romaji,Unit
+韓国人,Korean person,kankokujin, Nationality
+アメリカ人,American,amerikajin, Nationality
+日本人,Japanese person,nihonjin, Nationality
+中国人,Chinese person,chuugokujin, Nationality
+イギリス人,British person,igirisujin, Nationality
+会社員,office worker,kaishain,Profession
+学生,student,gakusei,Profession
+医者,doctor,isha,Profession
+先生,teacher,sensei,Profession
+男の人,man,otokonohito,Gender
+女の人,woman,onnanohito,Gender
+本,book,hon,Book
+新聞,newspaper,shimbun,Book
+雑誌,magazine,zasshi,Book
+手紙,letter,tegami,Book
+机,desk,tsukue,Household
+椅子,chair,isu,Household
+テレビ,TV,terebi,Household
+カメラ,camera,kamera,Household
+テーブル,table,tēburu,Household
+映画,movie,eiga,Language
+ハンカチ,handkerchief,hankachi,Daily Supplies
+パソコン,personal computer,pasokon,Daily Supplies
+時計,clock,tokei,Daily Supplies
+傘,umbrella,kasa,Daily Supplies
+カバン,bag,kaban,Daily Supplies
+トイレ,toilet,toire,School
+事務室,office room,jimushitsu,School
+図書館,library,toshokan,School
+会議室,meeting room,kaigishitsu,School
+学校,school,gakkou,School
+教室,classroom,kyoushitsu,School
+レストラン,restaurant,resutoran,Public Area
+デパート,department store,depāto,Public Area
+映画館,movie theater,eigakan,Public Area
+銀行,bank,ginkou,Public Area
+本屋,book store,hon'ya,Public Area
+病院,hospital,byouin,Public Area
+喫茶店,coffee shop,kissaten,Public Area
+郵便局,post office,yuubinkyoku,Public Area
+公園,park,kouen,Existence 1
+石,stone,ishi,Existence 1
+庭,garden,niwa,Existence 1
+部屋,room,heya,Existence 1
+花,flower,hana,Existence 1
+子供,child,kodomo,Humans & Animals
+犬,dog,inu,Humans & Animals
+居間,living room,ima,Humans & Animals
+猫,cat,neko,Humans & Animals
+薬,medicine,kusuri,Location
+箱,box,hako,Location
+ベッド,bed,beddo,Location
+冷蔵庫,fridge,reizouko,Existence 2
+茶碗,rice bowl,jawan,Existence 2
+りんご,apple,ringo,Existence 2
+ビール,beer,bīru,Existence 2
+紅茶,black tea,koucha,Existence 2
+グラス,glass,gurasu,Existence 2
+鳥,bird,tori,Humans & Animals 2
+家,house,ie,Humans & Animals 2
+外,outside,soto,Humans & Animals 2
+車,car,kuruma,Humans & Animals 6
+木,tree,ki,Humans & Animals 5
+魚,fish,sakana,Humans & Animals 2
+ペン,pen,pen,Negation
+社長,president,shachou,Negation
+ペット,pet,petto,Negation
+消しゴム,eraser,keshigomu,Negation
+財布,wallet,saifu,Negation
+二,2,ni,Number
+三,3,san,Number
+五,5,go,Number
+十,10,juu,Number
+九,9,kyuu,Number
+一,1,ichi,Number
+六,6,roku,Number
+八,8,hachi,Number
+四十七,47,yonjuunana,Number
+二十九,29,nijuukyuu,Number
+五十六,56,gojuuroku,Number
+八十三,83,hachijuusan,Number
+七十四,74,nanajuuyon,Number
+六十五,65,rokujuugo,Number
+十一,11,juuichi,Number
+三十八,38,sanjuuhachi,Number
+七,7,shichi,Number
+九十二,92,kyuujuuni,Number
+四,4,yon,Number
+月曜日,Monday,getsuyoubi,Day
+木曜日,Thursday,mokuyoubi,Day
+水曜日,Wednesday,suiyoubi,Day
+火曜日,Tuesday,kayoubi,Day
+金曜日,Friday,kin'youbi,Day
+男の子,boy,otokonoko,Age
+女の子,girl,onnanoko,Age
+100,100,hyaku,Shopping
+300,300,sanbyaku,Shopping
+1000,1000,sen,Shopping
+円,yen,en,Shopping
+10000,10000,ichiman,Shopping
+お父さん,father,otousan,Family
+お母さん,mother,okaasan,Family
+おじいさん,grandfather,ojiisan,Family
+おばあさん,grandmother,obaasan,Family
+お兄さん,older brother,oniisan,Family
+お姉さん,older sister,oneesan,Family
+アメリカ,America,amerika,Family
+日本,Japan,nihon,Family
+息子,son,musuko,Family
+娘,daughter,musume,Family
+晴れ,sunny,hare,Weather
+曇り,cloudy,kumori,Weather
+雪,snow,yuki,Weather
+土曜日,Saturday,doyoubi,Weather
+雨,rain,ame,Weather
+天気,weather,tenki,Weather
+日曜日,Sunday,nichiyoubi,Weather
+春,Spring,haru,Season
+夏,Summer,natsu,Season
+東京,Tokyo,toukyou,Season
+暑い,hot,atsui,Season
+冬,Winter,fuyu,Season
+秋,Autumn,aki,Season
+馬,horse,uma,Animals
+大きい,big,ookii,Animals
+小さい,small,chiisai,Animals
+パンダ,panda,panda,Animals
+軽い,light (weight),karui,Animals
+重い,heavy,omoi,Animals
+かわいい,cute,kawaii,Animals
+虎,tiger,tora,Animals
+サル,monkey,saru,Animal 2
+荷物,luggage,nimotsu,Animal 2
+ライオン,lion,raion,Animal 2
+像,elephant,zou,Animal 2
+ウサギ,rabbit,usagi,Animal 2
+動物,animal,doubutsu,Animal 2
+黒い,black,kuroi,Color
+赤い,red,akai,Color
+寿司,sushi,sushi,Color
+バナナ,banana,banana,Color
+ジュース,juice,jūsu,Color
+上着,jacket,uwagi,Clothing
+靴下,socks,kutsushita,Clothing
+長い,long,nagai,Clothing
+ネクタイ,necktie,nekutai,Clothing
+高い,expensive,takai,Clothing
+安い,cheap,yasui,Clothing
+セーター,sweater,sētā,Clothing
+オレンジ色,orange,orenjiiro,Clothing
+靴,shoes,kutsu,Clothing
+コート,coat,kōto,Clothing
+ジーンズ,jeans,jīnzu,Clothing
+シャツ,shirt,shatsu,Clothing
+ズボン,pants,zubon,Clothing
+町,town,machi,Adjective
+にぎやか,lively,nigiyaka,Adjective
+コンビニ,convenience store,kombini,Adjective
+簡単,simple,kantan,Adjective
+便利,convenient,benri,Adjective
+人,person,jin,Adjective 2
+お酒,alcohol,osake,Adjective 2
+親切,kind,shinsetsu,Adjective 2
+きれい,pretty,kirei,Adjective 2
+有名,famous,yuumei,Adjective 2
+料理,cuisine,ryouri,Adjective 2
+コーヒー,coffee,kōhī,Verb 1
+書く,to write,kaku,Verb 1
+音楽,music,ongaku,Verb 1
+パン,bread,pan,Verb 1
+ラジオ,radio,rajio,Verb 1
+聞く,to listen,kiku,Verb 1
+見る,to see, miru,Verb 2
+卵,egg,tamago,Verb 2
+起きる,to get up,okiru,Verb 2
+晩ご飯,dinner,bangohan,Verb 2
+食べる,to eat,taberu,Verb 2
+出迎える, to greet; to welcome,demukaeru,Verb 2
+中国,China,chuugoku,Verb 3
+出勤する,to go to work,shukkinsuru,Verb 3
+ジョギングする, to jog,jogingusuru,Verb 3
+旅行する,to travel,ryokousuru,Verb 3
+散歩する,to go for a walk,sanposuru,Verb 3
+来る,to come,kuru,Verb 3
+掃除する, to clean, soujisuru,Verb 3
+泳ぐ,to swim,oyogu,Daily Life
+遊ぶ,to play,asobu,Daily Life
+プール,pool,pūru,Daily Life
+スーパー,supermarket,sūpā,Daily Life
+働く,to work,hataraku,Daily Life
+休む,to rest,yasumu,Daily Life
+カレー,curry,karē,Daily Life
+勉強する,to study,benkyousuru,Daily Life
+食堂,cafeteria,shokudou,Daily Life
+スプーン,spoon,supūn,Tableware
+箸,chopsticks,hashi,Tableware
+スープ,soup,sūpu,Tableware
+ナイフ,knife,naifu,Tableware
+鶏肉,chicken meat,toriniku,Tableware
+ラーメン,Ramen,rāmen,Tableware
+紙,paper,kami,Tableware
+作る,to make,tsukuru,Tableware
+切る,to cut, kiru,Tableware
+はがき,postcard,hagaki,Counter
+出す,to take out,dasu,Counter
+兄弟,siblings,kyoudai,Counter
+動物園,zoo,doubutsuen,Counter
+蛇,snake,hebi,Counter
+友達,friend,tomodachi,
+両親,parents,ryoushin,
+北京,Beijing,pekin,
+大阪,Osaka,oosaka,
+行く,to go,iku,
+国,country,kuni,
+帰る,to return,kaeru,
+美術館,art museum,bijutsukan,
+イギリス,England,igirisu,
+フランス,France,furansu,
+ドイツ,Germany,doitsu,
+家族,family,kazoku,
+オーストラリア,Australia,ōsutoraria,
+バス,bus,basu,
+電車,train,densha,
+飛行機,airplane,hikouki,
+タクシー,taxi,takushī,
+自転車,bicycle,jitensha,
+船,ship,bune,
+地下鉄,subway,chikatetsu,
+ホテル,hotel,hoteru,
+空港,airport,kuukou,
+駅,station,eki,
+寮,dormitory,ryou,
+お寺,temple,otera,
+サッカー,soccer,sakkā,
+フランス語,French language,furansugo,
+スポーツ,sports,supōtsu,
+山,mountain,yama,
+歌う,to sing,utau,
+運転する,to drive,untensuru,
+暗殺教室,Assassination Classroom,ansatsukyoushitsu,
+字,character,ji,
+地図,map,chizu,
+使う,to use,tsukau,
+分かる,to understand,wakaru,
+面白い,interesting,omoshiroi,
+つまらない,boring,tsumaranai,
+うるさい,noisy,urusai,
+野菜,vegetable,yasai,
+サラダ,salad,sarada,
+まずい,bad tasting,mazui,
+飴,candy,ame,
+甘い,sweet,amai,
+海老,shrimp,ebi,
+おいしい,delicious,oishii,
+お菓子,sweets,okashi,
+テニス,tennis,tenisu,
+水泳,swimming,suiei,
+嫌い,hate,kirai,
+バドミントン,badminton,badominton,
+ハイキング,hiking,haikingu,
+野球,baseball,yakyuu,
+上手,good at,jouzu,
+バスケ,basketball,basuke,
+スキー,skiing,sukī,
+卓球,table tennis,takkyuu,
+人気,popular,ninki,
+太極拳,Tai Chi,taikyokuken,
+北海道,Hokkaido,hokkaidou,
+食べ物,food,tabemono,
+多い,many,ooi,
+目,eye,me,
+鼻,nose,hana,
+手,hand,te,
+足,foot,ashi,
+太い,fat,futoi,
+細い,thin,hosoi,
+髪,hair,kami,
+尻尾,tail (animal),shippo,
+低い,low,hikui,
+頭,head,atama,
+お腹,stomach,onaka,
+痛い,painful,itai,
+妹,younger sister,imouto,
+若い,young,wakai,
+広い,wide,hiroi,
+速い,fast,hayai,
+易しい,easy,yasashii,
+狭い,narrow,semai,
+遅い,slow,osoi,
+スカート,skirt,sukāto,
+イチゴ,strawberry,ichigo,
+京都,Kyoto,kyouto,
+果物,fruit,kudamono,
+スイカ,watermelon,suika,
+優しい,gentle,yasashii,
+店,shop,ten,
+明るい,bright,akarui,
+都市,city,toshi,
+ハンサム,handsome,hansamu,
+暗い,dark,kurai,
+帽子,hat,boushi,
+携帯電話,mobile phone,keitaidenwa,
+クラスメート,classmate,kurasumēto,
+恋人,lover,koibito,
+音,sound,on,
+冷たい,ice cold,tsumetai,
+教師,teacher,kyoushi,
+空,sky,sora,
+飛ぶ,to fly,tobu,
+走る,to run,hashiru,
+運動場,playground,undoujou,
+顔,face,kao,
+お風呂,bath,ofuro,
+入る,to enter,hairu,
+借りる,to borrow,kariru,
+持つ,to carry,motsu,
+着物,kimono,kimono,
+着る,to wear,kiru,
+東,East,higashi,
+西,West,nishi,
+南,South,minami,
+北,North,kita,
+道,street,michi,
+曲がる,to turn,magaru,
+交差点,intersection,kousaten,
+信号,traffic light,shingou,
+座る,to sit,suwaru,
+角,corner,kaku,
+ドア,door,doa,
+開ける,to open,akeru,
+窓,window,mado,
+閉める,to close,shimeru,
+待つ,to wait,matsu,
+写真,picture,shashin,
+撮る,to take (a picture),toru,
+タバコ,cigarette,tabako,
+吸う,to breathe in,suu,
+ごみ,trash,gomi,
+捨てる,to throw away,suteru,
+置く,to put down,oku,
+クーラー,cooler,kūrā,
+つける,to turn on,tsukeru,
+電気,light (electricity),denki,
+消す,to turn off,kesu,
+電話,phone,denwa,
+止める,to stop,tomeru,
+磨く,to polish,migaku,
+降る,to fall (rain/snow),furu,
+桜,cherry blossom,sakura,
+知る,to know,shiru,
+眼鏡,glasses,megane,
+かける,to make a call,kakeru,
+マスク,mask,masuku,
+結婚する,to marry,kekkonsuru,
+始まる,to start,hajimaru,
+住む,to live,sumu,
+廊下,hallway,rouka,
+ページ,page,pēji,
+乗る,to ride,noru,
+切手,stamp,kitte,
+脱ぐ,to take off,nugu,
+覚える,to remember,oboeru,
+スーツ,suit,sūtsu,
+水,water,mizu,
+相談する,to discuss,soudansuru,
+渡す,to deliver,watasu,
+ケーキ,cake,kēki,
+泣く,to cry,naku,
+笑う,to laugh/smile,warau,
+叫ぶ,to shout,sakebu,
+夢,dream,yume,
+赤ちゃん,baby,akachan,
+アパート,apartment,apāto,
+飼う,to raise,kau,
+パスポート,passport,pasupōto,
