@@ -4,7 +4,7 @@ export const protectedArtistRouter = express.Router();
 const artistController = require('../../controllers/artist');
 
 publicArtistRouter.route('/login')
-    .post(artistController.login); //TODO move to login
+    .post(artistController.login);
 
 publicArtistRouter.route('/').get(artistController.getArtists);
 

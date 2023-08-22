@@ -7,6 +7,7 @@ import {publicPicturesRouter, protectedPicturesRouter} from "./router/api/pictur
 import {jwtRouter} from "./router/jwt";
 import {publicArtistRouter, protectedArtistRouter} from "./router/api/artist";
 import {registerRouter} from "./router/register";
+import {publicWordsRouter} from "./router/api/words";
 const mongoSanitize = require('express-mongo-sanitize');
 const authenticate  = require("./router/authenticate")
 let cors = require('cors')
@@ -60,7 +61,8 @@ app.use('/register', registerRouter);
 
 // CRUD API
 app.use('/pictures', publicPicturesRouter);
-app.use('/artist', publicArtistRouter); // TODO move to login
+app.use('/artist', publicArtistRouter);
+app.use('/words', publicWordsRouter);
 
 // authorization required
 app.use(jwtRouter);
