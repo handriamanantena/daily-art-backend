@@ -3,7 +3,7 @@ import {Comment} from "./Comment";
 import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
 export interface Picture extends MongoDBEntity {
-    pictureName: string,
+    pictureName?: string,
     url?: string,
     tags?: string[],
     date: Date,
