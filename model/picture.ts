@@ -12,6 +12,7 @@ export interface Picture extends MongoDBEntity {
     userName: string,
     recentComments? :Comment[],
     pastCommentsIds?: string[],
+    dailyChallenge?: string,
     id?: mongoDB.ObjectId
 }
 
