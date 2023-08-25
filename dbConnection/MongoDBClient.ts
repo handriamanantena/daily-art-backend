@@ -106,7 +106,7 @@ export class MongoDBClient {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
         }
-        return await collection.insertOne(resource);
+        return await collection.insertOne(resource,  { ignoreUndefined: true });
     }
 
     async updateResource<T extends MongoDBEntity>(collectionName: ArtCollections, filter : any, update: any) : Promise<UpdateResult> {
