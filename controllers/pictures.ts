@@ -273,7 +273,7 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
         let pictureResponse = await addPictureToDB(picture);
         if(pictureResponse.acknowledged) {
             // TODO need to add file extension
-            let updateStatus = await mongoDBClient.updateResource("pictures", {_id : new mongoDB.ObjectId(pictureResponse.insertedId)}, {$set: {url: pictureResponse.insertedId.toString()}});
+            let updateStatus = await mongoDBClient.updateResource("pictures", {_id : new mongoDB.ObjectId(pictureResponse.insertedId)}, {$set: {url: pictureResponse.insertedId.toString()}}, {upsert : false});
             if(updateStatus.modifiedCount == 1) {
                 res.status(201);
             }
@@ -402,10 +402,10 @@ export async function addPictureToDB(picture : Picture) : Promise<InsertOneResul
     }
     let update;
     if (diff == 1) {
-        update = await mongoDBClient.updateResource("artist", {userName: picture.userName}, {$inc: {streak: 1}});
+        update = await mongoDBClient.updateResource("artist", {userName: picture.userName}, {$inc: {streak: 1}}, {upsert: false});
     }
     else if (diff > 1 || diff == -1) {
-        update = await mongoDBClient.updateResource("artist", {userName: picture.userName}, {$set: {streak: 1}});
+        update = await mongoDBClient.updateResource("artist", {userName: picture.userName}, {$set: {streak: 1}}, {upsert: false});
     }
     console.log("upate in artist collection: " + update);
     let pictureResponse = await mongoDBClient.createResource("pictures", picture);

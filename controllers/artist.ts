@@ -5,6 +5,7 @@ import {GoogleLogin} from "../authentication/googleLogin";
 import {MongoDBClient} from "../dbConnection/MongoDBClient";
 import {getResources} from "./genericApi";
 import {ParsedQs} from "qs";
+import {UpdateResult} from "mongodb";
 const googleLogin = new GoogleLogin();
 const mongodbClient = new MongoDBClient();
 const bcrypt = require('bcryptjs');
@@ -95,13 +96,13 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
             };
         }
         dbResponse = await mongodbClient.addNewResource("artist", artist);
-        console.log("db response " + dbResponse);
+        console.log("db response " + JSON.stringify(dbResponse));
         if (dbResponse && dbResponse.acknowledged && dbResponse.insertedId) {
             delete artist.password;
             artist._id = dbResponse.insertedId;
         }
         let response = generateTokens(artist, res);
-        console.log("response " + response);
+        console.log("response " + JSON.stringify(response));
         res.status(201);
         return res.send(response);
     }
@@ -185,6 +186,20 @@ export function generateTokens(artist : Artist, res : Response) {
     return response;
 }
 
-export function updateArtist(req: Request, res: Response, next: NextFunction) {
-        return res.send();
+export async function updateArtist(req: Request, res: Response, next: NextFunction) {
+    if(req.body.password) {
+        delete req.body.password;
+    }
+    let updates = { $set : req.body};
+    let email = decodeURIComponent(req.params.email);
+    let result : UpdateResult = await mongodbClient.updateResource("artist", {email: email}, updates,
+        {upsert : false});
+    console.log(result);
+    if(result.modifiedCount == 1) {
+        res.status(201);
+    }
+    else {
+        res.status(409);
+    }
+    return res.send();
 }

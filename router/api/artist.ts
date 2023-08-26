@@ -8,5 +8,5 @@ publicArtistRouter.route('/login')
 
 publicArtistRouter.route('/').get(artistController.getArtists);
 
-protectedArtistRouter.route('/').put(artistController.updateArtist);
+protectedArtistRouter.route('/:email').patch(artistController.updateArtist);
 
