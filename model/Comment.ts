@@ -1,4 +1,3 @@
-import {Artist} from "./Artist";
 import * as mongoDB from "mongodb";
 import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 

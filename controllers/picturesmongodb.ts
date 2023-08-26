@@ -1,8 +1,8 @@
 import * as mongoDB from "mongodb";
-import {Picture, PictureDB} from "./model/picture";
-import {Gallery, GalleryDB} from "./model/Gallery";
-import {Comment, CommentDB, Reply} from "./model/Comment";
-import {collections} from "./dbConnection/dbConn";
+import {Picture, PictureDB} from "../model/picture";
+import {Gallery, GalleryDB} from "../model/Gallery";
+import {Comment, CommentDB, Reply} from "../model/Comment";
+import {collections} from "../dbConnection/dbConn";
 
 
 export class Picturesmongodb {

@@ -1,8 +1,8 @@
 import Picturesmongodb from "./picturesmongodb";
 import * as mongoDB from "mongodb";
-import {Picture} from "./model/picture";
+import {Picture} from "../model/picture";
 import {ObjectId} from "mongodb";
-import {Comment, CommentDB, Reply} from "./model/Comment";
+import {Comment, CommentDB, Reply} from "../model/Comment";
 const uri =
     "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
 const client: mongoDB.MongoClient = new mongoDB.MongoClient(uri);

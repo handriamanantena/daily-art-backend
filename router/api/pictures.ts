@@ -1,9 +1,7 @@
 import express, { Request, Response } from "express";
-import {filterPictures, getPictures} from "../../controllers/pictures";
 export const publicPicturesRouter = express.Router();
 export const protectedPicturesRouter = express.Router();
 const picturesController = require('../../controllers/pictures');
-const authenticate  = require("../../router/authenticate")
 
 /*publicPicturesRouter.route('/')
     .get(picturesController.getPictures)

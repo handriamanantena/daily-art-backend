@@ -1,5 +1,4 @@
 import * as mongoDB from "mongodb"
-import {Picture} from "./picture";
 import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
 export interface Artist extends MongoDBEntity {

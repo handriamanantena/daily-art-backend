@@ -1,12 +1,12 @@
 import {closeConnection, collections, connectToDatabase} from "../../dbConnection/dbConn";
 import {artistDB} from "./artistArray";
-import {addPictureToDB} from "../../dbConnection/pictureMongoConnection";
 import {picturesDB} from "./pictureArray";
 import {InsertOneResult} from "mongodb";
 import {Picture} from "../../model/picture";
 import {Artist} from "../../model/Artist";
 import * as mongoDB from "mongodb";
 import moment from "moment";
+import {addPictureToDB} from "../../controllers/pictures";
 // @ts-ignore
 describe('test insert picture', () => {
 

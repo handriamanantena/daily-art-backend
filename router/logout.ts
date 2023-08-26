@@ -4,5 +4,3 @@ const controller = require('../controllers/authController');
 
 logoutRouter.route('/')
     .get(controller.logout);
-
-module.exports = logoutRouter;

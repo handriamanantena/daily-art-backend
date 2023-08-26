@@ -1,18 +1,15 @@
-import express, {NextFunction, Request, Response} from "express";
+import {NextFunction, Request, Response} from "express";
 import {Picture, PictureDB} from "../model/picture";
-import {Http404Error} from "../error/HttpErrors";
-import {collections} from "../dbConnection/dbConn";
-import {Picturesmongodb} from "../picturesmongodb";
+import {Picturesmongodb} from "./picturesmongodb";
 import {MongoDBClient} from "../dbConnection/MongoDBClient";
 import * as mongoDB from "mongodb";
 import {ObjectId} from "mongodb";
-import {Artist} from "../model/Artist";
 import {getResources, splitFields} from "./genericApi";
 import {ParsedQs} from "qs";
-import {Comment} from "../model/Comment";
 import {checkFields} from "../common/parser/genericTypeCheck";
-import {addPictureToDB} from "../dbConnection/pictureMongoConnection";
 import {DeleteResult} from "mongodb";
+import {InsertOneResult} from "mongodb";
+import moment from "moment";
 const mongoDBClient = new MongoDBClient();
 const pictureMongodb = new Picturesmongodb();
 
@@ -255,26 +252,6 @@ export async function addReplyToPicture (req: Request, res: Response, next: Next
     })
 }
 
-export async function getFile (req: Request, res: Response, next: NextFunction) {
-    let options = {
-        root: 'F:\\art\\pictures\\test\\', // TODO need to configure path
-        dotfiles: 'deny',
-        headers: {
-            'x-timestamp': Date.now(),
-            'x-sent': true
-        }
-    }
-    let fileName = req.params.name
-
-    res.sendFile(fileName, options, function (err) {
-        if (err) {
-            next(err)
-        } else {
-            console.log('Sent:', fileName)
-        }
-    })
-}
-
 export async function addPicture (req: Request, res: Response, next: NextFunction) {
     let artistUserName = req.params.userName;
     if(artistUserName == res.locals.user?.userName) {
@@ -411,4 +388,28 @@ async function getPage(pageIndex: string, pageSize: number, filterTerms : {[key:
         //return await mongoDBClient.getResourceByPage("pictures", pageIndex, pageSize, filterTerms, searchText, fields);
         return await mongoDBClient.getAggregate("pictures", "artist", "userName", "userName", "profile", pageIndex, pageSize, filterTerms, searchText, fields);
    // }
+}
+
+export async function addPictureToDB(picture : Picture) : Promise<InsertOneResult>{
+    let dates : {date : Date | {}}[] = await mongoDBClient.getResources("pictures", {userName: picture.userName}, {date: 1, _id: 0}, {date: -1}, 1);
+    let date1 = moment(dates[0]?.date);
+    let todayDate = moment();
+    let diff;
+    if (dates.length == 0) {
+        diff = -1;
+    }
+    else {
+        diff = todayDate.diff(date1, "days");
+    }
+    let update;
+    if (diff == 1) {
+        update = await mongoDBClient.updateResource("artist", {userName: picture.userName}, {$inc: {streak: 1}});
+    }
+    else if (diff > 1 || diff == -1) {
+        update = await mongoDBClient.updateResource("artist", {userName: picture.userName}, {$set: {streak: 1}});
+    }
+    console.log("upate in artist collection: " + update);
+    let pictureResponse = await mongoDBClient.createResource("pictures", picture);
+    console.log("update in picture collection" + pictureResponse);
+    return pictureResponse;
 }
