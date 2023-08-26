@@ -308,7 +308,6 @@ export async function deletePicture(req: Request, res: Response, next: NextFunct
 
 export async function getPictures (req: Request, res: Response, next: NextFunction) {
     let pictures = await getResources(req, res, next, setKeysForFilter, getPage);
-    console.log("inside" + JSON.stringify(pictures));
     if(pictures) {
         return res.send(pictures);
     }
