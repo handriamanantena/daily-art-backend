@@ -170,9 +170,9 @@ export async function getArtists (req: Request, res: Response, next: NextFunctio
 
 export function generateTokens(artist : Artist, res : Response) {
     // @ts-ignore
-    let accessToken = jwt.sign({ userName: artist.userName, email: artist.email }, process.env.TOKEN_SECRET, {expiresIn: process.env.TOKEN_EXPIRE});
+    let accessToken = jwt.sign({ userName: artist.userName, email: artist.email, profilePicture: artist.profilePicture }, process.env.TOKEN_SECRET, {expiresIn: process.env.TOKEN_EXPIRE});
     // @ts-ignore
-    const refreshToken = jwt.sign({ userName: artist.userName, email: artist.email }, process.env.REFRESH_TOKEN_SECRET,
+    const refreshToken = jwt.sign({ userName: artist.userName, email: artist.email, profilePicture: artist.profilePicture }, process.env.REFRESH_TOKEN_SECRET,
         { expiresIn: process.env.REFRESH_TOKEN_EXPIRE }
     );
     res.header('Access-Control-Allow-Credentials', "true"); // TODO check allowed origins
