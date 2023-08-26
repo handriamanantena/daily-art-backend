@@ -100,7 +100,7 @@ export class MongoDBClient {
         }
     }
 
-    async createResource<T>(collectionName: ArtCollections, resource : MongoDBEntity) : Promise<InsertOneResult> {
+    async createResource<T>(collectionName: ArtCollections, resource : any) : Promise<InsertOneResult> {
         let collection = collections[collectionName];
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
