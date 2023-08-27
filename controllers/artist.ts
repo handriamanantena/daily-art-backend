@@ -106,11 +106,14 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
         res.status(201);
         return res.send(response);
     }
-    catch (e) {
-        console.log(e);
-        //if (e.toString().contains("sdf"))
+    catch (e: any) {
+        if(e.code == 11000) {
+            res.status(409);
+            return res.send("Email already in use");
+        }
+        console.error(e);
         res.status(500);
-        return res.send("can not register user");
+        return res.send("Internal error");
     }
 }
 
