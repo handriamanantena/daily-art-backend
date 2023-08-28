@@ -49,7 +49,7 @@ export async function login (req: Request, res: Response, next: NextFunction) {
         }
         console.log(artist);
         console.log(req.body);
-        const match = await bcrypt.compare(password, artist.password /* hashed */);
+        const match = await bcrypt.compare(password, artist.password);
         console.log("is match: ", match);
         if(!match) {
             res.status(401);
@@ -90,6 +90,7 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
                 return res.send("password or email is blank");
             }
             artist = {
+                userName: await generateUniqueUserNameFromEmail(artistInfo.email.split("@")[0]),
                 email: artistInfo.email,
                 profilePicture: "",
                 password: hashedPassword
@@ -197,7 +198,6 @@ export async function updateArtist(req: Request, res: Response, next: NextFuncti
     let email = decodeURIComponent(req.params.email);
     let result : UpdateResult = await mongodbClient.updateResource("artist", {email: email}, updates,
         {upsert : false});
-    console.log(result);
     if(result.modifiedCount == 1) {
         res.status(201);
     }
