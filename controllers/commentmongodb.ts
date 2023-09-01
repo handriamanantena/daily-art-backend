@@ -32,8 +32,7 @@ export class Commentmongodb {
             const commentCollection = await this.getCommentCollection()
             let commentDB = await commentCollection.findOne(commentId) as CommentDB;
             commentDB["id"] = commentDB["_id"]?.toHexString() // TODO check this
-            delete commentDB["_id"]
-            comment = commentDB as Comment
+            comment = commentDB as Comment;
             return comment;
         }
         finally {

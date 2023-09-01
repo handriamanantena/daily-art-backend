@@ -132,7 +132,7 @@ export async function getPicturesByArtist(req: Request, res: Response, next: Nex
             }
         }
         else {
-            artist = await mongoDBClient.getOneResource<Picture>("artist", {_id: new ObjectId(artistId)});
+            artist = await mongoDBClient.getOneResource<PictureDB>("artist", {_id: new ObjectId(artistId)});
         }
         pictures = await mongoDBClient.getResources("pictures", {_id: {$in: artist.pictures}}, {}, {}, undefined);
         if(pictures) {
