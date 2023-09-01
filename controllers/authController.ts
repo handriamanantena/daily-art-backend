@@ -98,7 +98,8 @@ export const refresh = (req : Request, res : Response, next: NextFunction) => {
             const accessToken = jwt.sign(
                 {
                     userName: decoded.userName,
-                    email: decoded.email
+                    email: decoded.email,
+                    profilePicture: decoded.profilePicture
                 },
                 //@ts-ignore
                 process.env.TOKEN_SECRET,
