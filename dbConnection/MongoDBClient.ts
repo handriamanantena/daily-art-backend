@@ -122,6 +122,18 @@ export class MongoDBClient {
         return await collection.updateOne(filter, update, options);
     }
 
+    async updateResources<T extends MongoDBEntity>(collectionName: ArtCollections, filter : any, update: any,
+                                                  options : UpdateOptions) : Promise<UpdateResult | Document> {
+        let collection = collections[collectionName];
+        if (collection == undefined) {
+            console.error(collectionName + " collection missing");
+            throw new Error(collectionName + " collection missing");
+        }
+        delete update.$set._id;
+        delete update.$set.id;
+        return await collection.updateMany(filter, update, options);
+    }
+
     async deleteOneResource(collectionName: ArtCollections, filter : any) {
         let collection = collections[collectionName];
         if (collection == undefined) {

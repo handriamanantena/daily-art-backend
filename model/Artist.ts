@@ -1,8 +1,8 @@
 import * as mongoDB from "mongodb"
 import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
-export interface Artist extends MongoDBEntity {
-    userName?: string,
+export interface Artist {
+    userName: string,
     pictures?: mongoDB.ObjectId[], //only include url and id
     email: string,
     password?: string,
@@ -12,5 +12,5 @@ export interface Artist extends MongoDBEntity {
 }
 
 export interface ArtistDB extends Artist {
-    _id?: mongoDB.ObjectId
+    _id: mongoDB.ObjectId
 }
