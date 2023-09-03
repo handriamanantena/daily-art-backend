@@ -63,9 +63,9 @@ export async function login (req: Request, res: Response, next: NextFunction) {
     if(artist) {
         delete artist['password'];
         let artistDB : ArtistDB = artist as ArtistDB;
-        let response = generateTokens({ userName: artist.userName, email: artist.email, id: artistDB._id.toString()}, res);
+        let accessToken = generateTokens({ userName: artist.userName, email: artist.email, id: artistDB._id.toString()}, res);
         res.status(200);
-        return res.send(response);
+        return res.send({artist: artistDB, accessToken: accessToken});
     }
     else {
         res.status(500);
@@ -106,10 +106,10 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
             delete artist.password;
             let artistDB : ArtistDB = artist as ArtistDB;
             artistDB._id = dbResponse.insertedId;
-            let response = generateTokens({ userName: artistDB.userName, email: artistDB.email, id: artistDB._id.toString()}, res);
-            console.log("response " + JSON.stringify(response));
+            let accessToken = generateTokens({ userName: artistDB.userName, email: artistDB.email, id: artistDB._id.toString()}, res);
+            console.log("response " + JSON.stringify(accessToken));
             res.status(201);
-            return res.send(response);
+            return res.send({artist: artistDB, accessToken});
         }
         else {
             res.status(422);
@@ -207,17 +207,18 @@ export async function updateArtist(req: Request, res: Response, next: NextFuncti
         let pictureResult: UpdateResult | Document = {};
         if(artistResult.modifiedCount == 1) {
             if(updates.$set.userName) {
+                let pictureUpdate = { $set : {userName : updates.$set.userName}};
                 pictureResult = await mongodbClient.updateResources("pictures",
-                    {userName: res.locals.tokens.userName}, {$set : {userName : res.locals.token.userName}},
+                    {userName: res.locals.token.userName}, pictureUpdate,
                     {upsert: false});
                 let payload : JwtPayload = {
                     userName: updates.$set.userName,
                     id: artistId,
                     email: res.locals.token.email
                 };
-                let response = generateTokens(payload, res);
+                let accessToken = generateTokens(payload, res);
                 res.status(201);
-                return res.send({response, artistResult, pictureResult});
+                return res.send({accessToken: accessToken, artistResult: artistResult, pictureResult: pictureResult});
             }
             res.status(201);
             return res.send(artistResult);

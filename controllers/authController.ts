@@ -97,10 +97,6 @@ export function generateTokens(jwtPayload : JwtPayload, res : Response) {
     );
     res.header('Access-Control-Allow-Credentials', "true"); // TODO check allowed origins
     res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
-    let response = {
-        jwtPayload,
-        accessToken
-    }; // TODO try setting jwt token in cookie instead httpOnly true, however return artist info as well. store artist info Context in front end
-    console.log("generated token" + JSON.stringify(response));
-    return response;
+    console.log("generated token" + JSON.stringify(accessToken));
+    return accessToken;
 }
