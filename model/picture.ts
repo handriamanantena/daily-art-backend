@@ -2,7 +2,7 @@ import * as mongoDB from "mongodb"
 import {Comment} from "./Comment";
 import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
-export interface Picture extends MongoDBEntity {
+export interface Picture {
     pictureName?: string,
     url?: string,
     tags?: string[],
@@ -16,8 +16,7 @@ export interface Picture extends MongoDBEntity {
     id?: mongoDB.ObjectId
 }
 
-export interface PictureDB extends Picture{
-    _id?: mongoDB.ObjectId
+export interface PictureDB extends Picture, MongoDBEntity {
     pastCommentsObjectIds?: mongoDB.ObjectId[]
 }
 

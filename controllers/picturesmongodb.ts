@@ -12,7 +12,7 @@ export class Picturesmongodb {
         return collections.pictures;
     }
 
-    async getAllPictures() {
+   /* async getAllPictures() {
         let allPictures : Picture[] = []
         try {
             const pictures = await this.getPicturesCollection()
@@ -31,7 +31,7 @@ export class Picturesmongodb {
         finally {
             return allPictures;
         }
-    }
+    }*/
 
    /* async getPictureByName(pictureName : string) {
         let picture : Picture;
@@ -155,7 +155,7 @@ export class Picturesmongodb {
             }
             let result = await pictures.updateOne({_id: objectId}, pushValues);
             console.log("insert comment result ", result)
-            let picture = await pictures.findOne({_id: objectId}) as Picture
+            let picture = await pictures.findOne({_id: objectId}) as PictureDB;
             if(picture.recentComments == undefined) {
                 throw new Error("picture does not exist")
             }

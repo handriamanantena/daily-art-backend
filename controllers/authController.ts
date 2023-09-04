@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 import {NextFunction, Request, Response} from "express";
-import {ArtistDB} from "../model/Artist";
+import {Artist, ArtistDB} from "../model/Artist";
 import {MongoDBClient} from "../dbConnection/MongoDBClient";
+import {JwtPayload} from "../model/JwtPayload";
 const bcrypt = require('bcryptjs');
 const mongoDBClient = new MongoDBClient();
 
@@ -9,30 +10,6 @@ const mongoDBClient = new MongoDBClient();
  * Default alg HS256
  * */
 
-export const handleAuthentication = async (req : Request, res : Response, next: NextFunction) => {
-    console.log("inside middleware")
-    const authHeader = req.headers.authorization;
-    let password = req.body.password;
-    let userName = req.body.userName;
-    //let objectId = new mongoDB.ObjectId(userID);
-    let artist : ArtistDB = await mongoDBClient.getOneResource<ArtistDB>("artist", {userName: userName}); //TODO user is entering their email need to change front end
-    console.log(artist)
-    if(artist == undefined || artist?._id == undefined) {
-        res.status(401);
-        res.send("User not Unauthorized");
-    }
-    console.log(artist);
-    console.log(req.body);
-    const match = await bcrypt.compare(password, artist.password /* hashed */);
-    console.log("is match: ", match);
-    if(match) {
-        next();
-    }
-    else {
-        res.status(401);
-        res.send();
-    }
-}
 
 export const logout = (req : Request, res : Response, next: NextFunction) => {
     console.log("logging out");
@@ -64,7 +41,7 @@ export function verifyJwt (req : Request, res : Response, next: NextFunction) {
                 }
                 else {
                     console.log("JWT verified");
-                    res.locals.user = decoded;
+                    res.locals.token = decoded;
                     next();
                 }
             }
@@ -95,11 +72,12 @@ export const refresh = (req : Request, res : Response, next: NextFunction) => {
                 console.error("refresh failed");
                 res.sendStatus(403);
             }
-            const accessToken = jwt.sign(
-                {
-                    userName: decoded.userName,
-                    email: decoded.email
-                },
+            let jwtPayload : JwtPayload = {
+                userName: decoded.userName,
+                email: decoded.email,
+                id: decoded.id
+            }
+            const accessToken = jwt.sign(jwtPayload,
                 //@ts-ignore
                 process.env.TOKEN_SECRET,
                 { expiresIn: process.env.TOKEN_EXPIRE }
@@ -110,4 +88,15 @@ export const refresh = (req : Request, res : Response, next: NextFunction) => {
 }
 
 
-export default {handleAuth: handleAuthentication};
+export function generateTokens(jwtPayload : JwtPayload, res : Response) {
+    // @ts-ignore
+    let accessToken = jwt.sign(jwtPayload, process.env.TOKEN_SECRET, {expiresIn: process.env.TOKEN_EXPIRE});
+    // @ts-ignore
+    const refreshToken = jwt.sign(jwtPayload, process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: process.env.REFRESH_TOKEN_EXPIRE }
+    );
+    res.header('Access-Control-Allow-Credentials', "true"); // TODO check allowed origins
+    res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+    console.log("generated token" + JSON.stringify(accessToken));
+    return accessToken;
+}
