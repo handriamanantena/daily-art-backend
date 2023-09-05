@@ -19,5 +19,5 @@ publicPicturesRouter.route('/').get(picturesController.getPictures);
 protectedPicturesRouter.route('/')
     .post(picturesController.addPicture);
 
-protectedPicturesRouter.route('/')
+protectedPicturesRouter.route('/:pictureId')
     .delete(picturesController.deletePicture);
