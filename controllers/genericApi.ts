@@ -24,7 +24,6 @@ export const getResources = async <T>(req : Request, res : Response, next: NextF
         fields = splitFields(urlQuery.fields as string);
     console.log("fields " + JSON.stringify(fields));
     let resources = await getResourceByPage(pageIndex, pageSize, filterTerms, search, fields);
-    console.log("generic " + JSON.stringify(resources));
     return resources;
 
 }

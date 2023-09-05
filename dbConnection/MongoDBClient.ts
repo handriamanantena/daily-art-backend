@@ -1,9 +1,10 @@
 import {collections} from "./dbConn";
 import {MongoDBEntity} from "../model/MongoDBEntity/MongoDBEntity";
 import * as mongoDB from "mongodb";
-import {Document, Filter, FindCursor, FindOptions, InferIdType, InsertOneResult, ObjectId} from "mongodb";
+import {Document, FindCursor, InsertOneResult, ObjectId} from "mongodb";
 import {UpdateResult} from "mongodb";
 import {Sort} from "mongodb";
+import {UpdateOptions} from "mongodb";
 
 type ArtCollections = "pictures" | "artist" | "words";
 
@@ -109,13 +110,28 @@ export class MongoDBClient {
         return await collection.insertOne(resource);
     }
 
-    async updateResource<T extends MongoDBEntity>(collectionName: ArtCollections, filter : any, update: any) : Promise<UpdateResult> {
+    async updateResource<T extends MongoDBEntity>(collectionName: ArtCollections, filter : any, update: any,
+                                                  options : UpdateOptions) : Promise<UpdateResult> {
         let collection = collections[collectionName];
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
         }
-        return await collection.updateOne(filter, update);
+        delete update.$set._id;
+        delete update.$set.id;
+        return await collection.updateOne(filter, update, options);
+    }
+
+    async updateResources<T extends MongoDBEntity>(collectionName: ArtCollections, filter : any, update: any,
+                                                  options : UpdateOptions) : Promise<UpdateResult | Document> {
+        let collection = collections[collectionName];
+        if (collection == undefined) {
+            console.error(collectionName + " collection missing");
+            throw new Error(collectionName + " collection missing");
+        }
+        delete update.$set._id;
+        delete update.$set.id;
+        return await collection.updateMany(filter, update, options);
     }
 
     async deleteOneResource(collectionName: ArtCollections, filter : any) {

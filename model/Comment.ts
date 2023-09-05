@@ -1,8 +1,7 @@
-import {Artist} from "./Artist";
 import * as mongoDB from "mongodb";
 import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
-export interface Comment extends MongoDBEntity{
+export interface Comment {
     nameOfCommenter?: string,
     commenterId?: string,
     likeCount?: number,
@@ -17,11 +16,10 @@ export interface Reply extends Comment {
     originalCommenterId?: string,
 }
 
-export interface ReplyDB extends Reply {
+export interface ReplyDB extends Reply, MongoDBEntity {
     nameOfOriginalCommenterObjectId?: mongoDB.ObjectId,
 }
 
-export interface CommentDB extends Comment {
-    _id?: mongoDB.ObjectId,
+export interface CommentDB extends Comment, MongoDBEntity {
     commenterObjectId? : mongoDB.ObjectId,
 }

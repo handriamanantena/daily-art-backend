@@ -1,25 +1,23 @@
 import express, { Request, Response } from "express";
-import {filterPictures, getPictures} from "../../controllers/pictures";
 export const publicPicturesRouter = express.Router();
 export const protectedPicturesRouter = express.Router();
 const picturesController = require('../../controllers/pictures');
-const authenticate  = require("../../router/authenticate")
 
 /*publicPicturesRouter.route('/')
     .get(picturesController.getPictures)
     .patch(picturesController.addReplyToPicture)*/
 
-publicPicturesRouter.route('/artists/:id')
+publicPicturesRouter.route('/artists/:pictureId')
     .get(picturesController.getPictureWithUserInfo);
 
 //publicPicturesRouter.route('/').get(picturesController.filterPictures)
-publicPicturesRouter.route('/').get(picturesController.getPictures)
+publicPicturesRouter.route('/').get(picturesController.getPictures);
 
 /*picturesRouter.route('/')
     .post(authenticate);*/
 
-protectedPicturesRouter.route('/:userName')
+protectedPicturesRouter.route('/')
     .post(picturesController.addPicture);
 
-protectedPicturesRouter.route('/:userName')
-    .post(picturesController.deletePicture);
+protectedPicturesRouter.route('/')
+    .delete(picturesController.deletePicture);

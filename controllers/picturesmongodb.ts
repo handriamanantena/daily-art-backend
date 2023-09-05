@@ -1,8 +1,8 @@
 import * as mongoDB from "mongodb";
-import {Picture, PictureDB} from "./model/picture";
-import {Gallery, GalleryDB} from "./model/Gallery";
-import {Comment, CommentDB, Reply} from "./model/Comment";
-import {collections} from "./dbConnection/dbConn";
+import {Picture, PictureDB} from "../model/picture";
+import {Gallery, GalleryDB} from "../model/Gallery";
+import {Comment, CommentDB, Reply} from "../model/Comment";
+import {collections} from "../dbConnection/dbConn";
 
 
 export class Picturesmongodb {
@@ -12,7 +12,7 @@ export class Picturesmongodb {
         return collections.pictures;
     }
 
-    async getAllPictures() {
+   /* async getAllPictures() {
         let allPictures : Picture[] = []
         try {
             const pictures = await this.getPicturesCollection()
@@ -31,7 +31,7 @@ export class Picturesmongodb {
         finally {
             return allPictures;
         }
-    }
+    }*/
 
    /* async getPictureByName(pictureName : string) {
         let picture : Picture;
@@ -155,7 +155,7 @@ export class Picturesmongodb {
             }
             let result = await pictures.updateOne({_id: objectId}, pushValues);
             console.log("insert comment result ", result)
-            let picture = await pictures.findOne({_id: objectId}) as Picture
+            let picture = await pictures.findOne({_id: objectId}) as PictureDB;
             if(picture.recentComments == undefined) {
                 throw new Error("picture does not exist")
             }

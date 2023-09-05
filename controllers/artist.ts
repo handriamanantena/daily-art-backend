@@ -5,6 +5,10 @@ import {GoogleLogin} from "../authentication/googleLogin";
 import {MongoDBClient} from "../dbConnection/MongoDBClient";
 import {getResources} from "./genericApi";
 import {ParsedQs} from "qs";
+import {UpdateResult, Document} from "mongodb";
+import * as mongoDB from "mongodb";
+import {generateTokens} from "./authController";
+import {JwtPayload} from "../model/JwtPayload";
 const googleLogin = new GoogleLogin();
 const mongodbClient = new MongoDBClient();
 const bcrypt = require('bcryptjs');
@@ -40,15 +44,15 @@ export async function login (req: Request, res: Response, next: NextFunction) {
     else {
         let password = req.body.password;
         let userName = req.body.userName;
-        artist = await mongodbClient.getOneResource<ArtistDB>("artist", {userName : userName}); //TODO user is entering their email need to change front end
-        console.log(artist)
-        if(artist == undefined || artist?._id == undefined) {
+        let artistDb : ArtistDB = await mongodbClient.getOneResource<ArtistDB>("artist", {userName : userName}); //TODO user is entering their email need to change front end
+        console.log(artistDb)
+        if(artistDb == undefined || artistDb?._id == undefined) {
             res.status(404);
             return res.send("User Id does not exist");
         }
-        console.log(artist);
+        console.log(artistDb);
         console.log(req.body);
-        const match = await bcrypt.compare(password, artist.password /* hashed */);
+        const match = await bcrypt.compare(password, artistDb.password);
         console.log("is match: ", match);
         if(!match) {
             res.status(401);
@@ -58,9 +62,10 @@ export async function login (req: Request, res: Response, next: NextFunction) {
     // @ts-ignore
     if(artist) {
         delete artist['password'];
-        let response = generateTokens(artist, res);
+        let artistDB : ArtistDB = artist as ArtistDB;
+        let accessToken = generateTokens({ userName: artist.userName, email: artist.email, id: artistDB._id.toString()}, res);
         res.status(200);
-        return res.send(response);
+        return res.send({artist: artistDB, accessToken: accessToken});
     }
     else {
         res.status(500);
@@ -89,27 +94,36 @@ export async function registerArtist (req: Request, res: Response, next: NextFun
                 return res.send("password or email is blank");
             }
             artist = {
+                userName: await generateUniqueUserNameFromEmail(artistInfo.email.split("@")[0]),
                 email: artistInfo.email,
                 profilePicture: "",
                 password: hashedPassword
             };
         }
         dbResponse = await mongodbClient.addNewResource("artist", artist);
-        console.log("db response " + dbResponse);
+        console.log("db response " + JSON.stringify(dbResponse));
         if (dbResponse && dbResponse.acknowledged && dbResponse.insertedId) {
             delete artist.password;
-            artist._id = dbResponse.insertedId;
+            let artistDB : ArtistDB = artist as ArtistDB;
+            artistDB._id = dbResponse.insertedId;
+            let accessToken = generateTokens({ userName: artistDB.userName, email: artistDB.email, id: artistDB._id.toString()}, res);
+            console.log("response " + JSON.stringify(accessToken));
+            res.status(201);
+            return res.send({artist: artistDB, accessToken});
         }
-        let response = generateTokens(artist, res);
-        console.log("response " + response);
-        res.status(201);
-        return res.send(response);
+        else {
+            res.status(422);
+            return res.send(dbResponse);
+        }
     }
-    catch (e) {
-        console.log(e);
-        //if (e.toString().contains("sdf"))
+    catch (e: any) {
+        if(e.code == 11000) {
+            res.status(409);
+            return res.send("Email already in use");
+        }
+        console.error(e);
         res.status(500);
-        return res.send("can not register user");
+        return res.send("Internal error");
     }
 }
 
@@ -168,23 +182,59 @@ export async function getArtists (req: Request, res: Response, next: NextFunctio
     }
 }
 
-export function generateTokens(artist : Artist, res : Response) {
-    // @ts-ignore
-    let accessToken = jwt.sign({ userName: artist.userName, email: artist.email }, process.env.TOKEN_SECRET, {expiresIn: process.env.TOKEN_EXPIRE});
-    // @ts-ignore
-    const refreshToken = jwt.sign({ userName: artist.userName, email: artist.email }, process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: process.env.REFRESH_TOKEN_EXPIRE }
-    );
-    res.header('Access-Control-Allow-Credentials', "true"); // TODO check allowed origins
-    res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
-    let response = {
-        artist,
-        accessToken
-    }; // TODO try setting jwt token in cookie instead httpOnly true, however return artist info as well. store artist info Context in front end
-    console.log("generated token" + JSON.stringify(response));
-    return response;
-}
 
-export function updateArtist(req: Request, res: Response, next: NextFunction) {
-        return res.send();
+export async function updateArtist(req: Request, res: Response, next: NextFunction) {
+    if(req.body.password) {
+        delete req.body.password;
+    }
+    let updates = { $set : req.body};
+    let artistId = res.locals.token.id;
+    let objectId = {};
+    try {
+        objectId = new mongoDB.ObjectId(artistId);
+    }
+    catch (e) {
+        console.error(e);
+        res.status(500);
+        return res.send("Error with artist id in token");
+    }
+    try {
+        if(updates.$set.userName) {
+            updates.$set.userName = updates.$set.userName.trim();
+        }
+        let artistResult: UpdateResult = await mongodbClient.updateResource("artist", {_id: objectId}, updates,
+            {upsert: false});
+        let pictureResult: UpdateResult | Document = {};
+        if(artistResult.modifiedCount == 1) {
+            if(updates.$set.userName) {
+                let pictureUpdate = { $set : {userName : updates.$set.userName}};
+                pictureResult = await mongodbClient.updateResources("pictures",
+                    {userName: res.locals.token.userName}, pictureUpdate,
+                    {upsert: false});
+                let payload : JwtPayload = {
+                    userName: updates.$set.userName,
+                    id: artistId,
+                    email: res.locals.token.email
+                };
+                let accessToken = generateTokens(payload, res);
+                res.status(201);
+                return res.send({accessToken: accessToken, artistResult: artistResult, pictureResult: pictureResult});
+            }
+            res.status(201);
+            return res.send(artistResult);
+        }
+        else {
+            res.status(422);
+            return res.send(artistResult);
+        }
+    }
+    catch (e : any) {
+        if (e.code == 11000) {
+            res.status(409);
+            return res.send("email or username already in use");
+        }
+        console.error(e);
+        res.status(500);
+        return res.send("Internal error");
+    }
 }

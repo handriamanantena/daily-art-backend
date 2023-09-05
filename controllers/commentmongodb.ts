@@ -1,8 +1,8 @@
 import Picturesmongodb from "./picturesmongodb";
 import * as mongoDB from "mongodb";
-import {Picture} from "./model/picture";
+import {Picture} from "../model/picture";
 import {ObjectId} from "mongodb";
-import {Comment, CommentDB, Reply} from "./model/Comment";
+import {Comment, CommentDB, Reply} from "../model/Comment";
 const uri =
     "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
 const client: mongoDB.MongoClient = new mongoDB.MongoClient(uri);
@@ -32,8 +32,7 @@ export class Commentmongodb {
             const commentCollection = await this.getCommentCollection()
             let commentDB = await commentCollection.findOne(commentId) as CommentDB;
             commentDB["id"] = commentDB["_id"]?.toHexString() // TODO check this
-            delete commentDB["_id"]
-            comment = commentDB as Comment
+            comment = commentDB as Comment;
             return comment;
         }
         finally {

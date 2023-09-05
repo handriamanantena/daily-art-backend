@@ -1,18 +1,15 @@
-import express, {NextFunction, Request, Response} from "express";
+import {NextFunction, Request, Response} from "express";
 import {Picture, PictureDB} from "../model/picture";
-import {Http404Error} from "../error/HttpErrors";
-import {collections} from "../dbConnection/dbConn";
-import {Picturesmongodb} from "../picturesmongodb";
+import {Picturesmongodb} from "./picturesmongodb";
 import {MongoDBClient} from "../dbConnection/MongoDBClient";
 import * as mongoDB from "mongodb";
 import {ObjectId} from "mongodb";
-import {Artist} from "../model/Artist";
 import {getResources, splitFields} from "./genericApi";
 import {ParsedQs} from "qs";
-import {Comment} from "../model/Comment";
 import {checkFields} from "../common/parser/genericTypeCheck";
-import {addPictureToDB} from "../dbConnection/pictureMongoConnection";
 import {DeleteResult} from "mongodb";
+import {InsertOneResult} from "mongodb";
+import moment from "moment";
 const mongoDBClient = new MongoDBClient();
 const pictureMongodb = new Picturesmongodb();
 
@@ -135,7 +132,7 @@ export async function getPicturesByArtist(req: Request, res: Response, next: Nex
             }
         }
         else {
-            artist = await mongoDBClient.getOneResource<Picture>("artist", {_id: new ObjectId(artistId)});
+            artist = await mongoDBClient.getOneResource<PictureDB>("artist", {_id: new ObjectId(artistId)});
         }
         pictures = await mongoDBClient.getResources("pictures", {_id: {$in: artist.pictures}}, {}, {}, undefined);
         if(pictures) {
@@ -220,7 +217,7 @@ export async function getPicturesByArtist(req: Request, res: Response, next: Nex
 }*/
 
 export async function getPictureWithUserInfo (req: Request, res: Response, next: NextFunction) {
-    let pictureId = req.params.id;
+    let pictureId = req.params.pictureId;
     let fields = {};
     if(req.query.fields != undefined)
         fields = splitFields(req.query.fields as string);
@@ -255,69 +252,42 @@ export async function addReplyToPicture (req: Request, res: Response, next: Next
     })
 }
 
-export async function getFile (req: Request, res: Response, next: NextFunction) {
-    let options = {
-        root: 'F:\\art\\pictures\\test\\', // TODO need to configure path
-        dotfiles: 'deny',
-        headers: {
-            'x-timestamp': Date.now(),
-            'x-sent': true
-        }
-    }
-    let fileName = req.params.name
-
-    res.sendFile(fileName, options, function (err) {
-        if (err) {
-            next(err)
-        } else {
-            console.log('Sent:', fileName)
-        }
-    })
-}
-
 export async function addPicture (req: Request, res: Response, next: NextFunction) {
-    let artistUserName = req.params.userName;
-    if(artistUserName == res.locals.user?.userName) {
-        let picture : Picture = req.body as Picture;
-        let missingFields;
-        try {
-            missingFields = checkFields(picture);
-            if(missingFields != "") {
-                throw new Error("Bad input, fields missing: " + missingFields);
-            }
-            picture.date = new Date();
-            picture.userName = artistUserName;
+    let picture: Picture = req.body as Picture;
+    let missingFields;
+    try {
+        missingFields = checkFields(picture);
+        if (missingFields != "") {
+            throw new Error("Bad input, fields missing: " + missingFields);
         }
-        catch (e) {
-            console.error(e);
-            res.status(400);
-            return res.send("Bad input, fields missing: " + missingFields);
-        }
-        let pictureResponse = await addPictureToDB(picture);
-        if(pictureResponse.acknowledged) {
-            // TODO need to add file extension
-            let updateStatus = await mongoDBClient.updateResource("pictures", {_id : new mongoDB.ObjectId(pictureResponse.insertedId)}, {$set: {url: pictureResponse.insertedId.toString()}});
-            if(updateStatus.modifiedCount == 1) {
-                res.status(201);
-            }
-            else {
-                // TODO need to delete picture
-            }
+        picture.date = new Date();
+        picture.userName = res.locals.token.userName;
+    }
+    catch (e) {
+        console.error(e);
+        res.status(400);
+        return res.send("Bad input, fields missing: " + missingFields);
+    }
+    let pictureResponse = await addPictureToDB(picture);
+    if (pictureResponse.acknowledged) {
+        // TODO need to add file extension
+        let updateStatus = await mongoDBClient.updateResource("pictures", {_id: new mongoDB.ObjectId(pictureResponse.insertedId)}, {$set: {url: pictureResponse.insertedId.toString()}}, {upsert: false});
+        if (updateStatus.modifiedCount == 1) {
+            res.status(201);
         }
         else {
-            res.status(500);
+            // TODO need to delete picture
         }
-        return res.send(pictureResponse);
     }
     else {
-        res.status(401);
-        console.log("error: artistUserName [" + artistUserName + "] locals user name: [" + res.locals.user?.userName + "]");
-        return res.send();
+        res.status(500);
     }
+    return res.send(pictureResponse);
+
 }
 
-export async function deletePicture(req: Request, res: Response, next: NextFunction) {
-    let result : DeleteResult = await mongoDBClient.deleteOneResource("pictures", {_id: req.body.pictureId});
+export async function deletePicture(req: Request, res: Response, next: NextFunction) { // TODO need to authorize user first with jwt token
+   /*let result : DeleteResult = await mongoDBClient.deleteOneResource("pictures", {_id: req.body.pictureId});
     if(result.deletedCount == 1) {
         res.status(200);
         return res.send("deleted image " + req.body.pictureId);
@@ -326,12 +296,11 @@ export async function deletePicture(req: Request, res: Response, next: NextFunct
         res.status(500);
         console.error("failed to delete image id " + req.body.pictureId);
         return res.send("failed to delete image " + req.body.pictureId);
-    }
+    }*/
 }
 
 export async function getPictures (req: Request, res: Response, next: NextFunction) {
     let pictures = await getResources(req, res, next, setKeysForFilter, getPage);
-    console.log("inside" + JSON.stringify(pictures));
     if(pictures) {
         return res.send(pictures);
     }
@@ -411,4 +380,28 @@ async function getPage(pageIndex: string, pageSize: number, filterTerms : {[key:
         //return await mongoDBClient.getResourceByPage("pictures", pageIndex, pageSize, filterTerms, searchText, fields);
         return await mongoDBClient.getAggregate("pictures", "artist", "userName", "userName", "profile", pageIndex, pageSize, filterTerms, searchText, fields);
    // }
+}
+
+export async function addPictureToDB(picture : Picture) : Promise<InsertOneResult>{
+    let dates : {date : Date | {}}[] = await mongoDBClient.getResources("pictures", {userName: picture.userName}, {date: 1, _id: 0}, {date: -1}, 1);
+    let date1 = moment(dates[0]?.date);
+    let todayDate = moment();
+    let diff;
+    if (dates.length == 0) {
+        diff = -1;
+    }
+    else {
+        diff = todayDate.diff(date1, "days");
+    }
+    let update;
+    if (diff == 1) {
+        update = await mongoDBClient.updateResource("artist", {userName: picture.userName}, {$inc: {streak: 1}}, {upsert: false});
+    }
+    else if (diff > 1 || diff == -1) {
+        update = await mongoDBClient.updateResource("artist", {userName: picture.userName}, {$set: {streak: 1}}, {upsert: false});
+    }
+    console.log("upate in artist collection: " + update);
+    let pictureResponse = await mongoDBClient.createResource("pictures", picture);
+    console.log("update in picture collection" + pictureResponse);
+    return pictureResponse;
 }
