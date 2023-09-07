@@ -327,6 +327,35 @@ export async function getPictures (req: Request, res: Response, next: NextFuncti
     }
 }
 
+export async function updatePicture (req: Request, res: Response, next: NextFunction) {
+    let pictureId = req.params.pictureId as string;
+    let objectId = utility.fromStringToMongoId(pictureId);
+    if(objectId == undefined) {
+        res.status(404);
+        return res.send("Picture not found");
+    }
+    let picture : PictureDB = await mongoDBClient.getOneResource<PictureDB>("pictures",{_id : objectId});
+    if(picture.userName == res.locals.token.userName) {
+        let updates = { $set : req.body};
+        console.log(updates);
+        delete updates.$set.userName;
+        let updateResult = await mongoDBClient.updateResource("pictures", {_id: objectId}, updates, {upsert: false});
+        if(updateResult.modifiedCount == 1 || updateResult.acknowledged) {
+            res.status(200);
+            return res.send("update success");
+        }
+        else {
+            res.status(404);
+            return res.send("Picture not found");
+        }
+    }
+    else {
+        res.status(409);
+        return res.send("Unauthorized");
+    }
+}
+
+
 function setKeysForFilter(urlQuery : ParsedQs) : {[key: string]: any} {
     let date = urlQuery.date as string;
     let artist = urlQuery.artist as string;
