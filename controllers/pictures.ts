@@ -10,9 +10,10 @@ import {checkFields} from "../common/parser/genericTypeCheck";
 import {DeleteResult} from "mongodb";
 import {InsertOneResult} from "mongodb";
 import moment from "moment";
+import {Utility} from "../common/utility";
 const mongoDBClient = new MongoDBClient();
 const pictureMongodb = new Picturesmongodb();
-
+const utility = new Utility();
 
 
 export async function filterPictures (req: Request, res: Response, next: NextFunction) {
@@ -287,16 +288,32 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
 }
 
 export async function deletePicture(req: Request, res: Response, next: NextFunction) { // TODO need to authorize user first with jwt token
-   /*let result : DeleteResult = await mongoDBClient.deleteOneResource("pictures", {_id: req.body.pictureId});
-    if(result.deletedCount == 1) {
-        res.status(200);
-        return res.send("deleted image " + req.body.pictureId);
-    }
-    else {
-        res.status(500);
-        console.error("failed to delete image id " + req.body.pictureId);
-        return res.send("failed to delete image " + req.body.pictureId);
-    }*/
+   let pictureId = req.params.pictureId as string;
+   let objectId = utility.fromStringToMongoId(pictureId);
+   let picture : PictureDB = await mongoDBClient.getOneResource<PictureDB>("pictures", {_id: objectId});
+   if(picture) {
+       if(picture.userName == res.locals.token.userName) {
+           let result : DeleteResult = await mongoDBClient.deleteOneResource("pictures", {_id: objectId});
+           if(result.deletedCount == 1) {
+               res.status(200);
+               return res.send(result);
+           }
+           else {
+               res.status(500);
+               console.error("failed to delete image id " + req.body.pictureId);
+               return res.send(result);
+           }
+       }
+       else {
+           res.status(401);
+           return res.send("Unauthorized to delete picture");
+       }
+   }
+   else {
+       res.status(404);
+       return res.send("picture not found");
+   }
+
 }
 
 export async function getPictures (req: Request, res: Response, next: NextFunction) {
@@ -309,6 +326,35 @@ export async function getPictures (req: Request, res: Response, next: NextFuncti
         return res.send();
     }
 }
+
+export async function updatePicture (req: Request, res: Response, next: NextFunction) {
+    let pictureId = req.params.pictureId as string;
+    let objectId = utility.fromStringToMongoId(pictureId);
+    if(objectId == undefined) {
+        res.status(404);
+        return res.send("Picture not found");
+    }
+    let picture : PictureDB = await mongoDBClient.getOneResource<PictureDB>("pictures",{_id : objectId});
+    if(picture.userName == res.locals.token.userName) {
+        let updates = { $set : req.body};
+        console.log(updates);
+        delete updates.$set.userName;
+        let updateResult = await mongoDBClient.updateResource("pictures", {_id: objectId}, updates, {upsert: false});
+        if(updateResult.modifiedCount == 1 || updateResult.acknowledged) {
+            res.status(200);
+            return res.send("update success");
+        }
+        else {
+            res.status(404);
+            return res.send("Picture not found");
+        }
+    }
+    else {
+        res.status(409);
+        return res.send("Unauthorized");
+    }
+}
+
 
 function setKeysForFilter(urlQuery : ParsedQs) : {[key: string]: any} {
     let date = urlQuery.date as string;
