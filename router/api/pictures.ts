@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 export const publicPicturesRouter = express.Router();
 export const protectedPicturesRouter = express.Router();
 const picturesController = require('../../controllers/pictures');
@@ -19,5 +19,7 @@ publicPicturesRouter.route('/').get(picturesController.getPictures);
 protectedPicturesRouter.route('/')
     .post(picturesController.addPicture);
 
-protectedPicturesRouter.route('/')
+protectedPicturesRouter.route('/:pictureId')
     .delete(picturesController.deletePicture);
+
+protectedPicturesRouter.route('/:pictureId').patch(picturesController.updatePicture);
