@@ -15,11 +15,24 @@ const port = 3001
 const app = express();
 
 
-app.use(cors({
+if(process.env.OTHER_CORS && (process.env.OTHER_CORS != undefined || process.env.OTHER_CORS != "")) {
+    let otherCors =  process.env.OTHER_CORS.split(",");
     //@ts-ignore
-    origin : [process.env.FRONT_END_HOST + process.env.FRONT_END_PORT, process.env.CLOUDFLARE_WORKER, process.env.OTHER_CORS],
-    credentials: true,
-}));
+    app.use(cors({
+        //@ts-ignore
+        origin : [process.env.FRONT_END_HOST + process.env.FRONT_END_PORT, process.env.CLOUDFLARE_WORKER, ...otherCors],
+        credentials: true,
+    }));
+}
+else {
+    app.use(cors({
+        //@ts-ignore
+        origin : [process.env.FRONT_END_HOST + process.env.FRONT_END_PORT, process.env.CLOUDFLARE_WORKER],
+        credentials: true,
+    }));
+}
+
+
 app.use(express.json());
 
 app.use(cookies())
