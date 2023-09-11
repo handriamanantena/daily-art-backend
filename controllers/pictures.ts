@@ -234,7 +234,7 @@ export async function getPictureWithUserInfo (req: Request, res: Response, next:
         "profile", fields, artistProjection);
     if(array.length == 0) {
         res.status(404);
-        return res.send();
+        return res.send([]);
     }
     else {
         return res.send(array[0]);
