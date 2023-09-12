@@ -327,6 +327,19 @@ export async function getPictures (req: Request, res: Response, next: NextFuncti
     }
 }
 
+export async function getOnePicture (req: Request, res: Response, next: NextFunction) {
+    let id = utility.fromStringToMongoId(req.params.id)
+    let picture = await mongoDBClient.getOneResource("pictures", {_id: id});
+    if(picture) {
+        res.status(200);
+        return res.send(picture);
+    }
+    else {
+        res.status(404);
+        return res.send();
+    }
+}
+
 export async function updatePicture (req: Request, res: Response, next: NextFunction) {
     let pictureId = req.params.pictureId as string;
     let objectId = utility.fromStringToMongoId(pictureId);

@@ -12,6 +12,7 @@ publicPicturesRouter.route('/artists/:pictureId')
 
 //publicPicturesRouter.route('/').get(picturesController.filterPictures)
 publicPicturesRouter.route('/').get(picturesController.getPictures);
+publicPicturesRouter.route('/:id').get(picturesController.getOnePicture);
 
 /*picturesRouter.route('/')
     .post(authenticate);*/
