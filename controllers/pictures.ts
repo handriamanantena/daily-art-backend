@@ -319,6 +319,7 @@ export async function deletePicture(req: Request, res: Response, next: NextFunct
 export async function getPictures (req: Request, res: Response, next: NextFunction) {
     let pictures = await getResources(req, res, next, setKeysForFilter, getPage);
     if(pictures) {
+        res.status(200);
         return res.send(pictures);
     }
     else {
