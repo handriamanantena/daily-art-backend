@@ -234,7 +234,7 @@ export async function getPictureWithUserInfo (req: Request, res: Response, next:
         "profile", fields, artistProjection);
     if(array.length == 0) {
         res.status(404);
-        return res.send();
+        return res.send([]);
     }
     else {
         return res.send(array[0]);
@@ -319,7 +319,21 @@ export async function deletePicture(req: Request, res: Response, next: NextFunct
 export async function getPictures (req: Request, res: Response, next: NextFunction) {
     let pictures = await getResources(req, res, next, setKeysForFilter, getPage);
     if(pictures) {
+        res.status(200);
         return res.send(pictures);
+    }
+    else {
+        res.status(404);
+        return res.send();
+    }
+}
+
+export async function getOnePicture (req: Request, res: Response, next: NextFunction) {
+    let id = utility.fromStringToMongoId(req.params.id)
+    let picture = await mongoDBClient.getOneResource("pictures", {_id: id});
+    if(picture) {
+        res.status(200);
+        return res.send(picture);
     }
     else {
         res.status(404);
