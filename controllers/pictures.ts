@@ -447,7 +447,9 @@ async function getPage(pageIndex: string, pageSize: number, filterTerms : {[key:
 }
 
 export async function addPictureToDB(picture : Picture) : Promise<InsertOneResult>{
+    console.log("getting dates");
     let dates : {date : Date | {}}[] = await mongoDBClient.getResources("pictures", {userName: picture.userName}, {date: 1, _id: 0}, {date: -1}, 1);
+    console.log("these are the dates: " + dates);
     let date1 = moment(dates[0]?.date);
     let todayDate = moment();
     let diff;
