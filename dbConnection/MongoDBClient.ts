@@ -117,8 +117,11 @@ export class MongoDBClient {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
         }
-        delete update.$set._id;
-        delete update.$set.id;
+        if(update.$set) {
+            delete update.$set._id;
+            delete update.$set.id;
+        }
+        console.log("preparing to update");
         return await collection.updateOne(filter, update, options);
     }
 

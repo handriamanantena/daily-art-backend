@@ -257,6 +257,7 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
     let picture: Picture = req.body as Picture;
     let missingFields;
     try {
+        console.log("checking fields")
         missingFields = checkFields(picture);
         if (missingFields != "") {
             throw new Error("Bad input, fields missing: " + missingFields);
@@ -265,11 +266,14 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
         picture.userName = res.locals.token.userName;
     }
     catch (e) {
+        console.error("missing fields: missingFields");
         console.error(e);
         res.status(400);
         return res.send("Bad input, fields missing: " + missingFields);
     }
+    console.log("adding picture to db")
     let pictureResponse = await addPictureToDB(picture);
+    console.log("db response: " + JSON.stringify(pictureResponse));
     if (pictureResponse.acknowledged) {
         // TODO need to add file extension
         let updateStatus = await mongoDBClient.updateResource("pictures", {_id: new mongoDB.ObjectId(pictureResponse.insertedId)}, {$set: {url: pictureResponse.insertedId.toString()}}, {upsert: false});
@@ -443,9 +447,12 @@ async function getPage(pageIndex: string, pageSize: number, filterTerms : {[key:
 }
 
 export async function addPictureToDB(picture : Picture) : Promise<InsertOneResult>{
+    console.log("getting dates");
     let dates : {date : Date | {}}[] = await mongoDBClient.getResources("pictures", {userName: picture.userName}, {date: 1, _id: 0}, {date: -1}, 1);
+    console.log("these are the dates: " + JSON.stringify(dates));
     let date1 = moment(dates[0]?.date);
     let todayDate = moment();
+    console.log(JSON.stringify(todayDate));
     let diff;
     if (dates.length == 0) {
         diff = -1;
@@ -453,11 +460,14 @@ export async function addPictureToDB(picture : Picture) : Promise<InsertOneResul
     else {
         diff = todayDate.diff(date1, "days");
     }
+    console.log("diff: " + diff);
     let update;
     if (diff == 1) {
+        console.log("diff == 1")
         update = await mongoDBClient.updateResource("artist", {userName: picture.userName}, {$inc: {streak: 1}}, {upsert: false});
     }
     else if (diff > 1 || diff == -1) {
+        console.log("diff > 1 || diff == -1");
         update = await mongoDBClient.updateResource("artist", {userName: picture.userName}, {$set: {streak: 1}}, {upsert: false});
     }
     console.log("upate in artist collection: " + update);
