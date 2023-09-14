@@ -119,6 +119,7 @@ export class MongoDBClient {
         }
         delete update.$set._id;
         delete update.$set.id;
+        console.log("preparing to update");
         return await collection.updateOne(filter, update, options);
     }
 
