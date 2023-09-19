@@ -221,23 +221,16 @@ export class MongoDBClient {
     }
 
     async getAggregateOneResource(collectionName: ArtCollections, from: ArtCollections | undefined, localField: string,
-                                  foreignField: string, queryId: string, as: string, fields: {[key: string]: 1 | 0}, foreignProjection: {[key: string]: 1 | 0}) {
+                                  foreignField: string, queryId: ObjectId | undefined, as: string, fields: {[key: string]: 1 | 0}, foreignProjection: {[key: string]: 1 | 0}) {
         let collection = collections[collectionName];
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
         }
         let id : mongoDB.ObjectId;
-        try{
-            id = new ObjectId(queryId);
-        }
-        catch (e) {
-            console.error("bad id" + queryId);
-            throw e;
-        }
         let cursor = collection.aggregate([
             { $sort : { _id : -1 } },
-            {$match: {_id : id}},
+            {$match: {_id : queryId}},
             {$lookup: {
                     from: from,
                     localField: localField,
