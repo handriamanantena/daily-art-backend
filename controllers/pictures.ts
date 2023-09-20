@@ -229,8 +229,8 @@ export async function getPictureWithUserInfo (req: Request, res: Response, next:
     if(req.query.artistProjection != undefined)
         artistProjection = splitFields(req.query.artistProjection as string);
     //"userName" : 1, "profilePicture" : 1
-    console.log(pictureId);
-    let array =  await mongoDBClient.getAggregateOneResource("pictures", "artist", "userName", "userName", pictureId,
+    let objectId = utility.fromStringToMongoId(pictureId);
+    let array =  await mongoDBClient.getAggregateOneResource("pictures", "artist", "userName", "userName", objectId,
         "profile", fields, artistProjection);
     if(array.length == 0) {
         res.status(404);
