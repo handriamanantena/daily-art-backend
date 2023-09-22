@@ -4,7 +4,7 @@ const fs = require("fs");
 const mongodbClient = new MongoDBClient();
 import moment, {MomentInput} from "moment";
 
-export const addWordsToDatabase = (file: string, startDate: Date) => {
+export const addChallengesToDatabase = (file: string, startDate: Date) => {
     let date : MomentInput = startDate;
     let count = 0;
     fs.createReadStream(file)
@@ -16,10 +16,10 @@ export const addWordsToDatabase = (file: string, startDate: Date) => {
             let wordOfTheDay = {
                 japanese: row[0],
                 english: row[1],
-                date: date
+                date: new Date(date)
             }
             try {
-                await mongodbClient.addNewResource("words", wordOfTheDay);
+                await mongodbClient.addNewResource("challenges", wordOfTheDay);
             }
             catch (e) {
                 console.log("Already inserted word");

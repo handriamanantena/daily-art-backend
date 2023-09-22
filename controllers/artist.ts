@@ -158,7 +158,8 @@ export async function getArtistUserNames(req: Request, res: Response, next: Next
 }
 
 async function getPage(pageIndex: string, pageSize: number, filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1|0}) {
-    return await mongodbClient.getAggregate("artist", undefined, "", "", "", pageIndex, pageSize, filterTerms, searchText, fields);
+    return await mongodbClient.getAggregate("artist", undefined, "", "", "",
+        "profilePicture", "_id", pageIndex, pageSize, filterTerms, searchText, fields);
 }
 
 function setKeysForFilter(urlQuery : ParsedQs) : {[key: string]: any} {

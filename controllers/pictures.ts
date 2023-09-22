@@ -442,7 +442,8 @@ async function getPage(pageIndex: string, pageSize: number, filterTerms : {[key:
 
     else {*/
         //return await mongoDBClient.getResourceByPage("pictures", pageIndex, pageSize, filterTerms, searchText, fields);
-        return await mongoDBClient.getAggregate("pictures", "artist", "userName", "userName", "profile", pageIndex, pageSize, filterTerms, searchText, fields);
+        return await mongoDBClient.getAggregate("pictures", "artist", "userName", "userName", "profile", "profilePicture",
+            "_id", pageIndex, pageSize, filterTerms, searchText, fields);
    // }
 }
 

@@ -5,7 +5,7 @@ import {publicPicturesRouter, protectedPicturesRouter} from "./router/api/pictur
 import {jwtRouter} from "./router/jwt";
 import {publicArtistRouter, protectedArtistRouter} from "./router/api/artist";
 import {registerRouter} from "./router/register";
-import {publicWordsRouter} from "./router/api/words";
+import {publicChallengesRouter} from "./router/api/challenges";
 import {logoutRouter} from "./router/logout";
 import {refresh} from "./router/refresh";
 import mongoSanitize from "express-mongo-sanitize";
@@ -54,7 +54,7 @@ app.use('/register', registerRouter);
 // CRUD API
 app.use('/pictures', publicPicturesRouter);
 app.use('/artist', publicArtistRouter);
-app.use('/words', publicWordsRouter);
+app.use('/challenges', publicChallengesRouter);
 
 // authorization required
 app.use(jwtRouter);
