@@ -314,5 +314,51 @@ export class MongoDBClient {
         }
     }
 
+    async getAggregateCustomLookup(collectionName: ArtCollections, indexField: any, indexValue: any, pageSize: number,
+                       filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1 | 0}, lookup: any) {
+        let collection = collections[collectionName];
+        if (collection == undefined) {
+            console.error(collectionName + " collection missing");
+            throw new Error(collectionName + " collection missing");
+        }
+        console.log(pageSize)
+        pageSize = pageSize ? pageSize : 10;
+        if(indexField == "_id") {
+            try{
+                indexValue = new ObjectId(indexValue);
+            }
+            catch (e) {
+                console.error("bad page index " + indexValue);
+                throw e;
+            }
+        }
+        if(indexValue != "" && indexValue != undefined && indexValue != "0") {
+            console.log("getting pictures");
+            let cursor = collection.aggregate([
+                { $sort : { [indexField] : -1 } },
+                {$match: {
+                        $and: [{[indexField]: {$lt: indexValue}}, filterTerms]
+                    }},
+                {$limit: pageSize
+                },
+                lookup,
+            ]);
+            //cursor.sort({ _id : -1});
+            return await cursor.toArray();
+        }
+        else {
+            let cursor = collection.aggregate([
+                { $sort : { [indexField] : -1 } },
+                {$match: {
+                        $and: [filterTerms]
+                    }},
+                {$limit: pageSize
+                },
+                lookup,
+            ]);
+            return await cursor.toArray();
+        }
+    }
+
 
 }
