@@ -45,7 +45,7 @@ async function getPage (pageIndex: string, pageSize: number, filterTerms : {[key
             pipeline : [
                 //{ $match: { $expr:{$in: ["$english", {$ifNull: [{ $split: ["$dailyChallenge", "/"]}, []]}]}}},
                 { $match: { $expr:{$in: ["$$english", {$ifNull: [{ $split: ["$dailyChallenge", "/"]}, []]}]}}},
-                {$project : { url : 1}} //TODO need to customize projection
+                {$project : { url : 1, pictureName: 1}} //TODO need to customize projection
             ],
             as: "pictures"
         }};

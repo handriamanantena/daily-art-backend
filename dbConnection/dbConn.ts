@@ -37,6 +37,7 @@ async function configureIndexes(db: mongoDB.Db) {
 
     const challengesCollection : mongoDB.Collection = db.collection("challenges");
     await challengesCollection.createIndex({japanese: 1}, {unique: true});
+    await challengesCollection.createIndex({english: 1}, {unique: true});
 }
 
 async function addChallenges() {
