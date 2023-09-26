@@ -5,3 +5,4 @@ const challengesController = require('../../controllers/challenges');
 publicChallengesRouter.route("/date/:date").get(challengesController.getChallengeByDate);
 publicChallengesRouter.route("/date").get(challengesController.getChallengeByDate);
 publicChallengesRouter.route("/").get(challengesController.getWordsPage);
+publicChallengesRouter.route("/:englishWord").get(challengesController.getChallenge);

@@ -15,8 +15,15 @@ export async function getChallengeByDate (req: Request, res: Response, next: Nex
         date = moment(date).format(process.env.DATE_FORMAT);
     }
     console.log(date);
-    let word = await mongodbClient.getOneResource("challenges", {date});
-    return res.send(word);
+    let word = await mongodbClient.getOneResource("challenges", {date: new Date(date)});
+    if(word) {
+        res.status(200);
+        return res.send(word);
+    }
+    else {
+        res.status(404);
+        return res.send({});
+    }
 
 }
 
@@ -29,6 +36,19 @@ export async function getWordsPage (req: Request, res: Response, next: NextFunct
     else {
         res.status(404);
         return res.send([]);
+    }
+}
+
+export async function getChallenge(req: Request, res: Response, next: NextFunction) {
+    let englishWord = req.params.englishWord
+    let words = await mongodbClient.getOneResource("challenges", {english: englishWord});
+    if(words) {
+        res.status(200);
+        return res.send(words);
+    }
+    else {
+        res.status(404);
+        return res.send({});
     }
 }
 function setKeysForFilter(urlQuery : ParsedQs) : {[key: string]: any} {
