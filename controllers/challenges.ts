@@ -40,8 +40,16 @@ export async function getWordsPage (req: Request, res: Response, next: NextFunct
 }
 
 export async function getChallenge(req: Request, res: Response, next: NextFunction) {
-    let englishWord = req.params.englishWord
-    let words = await mongodbClient.getOneResource("challenges", {english: englishWord});
+    let englishWord = decodeURIComponent(req.params.englishWord as string);
+    let isPast = req.query.past as string;
+    let words;
+    if(isPast == "true") {
+        let date = new Date();
+        words = await mongodbClient.getOneResource("challenges", {$and :[{english: englishWord}, {date: {$lt: date}}]});
+    }
+    else {
+        words = await mongodbClient.getOneResource("challenges", {english: englishWord});
+    }
     if(words) {
         res.status(200);
         return res.send(words);
