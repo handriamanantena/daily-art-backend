@@ -4,25 +4,23 @@ const fs = require("fs");
 const mongodbClient = new MongoDBClient();
 import moment, {MomentInput} from "moment";
 
-export const addWordsToDatabase = (file: string, startDate: Date) => {
+export const addChallengesToDatabase = (file: string, startDate: Date) => {
     let date : MomentInput = startDate;
-    let count = 0;
+    let formattedDate = moment(date).format(process.env.DATE_FORMAT);
+    console.log("first date: " + date);
     fs.createReadStream(file)
         .pipe(parse({ delimiter: ",", from_line :2}))
         .on("data",  async (row : any) => {
-            date = moment(date).add(1, 'd').format(process.env.DATE_FORMAT);
-            count = count + 1;
-            //console.log("count inside " + count);
             let wordOfTheDay = {
                 japanese: row[0],
                 english: row[1],
-                date: date
+                date: new Date(formattedDate)
             }
+            formattedDate = moment(formattedDate).add(1, 'd').format(process.env.DATE_FORMAT);
             try {
-                await mongodbClient.addNewResource("words", wordOfTheDay);
+                await mongodbClient.addNewResource("challenges", wordOfTheDay);
             }
             catch (e) {
-                console.log("Already inserted word");
             }
         })
         .on("end", () => {

@@ -1,8 +1,8 @@
 import * as mongoDB from "mongodb";
-import {addWordsToDatabase} from "../drawingOftheDay/wordOftheDay";
+import {addChallengesToDatabase} from "../drawingOftheDay/challengeOftheDay";
 
 let connection : mongoDB.MongoClient;
-export const collections: { pictures?: mongoDB.Collection, artist?: mongoDB.Collection, words?: mongoDB.Collection } = {}
+export const collections: { pictures?: mongoDB.Collection, artist?: mongoDB.Collection, challenges?: mongoDB.Collection } = {}
 
 export async function connectToDatabase (uri : string, connectionOptions: mongoDB.MongoClientOptions, dbName: string) {
 
@@ -11,13 +11,13 @@ export async function connectToDatabase (uri : string, connectionOptions: mongoD
     const db: mongoDB.Db = connection.db(dbName);
 
     await configureIndexes(db);
-    await addWords();
+    await addChallenges();
     const artistCollection: mongoDB.Collection = db.collection("artist");
     collections.artist = artistCollection;
     const picturesCollection: mongoDB.Collection = db.collection("pictures");
     collections.pictures = picturesCollection;
-    const wordsCollection: mongoDB.Collection = db.collection("words");
-    collections.words = wordsCollection;
+    const challengesCollection: mongoDB.Collection = db.collection("challenges");
+    collections.challenges = challengesCollection;
 
     console.log(`Successfully connected to database: ${db.databaseName} and collection: ${artistCollection.collectionName}`);
 }
@@ -35,12 +35,13 @@ async function configureIndexes(db: mongoDB.Db) {
     await artistCollection.createIndex({ userName : 1}, { unique: true});
     await artistCollection.createIndex({ email : 1}, { unique: true});
 
-    const wordsCollection : mongoDB.Collection = db.collection("words");
-    await wordsCollection.createIndex({japanese: 1}, {unique: true});
+    const challengesCollection : mongoDB.Collection = db.collection("challenges");
+    await challengesCollection.createIndex({japanese: 1}, {unique: true});
+    await challengesCollection.createIndex({english: 1}, {unique: true});
 }
 
-async function addWords() {
+async function addChallenges() {
     //@ts-ignore
-    await addWordsToDatabase(process.env.CSV_WORDS_FILE, process.env.WORDS_START_DATE);
+    await addChallengesToDatabase(process.env.CSV_WORDS_FILE, process.env.WORDS_START_DATE);
 
 }

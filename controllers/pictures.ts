@@ -328,7 +328,7 @@ export async function getPictures (req: Request, res: Response, next: NextFuncti
     }
     else {
         res.status(404);
-        return res.send();
+        return res.send([]);
     }
 }
 
@@ -378,6 +378,7 @@ function setKeysForFilter(urlQuery : ParsedQs) : {[key: string]: any} {
     let date = urlQuery.date as string;
     let artist = urlQuery.artist as string;
     let userName = urlQuery.userName as string;
+    let dailyChallenge = urlQuery.dailyChallenge as string;
     let filterKeys: {[key: string]: any} | undefined = {};
     if(date) {
         filterKeys.date = { $lt: new Date(date)};
@@ -387,6 +388,9 @@ function setKeysForFilter(urlQuery : ParsedQs) : {[key: string]: any} {
     }
     else if(userName) {
         filterKeys.userName = userName;
+    }
+    else if(dailyChallenge) {
+        filterKeys.dailyChallenge = decodeURIComponent(dailyChallenge);
     }
     /*let artistId = urlQuery.artist as string;
     let userName = urlQuery.userName as string;
@@ -442,7 +446,8 @@ async function getPage(pageIndex: string, pageSize: number, filterTerms : {[key:
 
     else {*/
         //return await mongoDBClient.getResourceByPage("pictures", pageIndex, pageSize, filterTerms, searchText, fields);
-        return await mongoDBClient.getAggregate("pictures", "artist", "userName", "userName", "profile", pageIndex, pageSize, filterTerms, searchText, fields);
+        return await mongoDBClient.getAggregate("pictures", "artist", "userName", "userName", "profile", "profilePicture",
+            "_id", pageIndex, pageSize, filterTerms, searchText, fields);
    // }
 }
 

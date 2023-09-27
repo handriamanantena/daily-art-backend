@@ -6,7 +6,7 @@ import {UpdateResult} from "mongodb";
 import {Sort} from "mongodb";
 import {UpdateOptions} from "mongodb";
 
-type ArtCollections = "pictures" | "artist" | "words";
+type ArtCollections = "pictures" | "artist" | "challenges";
 
 export class MongoDBClient {
 
@@ -245,32 +245,37 @@ export class MongoDBClient {
     }
 
     async getAggregate(collectionName: ArtCollections, from: ArtCollections | undefined, localField: string,
-                       foreignField: string, as: string, pageIndex: string, pageSize: number, filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1 | 0}) {
+                       foreignField: string, as: string, foreignProjection: string, indexField: any, indexValue: any, pageSize: number,
+                       filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1 | 0}) {
         let collection = collections[collectionName];
         let entity: any[];
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
         }
-        let id : mongoDB.ObjectId;
         console.log(pageSize)
         pageSize = pageSize ? pageSize : 10;
         if(from == undefined) {
-            return await this.getResourceByPage(collectionName, pageIndex, pageSize, filterTerms, searchText, fields);
+            return await this.getResourceByPage(collectionName, indexValue, pageSize, filterTerms, searchText, fields);
         }
-
-        if(pageIndex != "" && pageIndex != undefined && pageIndex != "0") {
+        if(foreignProjection == "password" || foreignProjection == "" || foreignProjection == undefined) {
+            foreignProjection = "_id";
+        }
+        if(indexField == "_id") {
             try{
-                id = new ObjectId(pageIndex);
+                indexValue = new ObjectId(indexValue);
             }
             catch (e) {
-                console.error("bad page index " + pageIndex);
+                console.error("bad page index " + indexValue);
                 throw e;
             }
+        }
+        if(indexValue != "" && indexValue != undefined && indexValue != "0") {
+
             let cursor = collection.aggregate([
-                { $sort : { _id : -1 } },
+                { $sort : { [indexField] : -1 } },
                 {$match: {
-                        $and: [{_id: {$lt: id}}, filterTerms]
+                        $and: [{[indexField]: {$lt: indexValue}}, filterTerms]
                     }},
                 {$limit: pageSize
                 },
@@ -279,7 +284,7 @@ export class MongoDBClient {
                     localField: localField,
                     foreignField: foreignField,
                     pipeline : [
-                        {$project : { profilePicture : 1}} //TODO need to customize projection
+                        {$project : { [foreignProjection] : 1}} //TODO need to customize projection
                     ],
                     as: as
                 }},
@@ -289,7 +294,7 @@ export class MongoDBClient {
         }
         else {
             let cursor = collection.aggregate([
-                { $sort : { _id : -1 } },
+                { $sort : { [indexField] : -1 } },
                 {$match: {
                         $and: [filterTerms]
                     }},
@@ -300,10 +305,56 @@ export class MongoDBClient {
                         localField: localField,
                         foreignField: foreignField,
                         pipeline : [
-                            {$project : { profilePicture : 1}} //TODO need to customize projection
+                            {$project : { [foreignProjection] : 1}} //TODO need to customize projection
                         ],
                         as: as
                     }},
+            ]);
+            return await cursor.toArray();
+        }
+    }
+
+    async getAggregateCustomLookup(collectionName: ArtCollections, indexField: any, indexValue: any, pageSize: number,
+                       filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1 | 0}, lookup: any) {
+        let collection = collections[collectionName];
+        if (collection == undefined) {
+            console.error(collectionName + " collection missing");
+            throw new Error(collectionName + " collection missing");
+        }
+        console.log(pageSize)
+        pageSize = pageSize ? pageSize : 10;
+        if(indexField == "_id") {
+            try{
+                indexValue = new ObjectId(indexValue);
+            }
+            catch (e) {
+                console.error("bad page index " + indexValue);
+                throw e;
+            }
+        }
+        if(indexValue != "" && indexValue != undefined && indexValue != "0") {
+            console.log("getting pictures");
+            let cursor = collection.aggregate([
+                { $sort : { [indexField] : -1 } },
+                {$match: {
+                        $and: [{[indexField]: {$lt: indexValue}}, filterTerms]
+                    }},
+                {$limit: pageSize
+                },
+                lookup,
+            ]);
+            //cursor.sort({ _id : -1});
+            return await cursor.toArray();
+        }
+        else {
+            let cursor = collection.aggregate([
+                { $sort : { [indexField] : -1 } },
+                {$match: {
+                        $and: [filterTerms]
+                    }},
+                {$limit: pageSize
+                },
+                lookup,
             ]);
             return await cursor.toArray();
         }
