@@ -1,0 +1,25 @@
+name: Merge Request Master
+on:
+  pull_request:
+    types:
+      - [opened, edited, reopened]
+    branches:
+      - 'master'
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ vars.DROPLET_IP }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd
+          cd daily-art-backend
+          git pull
+          touch delete.txt
