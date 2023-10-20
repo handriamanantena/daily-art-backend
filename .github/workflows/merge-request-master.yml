@@ -22,4 +22,5 @@ jobs:
           cd
           cd daily-art-backend
           git pull
-          touch delete.txt
+          cd .github/workflows
+
