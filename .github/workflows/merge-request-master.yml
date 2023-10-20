@@ -4,6 +4,8 @@ on:
     types: [opened, edited, reopened]
     branches:
       - 'master'
+    paths:
+      - './**'
 jobs:
 
   build:
