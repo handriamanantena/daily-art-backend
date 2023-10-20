@@ -4,8 +4,7 @@ on:
     types: [opened, edited, reopened]
     branches:
       - 'master'
-    paths:
-      - './**'
+    paths: ['**.ts', '.github/**']
 jobs:
 
   build:
