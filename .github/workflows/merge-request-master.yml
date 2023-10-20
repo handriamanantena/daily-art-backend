@@ -1,10 +1,12 @@
 name: Merge Request Master
 on:
+  push:
+    branches:
+      - 'dev'
   pull_request:
     types: [opened, edited, reopened]
     branches:
       - 'master'
-    paths: ['**.ts', '.github/**']
 jobs:
 
   build:
