@@ -17,8 +17,8 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v4
 
-    - name: Buil node application
-      run: npm run build
+    - name: Build node application
+      run: npm ci --omit=dev && npm run build
 
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
