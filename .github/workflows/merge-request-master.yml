@@ -35,4 +35,4 @@ jobs:
       run: docker push registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging
 
     - name: Run docker contianer
-      run: docker stop dailyart-container && docker run --name dailyart-container -d -p 3001:3000 registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging
+      run: docker rm dailyart-container && docker run --name dailyart-container -d -p 3001:3000 registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging
