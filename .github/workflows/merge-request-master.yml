@@ -2,28 +2,34 @@ name: Merge Request Master
 on:
   push:
     branches:
-      - 'dev'
+    - 'dev'
   pull_request:
     types: [opened, edited, reopened]
     branches:
-      - 'master'
+    - 'master'
+
 jobs:
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
+  push_to_registry:
+    name: Build and Push Docker image to Docker Hub
+    runs-on: self-hosted
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v0.1.10
-      with:
-        host: ${{ vars.DROPLET_IP }}
-        username: ${{ secrets.USERNAME }}
-        passphrase: ${{ secrets.PASSPHRASE }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
-          cd
-          cd daily-art-backend
-          git pull
-          cd .github/workflows
 
+    - name: create new git dir
+      run: mkdir dailyart-git && cd dailyart-git
+
+    - name: Check out the repo
+      uses: actions/checkout@v4
+
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DO_REGISTRY_SECRET }}
+
+    - name: Build container image
+      run: docker build -t registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging .
+
+    - name: Log in to DigitalOcean Container Registry with short-lived credentials
+      run: doctl registry login --expiry-seconds 600
+
+    - name: Push image to DigitalOcean Container Registry
+      run: docker push registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging
