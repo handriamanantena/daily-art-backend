@@ -14,11 +14,11 @@ jobs:
     runs-on: self-hosted
     steps:
 
-    - name: create new git dir
-      run: mkdir dailyart-git && cd dailyart-git
-
     - name: Check out the repo
       uses: actions/checkout@v4
+
+    - name: Buil node application
+      run: npm run build
 
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
