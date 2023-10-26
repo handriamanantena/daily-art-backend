@@ -35,4 +35,4 @@ jobs:
       run: docker push registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging
 
     - name: Run docker contianer
-      run: ./.github/workflows/runBlue.sh
+      run: . ./.github/workflows/runBlue.sh
