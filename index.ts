@@ -11,7 +11,7 @@ import {refresh} from "./router/refresh";
 import mongoSanitize from "express-mongo-sanitize";
 let cors = require('cors')
 const cookies = require("cookie-parser");
-const port = 3001
+const port = process.env.PORT
 const app = express();
 
 

@@ -5,6 +5,7 @@
   "exclude": [
     "test/**/*",
     "test/**/*",
-    "dbScripts/**/*"
+    "dbScripts/**/*",
+    ".github/**/*"
   ]
 }
