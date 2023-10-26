@@ -9,4 +9,4 @@ else
     GREEN_PORT="3000"
     BLUE_PORT="3001"
 fi
-docker stop dailyart-container-blue; docker rm dailyart-container-blue; docker run --name dailyart-container-blue -d -p $BLUE_PORT:3000 registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging
+docker stop dailyart-container-blue || true; docker rm dailyart-container-blue || true; docker run --name dailyart-container-blue -d -p $BLUE_PORT:3000 registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging
