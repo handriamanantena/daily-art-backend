@@ -14,4 +14,3 @@ docker rename dailyart-container-green dailyart-container-changing || true;
 docker rename dailyart-container-blue dailyart-container-green || true;
 docker rename dailyart-container-changing dailyart-container-blue || true;
 sed -i "s/proxy_pass http:\/\/localhost:[0-9]*;/proxy_pass http:\/\/localhost:$GREEN_PORT;/" /etc/nginx/conf.d/dev-api.dailyirasuto.com.conf
-sudo systemctl reload nginx
