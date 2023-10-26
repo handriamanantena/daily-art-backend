@@ -27,6 +27,9 @@ jobs:
     - name: Switch Blue to Green
       run: . ./.github/workflows/runGreen.sh
 
+    - name: Reload NGINX
+      run: echo ${{ secrets.USER_PASSWORD }} | sudo -S systemctl reload nginx
+
     - name: Log in to DigitalOcean Container Registry with short-lived credentials
       run: doctl registry login --expiry-seconds 600
 
