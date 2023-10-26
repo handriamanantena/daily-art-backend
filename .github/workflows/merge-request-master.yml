@@ -17,8 +17,8 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v4
 
-    - name: Build node application
-      run: npm ci --omit=dev && npm run build && cp ~/actions-runner/.env ~/actions-runner/_work/daily-art-backend/daily-art-backend/.env
+    - name: Build stage node application
+      run: npm ci --omit=dev && npm run build && cp ~/actions-runner/.envstage ~/actions-runner/_work/daily-art-backend/daily-art-backend/.env
 
     - name: Install doctl
       uses: digitalocean/action-doctl@v2

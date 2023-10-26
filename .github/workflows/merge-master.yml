@@ -13,6 +13,12 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v4
 
+    - name: Build prod node application
+      run: npm ci --omit=dev && npm run build && rm ~/actions-runner/_work/daily-art-backend/daily-art-backend/.env && cp ~/actions-runner/.envprod ~/actions-runner/_work/daily-art-backend/daily-art-backend/.env
+
+    - name: Build container image
+      run: docker build -t registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production .
+
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
       with:
