@@ -69,7 +69,22 @@ pm2 start build/index.js
 
 ```index.js``` is located where you specified the build in ```tsconfig.json``` under the ```outDir``` setting.
 
-##PM2
+##Blue Green deployment
+
+###Setup
+1. The github action is run on digital ocean. You will need to install the github action scripts on the digital ocean droplet. Documentation can be found here
+[self hosted](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners)
+
+2. You will also need to add the corresponding .env files to ~/actions-runner. The files need to be named ```/.envstage``` and ```.envstage```.
+You will need to give the linux user access to /etc/nginx/conf.d/<host>. The command
+```chmod -R <user> /etc/nginx/conf.d/<host> ```. 
+3.  You will need 2 running images ready before the blue green deployment. You will need to build 2 containers  ```dailyart-container-blue``` and 
+```dailyart-container-green```, where blue is staging build and green is production build. There is a ```DockerFile``` in the root directory to build.
+- ```docker build -t registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging .```
+- ```docker build -t registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production .```
+- ```docker run --name dailyart-container-blue -d -p 3000:3000 registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging```
+- ```docker run --name dailyart-container-green -d -p 3001:3000 registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production```
+##PM2 (Depricated)
 
 ####To start
 ```pm2 start hello.js```
