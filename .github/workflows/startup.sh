@@ -1,9 +1,3 @@
 #!/bin/bash
-cd ..
-cd ..
-pm2 stop dailyart-1
-pm2 stop dailyart-2
-pm2 start pm2Instance1.config.js
-pm2 start pm2Instance2.config.js
-export BLUE=3000
-export GREEN=3001
+docker stop dailyart-container-blue; docker rm dailyart-container-blue; docker run --name dailyart-container-blue -d -p 3000:3000 registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging
+docker stop dailyart-container-green; docker rm dailyart-container-green; docker run --name dailyart-container-green -d -p 3001:3000 registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production
