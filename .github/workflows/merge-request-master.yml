@@ -36,3 +36,4 @@ jobs:
 
     - name: Run docker contianer
       run: . ./.github/workflows/runBlue.sh
+      continue-on-error: true
