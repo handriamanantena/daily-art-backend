@@ -77,7 +77,7 @@ pm2 start build/index.js
 
 2. You will also need to add the corresponding .env files to ~/actions-runner. The files need to be named ```/.envstage``` and ```.envstage```.
 You will need to give the linux user access to /etc/nginx/conf.d/<host>. The command
-```chmod -R <user> /etc/nginx/conf.d/<host> ```. 
+```chown -R <user> /etc/nginx/conf.d/<host> ```. 
 3.  You will need 2 running images ready before the blue green deployment. You will need to build 2 containers  ```dailyart-container-blue``` and 
 ```dailyart-container-green```, where blue is staging build and green is production build. There is a ```DockerFile``` in the root directory to build.
 - ```docker build -t registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging .```
