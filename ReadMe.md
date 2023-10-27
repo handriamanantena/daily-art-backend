@@ -86,7 +86,7 @@ You will need to give the linux user access to /etc/nginx/conf.d/<host>. The com
 - ```docker run --name dailyart-container-green -d -p 3001:3000 registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production```
 
 ## start github action
-1. nohup run.sh &
+1. nohup ./run.sh &
 
 ## stop github action
 
