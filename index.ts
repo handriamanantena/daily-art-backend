@@ -35,7 +35,7 @@ else {
 
 app.use(express.json());
 
-app.use(cookies())
+app.use(cookies());
 // By default, $ and . characters are removed completely from user-supplied input in the following places:
 // - req.body
 // - req.query
@@ -46,6 +46,10 @@ app.use(cookies())
 app.use(mongoSanitize());
 app.use(require('sanitize').middleware);
 
+app.get('/health', (req, res) => {
+    res.status(200);
+    return res.send("OK");
+});
 
 app.use('/logout', logoutRouter);
 app.use('/refresh', refresh);

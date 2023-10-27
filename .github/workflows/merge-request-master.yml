@@ -26,7 +26,7 @@ jobs:
         token: ${{ secrets.DO_REGISTRY_SECRET }}
 
     - name: Build container image
-      run: docker build -t registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production-update .
+      run: echo ${{ secrets.USER_PASSWORD }} | sudo -S docker build -t registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production-update .
 
     - name: Run docker contianer
       run: . ./.github/workflows/runBlue.sh
