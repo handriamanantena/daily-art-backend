@@ -48,7 +48,7 @@ app.use(require('sanitize').middleware);
 
 app.get('/health', (req, res) => {
     res.status(200);
-    return res.send("OK");
+    return res.send({ status: "alive" });
 });
 
 app.use('/logout', logoutRouter);
