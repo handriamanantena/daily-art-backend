@@ -1,20 +1,24 @@
-import {collections} from "./dbConn";
+import {
+    ArtCollections,
+    FindCursor,
+    InsertOneResult,
+    MongoDB,
+    ObjectId,
+    Sort,
+    UpdateOptions, UpdateResult
+} from "../adapters/database/MongoDB";
 import {MongoDBEntity} from "../model/MongoDBEntity/MongoDBEntity";
-import * as mongoDB from "mongodb";
-import {Document, FindCursor, InsertOneResult, ObjectId} from "mongodb";
-import {UpdateResult} from "mongodb";
-import {Sort} from "mongodb";
-import {UpdateOptions} from "mongodb";
 
-type ArtCollections = "pictures" | "artist" | "challenges";
+
 
 export class MongoDBClient {
 
+    mongoDB : MongoDB = new MongoDB();
 
 
     async getOneResource<T extends MongoDBEntity>(collectionName: ArtCollections, query : {}) : Promise<T | any>{
         try{
-            let collection = collections[collectionName];
+            let collection = await this.mongoDB.getCollection(collectionName);
             if(collection == undefined) {
                 console.error(collectionName + " collection missing");
                 throw new Error(collectionName +" collection missing");
@@ -30,7 +34,7 @@ export class MongoDBClient {
     }
 
     async addNewResource<T extends MongoDBEntity>(collectionName: ArtCollections, query : {}) : Promise<InsertOneResult> {
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
@@ -41,7 +45,7 @@ export class MongoDBClient {
 
     async getResources(collectionName: ArtCollections, query : {}, projection : Document | {}, sort: Sort, limit: number | undefined) : Promise<[] | any> {
         try{
-            let collection = collections[collectionName];
+            let collection = await this.mongoDB.getCollection(collectionName);
             if(collection == undefined) {
                 console.error(collectionName + " collection missing");
                 throw new Error(collectionName +" collection missing");
@@ -62,7 +66,7 @@ export class MongoDBClient {
 
 
     async getResourcesProjection(collectionName: ArtCollections, query : {}, document: Document ) : Promise<FindCursor>{
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
@@ -72,7 +76,7 @@ export class MongoDBClient {
     }
 
     async getDistinctResources(collectionName: ArtCollections, query : {}, document: Document ) : Promise<any>{
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
@@ -86,7 +90,7 @@ export class MongoDBClient {
     async getResourcePage(collectionName: ArtCollections, query : {$and: [{_id: {$gt: ObjectId}}, any]} |  any, pageSize: number, sort: any) : Promise<[]> {
 
         try{
-            let collection = collections[collectionName];
+            let collection = await this.mongoDB.getCollection(collectionName);
             let entity : [];
             if(collection == undefined) {
                 console.error(collectionName + " collection missing");
@@ -102,7 +106,7 @@ export class MongoDBClient {
     }
 
     async createResource<T>(collectionName: ArtCollections, resource : any) : Promise<InsertOneResult> {
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
@@ -112,7 +116,7 @@ export class MongoDBClient {
 
     async updateResource<T extends MongoDBEntity>(collectionName: ArtCollections, filter : any, update: any,
                                                   options : UpdateOptions) : Promise<UpdateResult> {
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
@@ -127,7 +131,7 @@ export class MongoDBClient {
 
     async updateResources<T extends MongoDBEntity>(collectionName: ArtCollections, filter : any, update: any,
                                                   options : UpdateOptions) : Promise<UpdateResult | Document> {
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
@@ -138,7 +142,7 @@ export class MongoDBClient {
     }
 
     async deleteOneResource(collectionName: ArtCollections, filter : any) {
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
@@ -147,19 +151,12 @@ export class MongoDBClient {
     }
 
     async deleteResources(collectionName: ArtCollections, filter : any) {
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
         }
         return await collection.deleteMany(filter);
-    }
-
-    private logMissingCollection(collection: mongoDB.MongoClient, collectionName: ArtCollections) {
-        if(collection == undefined) {
-            console.error(collection + " collection missing");
-            throw new Error(collectionName +" collection missing");
-        }
     }
 
     async getResourceByPage(collectionName: ArtCollections, pageIndex: string, pageSize: number,
@@ -175,13 +172,13 @@ export class MongoDBClient {
                 delete fields.password;
             }
             console.log("fields: " + JSON.stringify(fields));
-            let collection = collections[collectionName];
+            let collection = await this.mongoDB.getCollection(collectionName);
             let entity : any[];
             if(collection == undefined) {
                 console.error(collectionName + " collection missing");
                 throw new Error(collectionName +" collection missing");
             }
-            let id : mongoDB.ObjectId;
+            let id : ObjectId;
             if(pageIndex != "" && pageIndex != undefined && pageIndex != "0") {
                 try{
                     id = new ObjectId(pageIndex);
@@ -222,12 +219,12 @@ export class MongoDBClient {
 
     async getAggregateOneResource(collectionName: ArtCollections, from: ArtCollections | undefined, localField: string,
                                   foreignField: string, queryId: ObjectId | undefined, as: string, fields: {[key: string]: 1 | 0}, foreignProjection: {[key: string]: 1 | 0}) {
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
         }
-        let id : mongoDB.ObjectId;
+        let id : ObjectId;
         let cursor = collection.aggregate([
             { $sort : { _id : -1 } },
             {$match: {_id : queryId}},
@@ -247,7 +244,7 @@ export class MongoDBClient {
     async getAggregate(collectionName: ArtCollections, from: ArtCollections | undefined, localField: string,
                        foreignField: string, as: string, foreignProjection: string, indexField: any, indexValue: any, pageSize: number,
                        filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1 | 0}) {
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         let entity: any[];
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
@@ -316,7 +313,7 @@ export class MongoDBClient {
 
     async getAggregateCustomLookup(collectionName: ArtCollections, indexField: any, indexValue: any, pageSize: number,
                        filterTerms : {[key: string]: any}, searchText: string, fields: {[key: string]: 1 | 0}, lookup: any) {
-        let collection = collections[collectionName];
+        let collection = await this.mongoDB.getCollection(collectionName);
         if (collection == undefined) {
             console.error(collectionName + " collection missing");
             throw new Error(collectionName + " collection missing");
