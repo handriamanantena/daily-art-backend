@@ -6,6 +6,7 @@
     "test/**/*",
     "test/**/*",
     "dbScripts/**/*",
-    ".github/**/*"
+    ".github/**/*",
+    "jest.config.ts"
   ]
 }

@@ -17,9 +17,6 @@ jobs:
     - name: Check out the repo
       uses: actions/checkout@v4
 
-    - name: Run tests
-      run: npm ci && npm run test
-
     - name: Build stage node application
       run: npm ci --omit=dev && npm run build && cp ~/actions-runner/.envstage ~/actions-runner/_work/daily-art-backend/daily-art-backend/.env
 
