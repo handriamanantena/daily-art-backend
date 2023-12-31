@@ -45,7 +45,6 @@ export class MongoDB extends DatabaseConnection {
     }
 
     async getCollection(collectionName: ArtCollections) : Promise<mongoDB.Collection> {
-        console.log("inside [" + this.database + "]");
         return (this.database as mongoDB.Db).collection(collectionName);
     }
 

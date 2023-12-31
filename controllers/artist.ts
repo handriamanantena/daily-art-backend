@@ -172,7 +172,6 @@ function setKeysForFilter(urlQuery : ParsedQs) : {[key: string]: any} {
 
 export async function getArtists (req: Request, res: Response, next: NextFunction) {
     let pictures = await getResources(req, res, next, setKeysForFilter, getPage);
-    console.log("inside" + JSON.stringify(pictures));
     if(pictures) {
         return res.send(pictures);
     }
