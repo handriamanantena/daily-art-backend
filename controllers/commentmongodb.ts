@@ -1,3 +1,4 @@
+/*
 import Picturesmongodb from "./picturesmongodb";
 import * as mongoDB from "mongodb";
 import {Picture} from "../model/picture";
@@ -96,4 +97,4 @@ export class Commentmongodb {
 
 }
 
-export default Commentmongodb
+export default Commentmongodb*/

@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {Picture, PictureDB} from "../model/picture";
-import {Picturesmongodb} from "./picturesmongodb";
-import {MongoDBClient} from "../dbConnection/MongoDBClient";
+import {client as mongoDBClient} from "../dbConnection/MongoDBConnection";
 import * as mongoDB from "mongodb";
 import {ObjectId} from "mongodb";
 import {getResources, splitFields} from "./genericApi";
@@ -11,8 +10,6 @@ import {DeleteResult} from "mongodb";
 import {InsertOneResult} from "mongodb";
 import moment from "moment";
 import {Utility} from "../common/utility";
-const mongoDBClient = new MongoDBClient();
-const pictureMongodb = new Picturesmongodb();
 const utility = new Utility();
 
 
@@ -243,7 +240,7 @@ export async function getPictureWithUserInfo (req: Request, res: Response, next:
     //return await mongoDBClient.getOneResource("pictures", {_id: new ObjectId(pictureId)});
 }
 
-export async function addReplyToPicture (req: Request, res: Response, next: NextFunction) {
+/*export async function addReplyToPicture (req: Request, res: Response, next: NextFunction) {
     let pictureId = req.query.pictureId as string
     pictureMongodb.insertReplyOnPicture(req.body, pictureId).then(value => {
         res.send(value)
@@ -251,7 +248,7 @@ export async function addReplyToPicture (req: Request, res: Response, next: Next
         console.log(e)
         next(e)
     })
-}
+}*/
 
 export async function addPicture (req: Request, res: Response, next: NextFunction) {
     let picture: Picture = req.body as Picture;

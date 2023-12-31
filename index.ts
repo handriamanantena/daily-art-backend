@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {MongoDBConnection} from "./dbConnection/MongoDBConnection";
+import {connection} from "./dbConnection/MongoDBConnection";
 import express from "express";
 import {publicPicturesRouter, protectedPicturesRouter} from "./router/api/pictures";
 import {jwtRouter} from "./router/jwt";
@@ -70,7 +70,6 @@ app.use('/artist', protectedArtistRouter);
 const uri = `mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_CLUSTER}/?retryWrites=true&w=majority`;
 //const uri= "mongodb://127.0.0.1:27017/?readPreference=primary&serverSelectionTimeoutMS=2000&appname=MongoDB%20Compass&directConnection=true&ssl=false";
 
-let connection = new MongoDBConnection();
 connection.connectToDatabase(uri, {}, `${process.env.DATABASE}`)
     .then(() => {
         connection.initializeCollections().then(() => {

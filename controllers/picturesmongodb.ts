@@ -2,15 +2,10 @@ import * as mongoDB from "mongodb";
 import {Picture, PictureDB} from "../model/picture";
 import {Gallery, GalleryDB} from "../model/Gallery";
 import {Comment, CommentDB, Reply} from "../model/Comment";
-import {collections} from "../dbConnection/dbConn";
 
 
 export class Picturesmongodb {
 
-
-    async getPicturesCollection() {
-        return collections.pictures;
-    }
 
    /* async getAllPictures() {
         let allPictures : Picture[] = []
@@ -58,7 +53,7 @@ export class Picturesmongodb {
 
     }*/
 
-    async getPictureById(id: string) {
+    /*async getPictureById(id: string) {
         let objectId = new mongoDB.ObjectId(id)
         return await this.getPictureByObjectId(objectId) as Picture
     }
@@ -81,7 +76,7 @@ export class Picturesmongodb {
         }
     }
 
-    /*async getGalleryByPage(page: number) {
+    async getGalleryByPage(page: number) {
         let gallery : GalleryDB = {}
         try {
             const galleryCollection = await this.getGalleryCollection();
@@ -134,7 +129,8 @@ export class Picturesmongodb {
         return gallery
     }*/
 
-    async insertRecentComment(comment: Comment, pictureId: string) {
+    //TODO comment
+    /*async insertRecentComment(comment: Comment, pictureId: string) {
         try {
             const pictures = await this.getPicturesCollection()
             let objectId = new mongoDB.ObjectId(pictureId)
@@ -174,10 +170,10 @@ export class Picturesmongodb {
         } catch (e) {
             console.log(e)
         }
-    }
+    }*/
 
     // TODO need to add reply on recent comment. might already be done in comment mongodb
-    async insertReplyOnPicture(reply: Reply, pictureId: string) {
+    /*async insertReplyOnPicture(reply: Reply, pictureId: string) {
         let pictureDB = await this.getPicturesCollection()
         let pushValues =
             {
@@ -195,10 +191,10 @@ export class Picturesmongodb {
         }
         let result = await pictureDB.updateOne({_id: objectId}, pushValues)
         return result
-    }
+    }*/
 
     //@Depricated
-    async insertReplyOnRecentComment(reply: Reply, pictureId: string) {
+    /*async insertReplyOnRecentComment(reply: Reply, pictureId: string) {
         let pictureDB = await this.getPicturesCollection()
         let pushValues =
             {
@@ -231,7 +227,7 @@ export class Picturesmongodb {
         catch (e) {
             console.log(e)
         }
-    }
+    }*/
 
 }
 

@@ -9,12 +9,13 @@ export interface MongoDBConnectionOptions {
 
 }
 
-export interface InsertOneResult implements mongoDB.InsertOneResult {}
+export interface InsertOneResult extends mongoDB.InsertOneResult {}
 export type Sort = mongoDB.Sort;
 export class FindCursor extends mongoDB.FindCursor {}
 export class ObjectId extends mongoDB.ObjectId {}
-export interface UpdateOptions implements mongoDB.UpdateOptions {}
-export interface UpdateResult implements mongoDB.UpdateResult {}
+export interface UpdateOptions extends mongoDB.UpdateOptions {}
+export interface UpdateResult extends mongoDB.UpdateResult {}
+export interface Document extends mongoDB.Document {}
 
 
 export type ArtCollections = "pictures" | "artist" | "challenges";
@@ -44,6 +45,7 @@ export class MongoDB extends DatabaseConnection {
     }
 
     async getCollection(collectionName: ArtCollections) : Promise<mongoDB.Collection> {
+        console.log("inside [" + this.database + "]");
         return (this.database as mongoDB.Db).collection(collectionName);
     }
 

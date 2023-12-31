@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {Artist, ArtistDB} from "../model/Artist";
 import jwt from "jsonwebtoken";
 import {GoogleLogin} from "../authentication/googleLogin";
-import {MongoDBClient} from "../dbConnection/MongoDBClient";
+import {client as mongodbClient} from "../dbConnection/MongoDBConnection";
 import {getResources} from "./genericApi";
 import {ParsedQs} from "qs";
 import {UpdateResult, Document} from "mongodb";
@@ -10,7 +10,6 @@ import * as mongoDB from "mongodb";
 import {generateTokens} from "./authController";
 import {JwtPayload} from "../model/JwtPayload";
 const googleLogin = new GoogleLogin();
-const mongodbClient = new MongoDBClient();
 const bcrypt = require('bcryptjs');
 
 export async function login (req: Request, res: Response, next: NextFunction) {

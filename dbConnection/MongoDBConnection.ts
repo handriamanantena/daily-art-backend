@@ -1,10 +1,18 @@
 import {addChallengesToDatabase} from "../drawingOftheDay/challengeOftheDay";
 import {DBConnection} from "./DBConnection";
 import {MongoDB, MongoDBConnectionOptions} from "../adapters/database/MongoDB";
+import {MongoDBClient} from "./MongoDBClient";
 
-export class MongoDBConnection extends DBConnection {
+class MongoDBConnection extends DBConnection {
 
     mongoDB : MongoDB = new MongoDB();
+    client : MongoDBClient;
+
+    constructor() {
+        super();
+        this.client = new MongoDBClient(this.mongoDB);
+    }
+
 
     async connectToDatabase(uri: string, connectionOptions: MongoDBConnectionOptions, dbName: string) {
         await this.mongoDB.connectToDatabase(uri, connectionOptions, dbName);
@@ -31,3 +39,6 @@ export class MongoDBConnection extends DBConnection {
     }
 
 }
+const connection = new MongoDBConnection();
+const client = connection.client;
+export {connection, client}

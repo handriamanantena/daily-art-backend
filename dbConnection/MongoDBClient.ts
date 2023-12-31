@@ -5,7 +5,7 @@ import {
     MongoDB,
     ObjectId,
     Sort,
-    UpdateOptions, UpdateResult
+    UpdateOptions, UpdateResult, Document
 } from "../adapters/database/MongoDB";
 import {MongoDBEntity} from "../model/MongoDBEntity/MongoDBEntity";
 
@@ -13,7 +13,11 @@ import {MongoDBEntity} from "../model/MongoDBEntity/MongoDBEntity";
 
 export class MongoDBClient {
 
-    mongoDB : MongoDB = new MongoDB();
+    mongoDB : MongoDB;
+
+    constructor(mongoDB : MongoDB ) {
+        this.mongoDB = mongoDB;
+    }
 
 
     async getOneResource<T extends MongoDBEntity>(collectionName: ArtCollections, query : {}) : Promise<T | any>{
