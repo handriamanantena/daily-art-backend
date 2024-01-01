@@ -2,7 +2,7 @@ name: Merge Request into dev or master
 on:
   push:
     branches:
-    - 'dev'
+    - '**'
   pull_request:
     types: [opened, edited, reopened]
     branches:
