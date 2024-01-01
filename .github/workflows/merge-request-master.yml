@@ -1,9 +1,11 @@
 name: Merge Request into dev or master
 on:
   pull_request:
-    types: [opened]
-  branches:
-  - ['dev', 'master']
+    types:
+    - synchronize
+    branches:
+      - 'dev'
+      - 'master'
 
 jobs:
   push_to_registry:
