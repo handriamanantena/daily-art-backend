@@ -9,3 +9,4 @@ else
     BLUE_PORT="3001"
 fi
 docker stop dailyart-container-blue || true; docker rm dailyart-container-blue || true; docker run --name dailyart-container-blue -d -p $BLUE_PORT:3000 registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production-update
+sed -i "s/proxy_pass http:\/\/localhost:[0-9]*;/proxy_pass http:\/\/localhost:$BLUE_PORT;/" /etc/nginx/conf.d/dev-api.dailyirasuto.com.conf
