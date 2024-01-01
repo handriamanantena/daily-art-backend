@@ -1,7 +1,7 @@
 name: Merge Request into dev or master
 on:
   pull_request:
-    types: [opened, edited, reopened, synchronize]
+    types: [synchronize]
     branches:
     - ['dev', 'master']
 
