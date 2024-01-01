@@ -1,4 +1,5 @@
 name: Merge Request into dev or master
+
 on:
   pull_request:
     types: [synchronize]
