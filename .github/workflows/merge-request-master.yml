@@ -6,7 +6,7 @@ on:
   pull_request:
     types: [opened, edited, reopened]
     branches:
-    - 'master'
+    - ['dev', 'master']
 
 jobs:
   push_to_registry:
