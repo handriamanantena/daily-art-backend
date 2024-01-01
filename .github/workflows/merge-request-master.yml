@@ -1,4 +1,4 @@
-name: Merge Request Master
+name: Merge Request into dev or master
 on:
   push:
     branches:
