@@ -1,12 +1,11 @@
-name: Merge Request Master
+name: Merge Request into dev or master
 on:
-  push:
-    branches:
-    - 'dev'
   pull_request:
-    types: [opened, edited, reopened]
+    types:
+    - synchronize
     branches:
-    - 'master'
+      - 'dev'
+      - 'master'
 
 jobs:
   push_to_registry:

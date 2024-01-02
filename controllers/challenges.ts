@@ -1,9 +1,8 @@
 import {NextFunction, Request, Response} from "express";
 import moment from "moment";
-import {MongoDBClient} from "../dbConnection/MongoDBClient";
+import {client as mongodbClient} from "../dbConnection/MongoDBConnection";
 import {getResources} from "./genericApi";
 import {ParsedQs} from "qs";
-const mongodbClient = new MongoDBClient();
 
 
 export async function getChallengeByDate (req: Request, res: Response, next: NextFunction) {

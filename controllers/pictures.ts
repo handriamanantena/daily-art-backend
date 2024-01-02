@@ -1,18 +1,12 @@
 import {NextFunction, Request, Response} from "express";
 import {Picture, PictureDB} from "../model/picture";
-import {Picturesmongodb} from "./picturesmongodb";
-import {MongoDBClient} from "../dbConnection/MongoDBClient";
-import * as mongoDB from "mongodb";
-import {ObjectId} from "mongodb";
+import {client as mongoDBClient} from "../dbConnection/MongoDBConnection";
 import {getResources, splitFields} from "./genericApi";
 import {ParsedQs} from "qs";
 import {checkFields} from "../common/parser/genericTypeCheck";
-import {DeleteResult} from "mongodb";
-import {InsertOneResult} from "mongodb";
+import {DeleteResult, ObjectId, InsertOneResult} from "../adapters/database/MongoDB";
 import moment from "moment";
 import {Utility} from "../common/utility";
-const mongoDBClient = new MongoDBClient();
-const pictureMongodb = new Picturesmongodb();
 const utility = new Utility();
 
 
@@ -243,7 +237,7 @@ export async function getPictureWithUserInfo (req: Request, res: Response, next:
     //return await mongoDBClient.getOneResource("pictures", {_id: new ObjectId(pictureId)});
 }
 
-export async function addReplyToPicture (req: Request, res: Response, next: NextFunction) {
+/*export async function addReplyToPicture (req: Request, res: Response, next: NextFunction) {
     let pictureId = req.query.pictureId as string
     pictureMongodb.insertReplyOnPicture(req.body, pictureId).then(value => {
         res.send(value)
@@ -251,7 +245,7 @@ export async function addReplyToPicture (req: Request, res: Response, next: Next
         console.log(e)
         next(e)
     })
-}
+}*/
 
 export async function addPicture (req: Request, res: Response, next: NextFunction) {
     let picture: Picture = req.body as Picture;
@@ -276,7 +270,7 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
     console.log("db response: " + JSON.stringify(pictureResponse));
     if (pictureResponse.acknowledged) {
         // TODO need to add file extension
-        let updateStatus = await mongoDBClient.updateResource("pictures", {_id: new mongoDB.ObjectId(pictureResponse.insertedId)}, {$set: {url: pictureResponse.insertedId.toString()}}, {upsert: false});
+        let updateStatus = await mongoDBClient.updateResource("pictures", {_id: new ObjectId(pictureResponse.insertedId)}, {$set: {url: pictureResponse.insertedId.toString()}}, {upsert: false});
         if (updateStatus.modifiedCount == 1) {
             res.status(201);
         }

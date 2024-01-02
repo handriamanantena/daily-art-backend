@@ -1,10 +1,7 @@
 import jwt from "jsonwebtoken";
 import {NextFunction, Request, Response} from "express";
-import {Artist, ArtistDB} from "../model/Artist";
-import {MongoDBClient} from "../dbConnection/MongoDBClient";
 import {JwtPayload} from "../model/JwtPayload";
 const bcrypt = require('bcryptjs');
-const mongoDBClient = new MongoDBClient();
 
 /**
  * Default alg HS256
