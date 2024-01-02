@@ -5,39 +5,37 @@ on:
     - 'master'
 
 jobs:
-  if_merged:
-    if: github.event.pull_request.merged == true
-    runs-on: self-hosted
-    steps:
+  runs-on: self-hosted
+  steps:
 
-    - name: Check out the repo
-      uses: actions/checkout@v4
+  - name: Check out the repo
+    uses: actions/checkout@v4
 
-    - name: Build prod node application
-      run: npm ci --omit=dev && npm run build && cp ~/actions-runner/.envprod ~/actions-runner/_work/daily-art-backend/daily-art-backend/.env
+  - name: Build prod node application
+    run: npm ci --omit=dev && npm run build && cp ~/actions-runner/.envprod ~/actions-runner/_work/daily-art-backend/daily-art-backend/.env
 
-    - name: Build container image
-      run: docker build -t registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production .
+  - name: Build container image
+    run: docker build -t registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production .
 
-    - name: Install doctl
-      uses: digitalocean/action-doctl@v2
-      with:
-        token: ${{ secrets.DO_REGISTRY_SECRET }}
+  - name: Install doctl
+    uses: digitalocean/action-doctl@v2
+    with:
+      token: ${{ secrets.DO_REGISTRY_SECRET }}
 
-    - name: Switch Blue to Green
-      run: . ./.github/workflows/runGreen.sh
+  - name: Switch Blue to Green
+    run: . ./.github/workflows/runGreen.sh
 
-    - name: Reload NGINX
-      run: echo ${{ secrets.USER_PASSWORD }} | sudo -S systemctl reload nginx
+  - name: Reload NGINX
+    run: echo ${{ secrets.USER_PASSWORD }} | sudo -S systemctl reload nginx
 
-    - name: Log in to DigitalOcean Container Registry with short-lived credentials
-      run: doctl registry login --expiry-seconds 600
+  - name: Log in to DigitalOcean Container Registry with short-lived credentials
+    run: doctl registry login --expiry-seconds 600
 
-    - name: Push image to DigitalOcean Container Registry
-      run: docker push registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production
+  - name: Push image to DigitalOcean Container Registry
+    run: docker push registry.digitalocean.com/dailyirasuto-backend-images/dailyart:production
 
-    - name: Push image to DigitalOcean Container Registry
-      run: docker push registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging
+  - name: Push image to DigitalOcean Container Registry
+    run: docker push registry.digitalocean.com/dailyirasuto-backend-images/dailyart:staging
 
 
 
