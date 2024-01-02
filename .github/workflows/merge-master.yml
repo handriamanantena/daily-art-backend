@@ -3,6 +3,8 @@ on:
   pull_request:
     types:
     - closed
+    branches:
+    - master
 
 jobs:
   if_merged:

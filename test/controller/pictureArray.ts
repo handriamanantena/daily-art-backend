@@ -1,4 +1,4 @@
-import {ObjectId} from "mongodb";
+import {ObjectId} from "../../adapters/database/MongoDB";
 
 export let picturesDB = [{
   "_id": new ObjectId("613012d4d165b61ffc1896f6"),

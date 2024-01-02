@@ -1,7 +1,6 @@
-import {MongoDBClient} from "../dbConnection/MongoDBClient";
+import {client as mongodbClient} from "../dbConnection/MongoDBConnection";
 import { parse } from 'csv-parse';
 const fs = require("fs");
-const mongodbClient = new MongoDBClient();
 import moment, {MomentInput} from "moment";
 
 export const addChallengesToDatabase = (file: string, startDate: Date) => {
