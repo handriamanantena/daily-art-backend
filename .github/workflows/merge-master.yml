@@ -1,4 +1,4 @@
-name: Merge Request Master
+name: Build Deploy Prod build
 on:
   push:
     branches:
