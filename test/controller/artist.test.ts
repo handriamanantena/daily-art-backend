@@ -1,17 +1,17 @@
 import {connection, client} from "../../dbConnection/MongoDBConnection";
 import {artistDB} from "./artistArray";
 import {picturesDB} from "./pictureArray";
-import {InsertOneResult} from "mongodb";
+import {InsertOneResult} from "../../adapters/database/MongoDB";
 import {Picture, PictureDB} from "../../model/picture";
 import {Artist, ArtistDB} from "../../model/Artist";
-import * as mongoDB from "mongodb";
+import {Collection} from "../../adapters/database/MongoDB";
 import moment from "moment";
 import {addPictureToDB} from "../../controllers/pictures";
 // @ts-ignore
 describe('test insert picture', () => {
 
-    let artistCollection : mongoDB.Collection | undefined;
-    let pictureCollection: mongoDB.Collection | undefined;
+    let artistCollection : Collection | undefined;
+    let pictureCollection: Collection | undefined;
 
     beforeAll(async () => {
         // @ts-ignore

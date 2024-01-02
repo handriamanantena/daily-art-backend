@@ -1,4 +1,4 @@
-import {ObjectId} from "mongodb";
+import {ObjectId} from "../adapters/database/MongoDB";
 
 
 export class Utility {

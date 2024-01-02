@@ -1,4 +1,4 @@
-import * as mongoDB from "mongodb";
+import {ObjectId} from "../adapters/database/MongoDB";
 import {MongoDBEntity} from "./MongoDBEntity/MongoDBEntity";
 
 export interface Comment {
@@ -17,9 +17,9 @@ export interface Reply extends Comment {
 }
 
 export interface ReplyDB extends Reply, MongoDBEntity {
-    nameOfOriginalCommenterObjectId?: mongoDB.ObjectId,
+    nameOfOriginalCommenterObjectId?: ObjectId,
 }
 
 export interface CommentDB extends Comment, MongoDBEntity {
-    commenterObjectId? : mongoDB.ObjectId,
+    commenterObjectId? : ObjectId,
 }

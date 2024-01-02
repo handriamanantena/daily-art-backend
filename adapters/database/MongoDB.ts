@@ -1,7 +1,5 @@
 import * as mongoDB from "mongodb";
 import {DatabaseConnection} from "./DatabaseConnection";
-import {IndexSpecification, InferIdType} from "mongodb";
-import {CreateIndexesOptions} from "mongodb";
 
 
 
@@ -13,9 +11,13 @@ export interface InsertOneResult extends mongoDB.InsertOneResult {}
 export type Sort = mongoDB.Sort;
 export class FindCursor extends mongoDB.FindCursor {}
 export class ObjectId extends mongoDB.ObjectId {}
+export interface DeleteResult extends mongoDB.DeleteResult {}
 export interface UpdateOptions extends mongoDB.UpdateOptions {}
 export interface UpdateResult extends mongoDB.UpdateResult {}
 export interface Document extends mongoDB.Document {}
+export type IndexSpecification = mongoDB.IndexSpecification;
+export interface CreateIndexesOptions extends mongoDB.CreateIndexesOptions {}
+export class Collection extends mongoDB.Collection {}
 
 
 export type ArtCollections = "pictures" | "artist" | "challenges";

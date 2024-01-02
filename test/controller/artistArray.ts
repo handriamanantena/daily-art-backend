@@ -1,4 +1,4 @@
-import {ObjectId} from "mongodb";
+import {ObjectId} from "../../adapters/database/MongoDB";
 
 export let artistDB = [{
     "_id": new ObjectId("648c96804207c39d2060cfcb"),

@@ -1,11 +1,12 @@
 import {connection, client as mongoDBClient} from "../../dbConnection/MongoDBConnection";
 import {picturesDB} from "./pictureArray";
 import {PictureDB} from "../../model/picture";
-import * as mongoDB from "mongodb";
+import {Collection} from "../../adapters/database/MongoDB";
+
 // @ts-ignore
 describe('test get picture', () => {
 
-    let collection : mongoDB.Collection;
+    let collection : Collection;
     // @ts-ignore
     beforeAll(async () => {
         // @ts-ignore

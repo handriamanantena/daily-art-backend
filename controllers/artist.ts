@@ -1,13 +1,11 @@
 import {NextFunction, Request, Response} from "express";
 import {Artist, ArtistDB} from "../model/Artist";
-import jwt from "jsonwebtoken";
 import {GoogleLogin} from "../authentication/googleLogin";
 import {client as mongodbClient} from "../dbConnection/MongoDBConnection";
 import {getResources} from "./genericApi";
 import {ParsedQs} from "qs";
-import {UpdateResult, Document} from "mongodb";
-import * as mongoDB from "mongodb";
 import {generateTokens} from "./authController";
+import {UpdateResult, Document, ObjectId} from "../adapters/database/MongoDB";
 import {JwtPayload} from "../model/JwtPayload";
 const googleLogin = new GoogleLogin();
 const bcrypt = require('bcryptjs');
@@ -190,7 +188,7 @@ export async function updateArtist(req: Request, res: Response, next: NextFuncti
     let artistId = res.locals.token.id;
     let objectId = {};
     try {
-        objectId = new mongoDB.ObjectId(artistId);
+        objectId = new ObjectId(artistId);
     }
     catch (e) {
         console.error(e);

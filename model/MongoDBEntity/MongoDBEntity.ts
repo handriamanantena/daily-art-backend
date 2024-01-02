@@ -1,5 +1,5 @@
-import * as mongoDB from "mongodb"
+import {ObjectId} from "../../adapters/database/MongoDB";
 
 export interface MongoDBEntity {
-    _id: mongoDB.ObjectId;
+    _id: ObjectId;
 }

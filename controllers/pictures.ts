@@ -1,13 +1,10 @@
 import {NextFunction, Request, Response} from "express";
 import {Picture, PictureDB} from "../model/picture";
 import {client as mongoDBClient} from "../dbConnection/MongoDBConnection";
-import * as mongoDB from "mongodb";
-import {ObjectId} from "mongodb";
 import {getResources, splitFields} from "./genericApi";
 import {ParsedQs} from "qs";
 import {checkFields} from "../common/parser/genericTypeCheck";
-import {DeleteResult} from "mongodb";
-import {InsertOneResult} from "mongodb";
+import {DeleteResult, ObjectId, InsertOneResult} from "../adapters/database/MongoDB";
 import moment from "moment";
 import {Utility} from "../common/utility";
 const utility = new Utility();
@@ -273,7 +270,7 @@ export async function addPicture (req: Request, res: Response, next: NextFunctio
     console.log("db response: " + JSON.stringify(pictureResponse));
     if (pictureResponse.acknowledged) {
         // TODO need to add file extension
-        let updateStatus = await mongoDBClient.updateResource("pictures", {_id: new mongoDB.ObjectId(pictureResponse.insertedId)}, {$set: {url: pictureResponse.insertedId.toString()}}, {upsert: false});
+        let updateStatus = await mongoDBClient.updateResource("pictures", {_id: new ObjectId(pictureResponse.insertedId)}, {$set: {url: pictureResponse.insertedId.toString()}}, {upsert: false});
         if (updateStatus.modifiedCount == 1) {
             res.status(201);
         }
