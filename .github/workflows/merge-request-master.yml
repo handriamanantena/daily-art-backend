@@ -1,5 +1,8 @@
-name: Merge Request into dev or master
+name: Build Deploy Stage Build
 on:
+  push:
+    branches:
+    - 'dev'
   pull_request:
     types: [synchronize, open]
     branches:
